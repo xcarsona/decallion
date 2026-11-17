@@ -1,23 +1,25 @@
 "use client";
 import { useState } from "react";
-import { CATEGORIES } from "@/lib/questions";
+import { CLUSTERS } from "@/lib/questions";
 import { LEVELS, LEVEL_KEYS, ft } from "@/lib/scoring";
-import { isPersistent, liveStreak, type Stats } from "@/lib/stats";
+import { bestOf, dailyOf, isPersistent, liveStreak, type Stats } from "@/lib/stats";
+import type { ClusterChoice, ClusterId } from "@/types";
 
-export function StatsPanel({ stats, today, yesterday, onReset }: { stats: Stats; today: number; yesterday: number; onReset: () => void }) {
+export function StatsPanel({ stats, cluster, today, yesterday, onReset }: { stats: Stats; cluster: ClusterChoice; today: number; yesterday: number; onReset: () => void }) {
   const [armed, setArmed] = useState(false);
   const figs: [string | number, string][] = [
-    [liveStreak(stats, today, yesterday), "Daily streak"],
-    [stats.daily.bestStreak, "Best streak"],
-    [ft(stats.best.daily), "Best daily ft"],
-    [ft(stats.best.practice), "Best practice ft"],
-    [ft(stats.best.endless), "Best endless ft"],
+    [liveStreak(stats, cluster, today, yesterday), "Daily streak"],
+    [dailyOf(stats, cluster).bestStreak, "Best streak"],
+    [ft(bestOf(stats, cluster, "daily")), "Best daily ft"],
+    [ft(bestOf(stats, cluster, "practice")), "Best practice ft"],
+    [ft(bestOf(stats, cluster, "unlimited")), "Best unlimited ft"],
     [stats.games, "Rounds played"],
     [stats.prompts ? Math.round(stats.pts / stats.prompts) : 0, "Avg pts / prompt"],
     [stats.levels[6] ?? 0, "Glass answers"],
   ];
   const bars = [...LEVEL_KEYS.map((k) => ({ cls: `c${k}`, name: LEVELS[k].name, n: stats.levels[k] ?? 0 })), { cls: "cx", name: "No credit", n: stats.levels.miss ?? 0 }];
-  const played = CATEGORIES.filter((c) => stats.cats[c]).sort((a, b) => stats.cats[b].pts / stats.cats[b].n - stats.cats[a].pts / stats.cats[a].n);
+  const played = Object.keys(stats.topics).sort((a, b) => stats.topics[b].pts / stats.topics[b].n - stats.topics[a].pts / stats.topics[a].n);
+  const label = (key: string) => { const [c, topic] = key.split("|"); return `${CLUSTERS[c as ClusterId]?.short ?? c} · ${topic}`; };
   const reset = () => {
     if (armed) {
       onReset();
@@ -42,14 +44,14 @@ export function StatsPanel({ stats, today, yesterday, onReset }: { stats: Stats;
         <div className="legend">{bars.map((b) => <span key={b.name} className={b.cls}>{b.name} {b.n}</span>)}</div>
       </div>
       <div className="field">
-        <span>By category</span>
+        <span>By topic</span>
         <div className="tablewrap">
           <table>
-            <thead><tr><th>Category</th><th className="num">Prompts</th><th className="num">Avg pts</th><th className="num">Glass</th></tr></thead>
+            <thead><tr><th>Topic</th><th className="num">Prompts</th><th className="num">Avg pts</th><th className="num">Glass</th></tr></thead>
             <tbody id="catRows">
               {played.length === 0 && <tr><td colSpan={4} className="mute">No rounds played yet.</td></tr>}
               {played.map((c) => (
-                <tr key={c}><td>{c}</td><td className="num">{stats.cats[c].n}</td><td className="num">{Math.round(stats.cats[c].pts / stats.cats[c].n)}</td><td className="num">{stats.cats[c].glass || 0}</td></tr>
+                <tr key={c}><td>{label(c)}</td><td className="num">{stats.topics[c].n}</td><td className="num">{Math.round(stats.topics[c].pts / stats.topics[c].n)}</td><td className="num">{stats.topics[c].glass || 0}</td></tr>
               ))}
             </tbody>
           </table>

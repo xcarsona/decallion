@@ -30,10 +30,10 @@ export function HomeMenu({ dailyScore, onStart, onPractice }: { dailyScore: numb
           </button>
           <button type="button" id="mPractice" onClick={onPractice}>
             <b>Practice</b>
-            <span>Pick categories, difficulty and timer</span>
+            <span>Pick clusters, difficulty and timer</span>
           </button>
-          <button type="button" id="mEndless" onClick={() => onStart("endless")}>
-            <b>Endless</b>
+          <button type="button" id="mUnlimited" onClick={() => onStart("unlimited")}>
+            <b>Unlimited</b>
             <span>Keep climbing until three misses</span>
           </button>
         </div>

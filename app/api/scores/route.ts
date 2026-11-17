@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   const db = getServerClient();
   if (!db) return NextResponse.json(NOT_CONFIGURED, { status: 503 });
 
-  const round = buildRound(QUESTIONS, { mode: "daily", seed: day });
+  const round = buildRound(QUESTIONS, { mode: "daily", cluster: "all", seed: day });
   const { score, levels } = scoreAnswers(round, answers as string[]);
 
   const { error } = await db.from("daily_scores").insert({ day: dayIso(day), name: name.name, name_key: name.name.toLowerCase(), score, levels });

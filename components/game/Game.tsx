@@ -10,10 +10,10 @@ import { RoundReview } from "./RoundReview";
 import { StatsPanel } from "./StatsPanel";
 import { createScene, type Scene } from "./scene";
 import { STRIKES, buildRound, dayKey, match, prevDayKey } from "@/lib/game-engine";
-import { CATEGORIES, QUESTIONS } from "@/lib/questions";
+import { CLUSTER_IDS, QUESTIONS } from "@/lib/questions";
 import { LEVELS, LEVEL_KEYS, pointsFor } from "@/lib/scoring";
-import { load, record, reset, type RecordOutcome } from "@/lib/stats";
-import type { LogEntry, Mode, PracticeSetup as Setup, Question } from "@/types";
+import { dailyOf, load, record, reset, type RecordOutcome } from "@/lib/stats";
+import type { ClusterChoice, LogEntry, Mode, PracticeSetup as Setup, Question } from "@/types";
 
 type View = "home" | "setup" | "play" | "climb" | "reveal" | "end";
 
@@ -39,7 +39,8 @@ export default function Game() {
   const [sound, setSound] = useState(soundPref);
   const [view, setView] = useState<View>("home");
   const [mode, setMode] = useState<Mode>("daily");
-  const [setup, setSetup] = useState<Setup>({ cats: CATEGORIES.slice(), diff: 0, timer: true });
+  const [cluster] = useState<ClusterChoice>("all");
+  const [setup, setSetup] = useState<Setup>({ clusters: CLUSTER_IDS.slice(), diff: 0, timer: true });
   const [round, setRound] = useState<Question[]>([]);
   const [idx, setIdx] = useState(0);
   const [log, setLog] = useState<LogEntry[]>([]);
@@ -61,7 +62,7 @@ export default function Game() {
   const score = log.reduce((sum, l) => sum + l.pts, 0);
   const strikes = log.filter((l) => l.level === -1).length;
   const timed = mode === "practice" ? setup.timer : true;
-  const roundOver = idx + 1 >= round.length || (mode === "endless" && strikes >= STRIKES);
+  const roundOver = idx + 1 >= round.length || (mode === "unlimited" && strikes >= STRIKES);
 
   function goHome() {
     scene.current?.reset();
@@ -74,7 +75,7 @@ export default function Game() {
 
   function start(m: Mode) {
     scene.current?.wake();
-    const next = buildRound(QUESTIONS, m === "practice" ? { mode: m, cats: setup.cats, diff: setup.diff } : { mode: m, seed: today });
+    const next = buildRound(QUESTIONS, m === "practice" ? { mode: m, cluster, clusters: setup.clusters, diff: setup.diff } : { mode: m, cluster, seed: today });
     if (!next.length) return goHome();
     scene.current?.reset();
     answered.current = false;
@@ -84,7 +85,7 @@ export default function Game() {
     setLog([]);
     setOutcome(null);
     setReview(null);
-    setCounts(m !== "daily" || stats.daily.last !== today); // only the first daily run of the day counts
+    setCounts(m !== "daily" || dailyOf(stats, cluster).last !== today); // only the first daily run of the day counts
     setView("play");
   }
 
@@ -113,14 +114,14 @@ export default function Game() {
   function finish() {
     let out: RecordOutcome | null = null;
     if (counts) {
-      const result = record(stats, { mode, score, dayKey: today, prevDayKey: yesterday, log: log.map((l) => ({ cat: l.question.cat, level: l.level, pts: l.pts })) });
+      const result = record(stats, { mode, cluster, score, dayKey: today, prevDayKey: yesterday, log: log.map((l) => ({ cluster: l.question.cluster, topic: l.question.topic, level: l.level, pts: l.pts })) });
       setStats(result.stats);
       out = result.outcome;
     }
     setOutcome(out);
     setReview({ mode, log, score });
     setView("end");
-    scene.current?.fxFinale(mode === "endless" ? Math.min(score, 650) : score);
+    scene.current?.fxFinale(mode === "unlimited" ? Math.min(score, 650) : score);
   }
 
   function toggleSound() {
@@ -136,7 +137,7 @@ export default function Game() {
   let pips: Pip[] = [];
   let label = "READY";
   if (round.length) {
-    if (mode === "endless") {
+    if (mode === "unlimited") {
       pips = Array.from({ length: STRIKES }, (_, i) => (i < STRIKES - strikes ? "now" : ""));
       label = `PROMPT ${idx + 1} · ${STRIKES - strikes} MISSES LEFT`;
     } else {
@@ -161,13 +162,13 @@ export default function Game() {
         <canvas id="sky" ref={skyRef} aria-hidden="true" />
         <canvas id="ui" ref={uiRef} aria-hidden="true" />
         <Hud shown={shown} pips={pips} label={label} />
-        {view === "home" && <HomeMenu dailyScore={stats.daily.last === today ? stats.daily.score : null} onStart={start} onPractice={() => setView("setup")} />}
+        {view === "home" && <HomeMenu dailyScore={dailyOf(stats, cluster).last === today ? dailyOf(stats, cluster).score : null} onStart={start} onPractice={() => setView("setup")} />}
         {view === "setup" && <PracticeSetup setup={setup} onChange={setSetup} onGo={() => start("practice")} onBack={goHome} />}
         {view === "play" && round[idx] && (
           <PromptView key={`${round[idx].id}-${idx}`} question={round[idx]} timed={timed} onAnswer={answer} onLastSeconds={() => scene.current?.tone(880, 0.05, 0, "square", 0.03)} />
         )}
         {view === "reveal" && last && (
-          <RevealView entry={last} last={roundOver} onNext={next} missNote={mode === "endless" ? `Miss ${strikes} of ${STRIKES}.` : last.typed ? "Not on the board." : "The clock ran out."} />
+          <RevealView entry={last} last={roundOver} onNext={next} missNote={mode === "unlimited" ? `Miss ${strikes} of ${STRIKES}.` : last.typed ? "Not on the board." : "The clock ran out."} />
         )}
         {view === "end" && <EndView mode={mode} log={log} score={score} outcome={outcome} day={today} onAgain={() => start(mode)} onHome={goHome} />}
       </div>
@@ -188,11 +189,11 @@ export default function Game() {
             <p>Every prompt has many correct answers. Type one. You get a single answer and 25 seconds.</p>
             <p>The fewer competitors likely to give your answer, the higher its level. Answer boards stay sealed until the round ends.</p>
             <p>The daily round is the same for everyone and changes at midnight UTC.</p>
-            <p className="mute">{QUESTIONS.length} prompts across {CATEGORIES.length} categories.</p>
+            <p className="mute">{QUESTIONS.length} prompts across {CLUSTER_IDS.length} career clusters.</p>
           </section>
         </div>
         <div className="col">
-          <StatsPanel stats={stats} today={today} yesterday={yesterday} onReset={() => { setStats(reset()); goHome(); }} />
+          <StatsPanel stats={stats} cluster={cluster} today={today} yesterday={yesterday} onReset={() => { setStats(reset()); goHome(); }} />
           <RoundReview mode={review?.mode ?? mode} log={review?.log ?? null} score={review?.score ?? 0} />
         </div>
       </div>

@@ -1,13 +1,13 @@
 import { Chip } from "@/components/ui/Chip";
 import { ROUND_SIZE, pool } from "@/lib/game-engine";
-import { CATEGORIES, QUESTIONS } from "@/lib/questions";
-import type { Difficulty, PracticeSetup as Setup } from "@/types";
+import { CLUSTERS, CLUSTER_IDS, QUESTIONS } from "@/lib/questions";
+import type { ClusterId, Difficulty, PracticeSetup as Setup } from "@/types";
 
 const DIFF_OPTIONS: [0 | Difficulty, string][] = [[0, "Any"], [1, "Easy"], [2, "Medium"], [3, "Hard"]];
 
 export function PracticeSetup({ setup, onChange, onGo, onBack }: { setup: Setup; onChange: (s: Setup) => void; onGo: () => void; onBack: () => void }) {
-  const n = pool(QUESTIONS, { cats: setup.cats, diff: setup.diff }).length;
-  const toggle = (c: string) => onChange({ ...setup, cats: setup.cats.includes(c) ? setup.cats.filter((x) => x !== c) : [...setup.cats, c] });
+  const n = pool(QUESTIONS, { clusters: setup.clusters, diff: setup.diff }).length;
+  const toggle = (c: ClusterId) => onChange({ ...setup, clusters: setup.clusters.includes(c) ? setup.clusters.filter((x) => x !== c) : [...setup.clusters, c] });
   return (
     <div className="view">
       <div className="panel tall">
@@ -16,13 +16,13 @@ export function PracticeSetup({ setup, onChange, onGo, onBack }: { setup: Setup;
           <span className="mute" id="avail">{n ? `${n} prompts match · round of ${Math.min(n, ROUND_SIZE)}` : "No prompts match"}</span>
         </div>
         <div className="field">
-          <span>Categories</span>
+          <span>Clusters</span>
           <div className="chips" id="catChips">
-            {CATEGORIES.map((c) => <Chip key={c} label={c} pressed={setup.cats.includes(c)} onClick={() => toggle(c)} />)}
+            {CLUSTER_IDS.map((c) => <Chip key={c} label={CLUSTERS[c].name} pressed={setup.clusters.includes(c)} onClick={() => toggle(c)} />)}
           </div>
           <div className="chips">
-            <Chip label="All" onClick={() => onChange({ ...setup, cats: CATEGORIES.slice() })} />
-            <Chip label="None" onClick={() => onChange({ ...setup, cats: [] })} />
+            <Chip label="All" onClick={() => onChange({ ...setup, clusters: CLUSTER_IDS.slice() })} />
+            <Chip label="None" onClick={() => onChange({ ...setup, clusters: [] })} />
           </div>
         </div>
         <div className="field">

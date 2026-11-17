@@ -1,6 +1,7 @@
 /* Pure game rules: answer matching, round building, the shared daily seed, and data checks. No DOM access, so the
    server scores a round with exactly the same code the browser plays it with. */
-import type { AnswerRow, Mode, Question } from "@/types";
+import type { AnswerRow, ClusterChoice, ClusterId, Mode, Question } from "@/types";
+import { CLUSTER_IDS } from "@/lib/questions/clusters";
 import { LEVELS, pointsFor } from "@/lib/scoring";
 
 export const SECONDS = 25;
@@ -96,27 +97,66 @@ export function msUntilNextDay(now: Date = new Date()): number {
   return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) - now.getTime();
 }
 
+/** Whole days since 1 January 2026 (UTC) for a day key. */
+const EPOCH = Date.UTC(2026, 0, 1);
+function dayIndex(key: number): number {
+  return Math.round((keyToDate(key).getTime() - EPOCH) / 86400000);
+}
+/** FNV-1a string hash, used to turn "cluster + day" into a seed. */
+function hash(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h | 0;
+}
+/** The seed for one cluster's daily round on one day. Different clusters get different rounds on the same day. */
+export function dailySeed(day: number, cluster: ClusterChoice): number {
+  return hash(`${cluster}:${day}`);
+}
+
 export interface RoundOptions {
   mode: Mode;
-  cats?: string[];
+  /** The cluster the player chose. Defaults to "all". A single cluster always wins over `clusters`. */
+  cluster?: ClusterChoice;
+  /** Practice in All clusters only: the clusters the player ticked. */
+  clusters?: ClusterId[];
   diff?: number;
   /** Day key for the daily round. Defaults to today (UTC). */
   seed?: number;
   rand?: () => number;
 }
 
-export function pool(questions: Question[], opts: { cats?: string[]; diff?: number } = {}): Question[] {
-  return questions.filter((q) => (!opts.cats || opts.cats.includes(q.cat)) && (!opts.diff || q.diff === opts.diff));
+/** A cluster needs this many prompts before its daily round opens, so three days in a row never share a prompt. */
+export const DAILY_MIN = ROUND_SIZE * 3;
+
+export function inCluster(questions: Question[], cluster: ClusterChoice = "all"): Question[] {
+  return cluster === "all" ? questions : questions.filter((q) => q.cluster === cluster);
+}
+export function dailyEnabled(questions: Question[], cluster: ClusterChoice): boolean {
+  return inCluster(questions, cluster).length >= DAILY_MIN;
+}
+export function countByCluster(questions: Question[]): Record<ClusterId, number> {
+  const out = { bma: 0, ent: 0, fin: 0, ht: 0, mkt: 0 };
+  for (const q of questions) if (q.cluster in out) out[q.cluster]++;
+  return out;
 }
 
-/** Takes n prompts, preferring categories not yet used so a round is varied. */
-function spread(list: Question[], n: number): Question[] {
+export function pool(questions: Question[], opts: { cluster?: ClusterChoice; clusters?: ClusterId[]; diff?: number } = {}): Question[] {
+  const single = opts.cluster && opts.cluster !== "all" ? opts.cluster : null;
+  return questions.filter((q) => (single ? q.cluster === single : !opts.clusters || opts.clusters.includes(q.cluster)) && (!opts.diff || q.diff === opts.diff));
+}
+
+/** Takes n prompts, preferring groups not yet used so a round is varied: topics inside one cluster, clusters in a
+    mixed round. */
+function spread(list: Question[], n: number, group: (q: Question) => string): Question[] {
   const out: Question[] = [];
   const seen = new Set<string>();
   for (const q of list) {
     if (out.length >= n) break;
-    if (!seen.has(q.cat)) {
-      seen.add(q.cat);
+    if (!seen.has(group(q))) {
+      seen.add(group(q));
       out.push(q);
     }
   }
@@ -126,12 +166,40 @@ function spread(list: Question[], n: number): Question[] {
   }
   return out;
 }
+const groupFor = (cluster: ClusterChoice) => (q: Question) => (cluster === "all" ? q.cluster : q.topic);
+
+const dailyCache = new Map<string, Question[]>();
+
+/** The daily round for one cluster (or the mixed round) on one day. Every player gets the same seven prompts.
+    Each day is drawn from a shuffle seeded by the cluster and the day, skipping any prompt used on the two days
+    before, so three days in a row never repeat. That makes a day depend on the days before it, so the rounds are
+    worked out forward from 1 January 2026. Returns [] while the cluster has fewer than DAILY_MIN prompts. */
+export function dailyRound(questions: Question[], cluster: ClusterChoice, day: number): Question[] {
+  const list = inCluster(questions, cluster).slice().sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  if (list.length < DAILY_MIN) return [];
+  const cacheKey = `${cluster}:${day}:${list.length}:${hash(list.map((q) => q.id).join())}`;
+  const cached = dailyCache.get(cacheKey);
+  if (cached) return cached;
+  const end = dayIndex(day);
+  let round: Question[] = [];
+  let recent: string[][] = [];
+  for (let i = Math.min(0, end); i <= end; i++) {
+    const key = dayKey(new Date(EPOCH + i * 86400000));
+    const used = new Set(recent.flat());
+    round = spread(shuffle(list, rng(dailySeed(key, cluster))).filter((q) => !used.has(q.id)), ROUND_SIZE, groupFor(cluster));
+    recent = [...recent.slice(-1), round.map((q) => q.id)];
+  }
+  if (dailyCache.size > 64) dailyCache.clear();
+  dailyCache.set(cacheKey, round);
+  return round;
+}
 
 export function buildRound(questions: Question[], opts: RoundOptions): Question[] {
   const rand = opts.rand ?? Math.random;
-  if (opts.mode === "daily") return spread(shuffle(questions, rng(opts.seed ?? dayKey())), ROUND_SIZE);
-  if (opts.mode === "endless") return shuffle(questions, rand);
-  return spread(shuffle(pool(questions, opts), rand), ROUND_SIZE);
+  const cluster = opts.cluster ?? "all";
+  if (opts.mode === "daily") return dailyRound(questions, cluster, opts.seed ?? dayKey());
+  if (opts.mode === "unlimited") return shuffle(inCluster(questions, cluster), rand);
+  return spread(shuffle(pool(questions, opts), rand), ROUND_SIZE, groupFor(cluster));
 }
 
 /** Scores typed answers against a round. Used by the server so a submitted score cannot be made up. */
@@ -144,29 +212,41 @@ export function scoreAnswers(round: Question[], answers: string[]): { score: num
   return { score, levels };
 }
 
+/** The fewest answers a prompt may have. Prompts with only a handful of possible answers do not suit the game. */
+export const MIN_ANSWERS = 6;
+/** Prompts from the original bank whose answers are a complete, closed set smaller than MIN_ANSWERS. */
+const CLOSED_SETS = new Set(["PFL-02"]); // the five credit score factors
+
 /** Data checks, run in tests, so a bad edit to the bank is reported instead of silently breaking a prompt. */
-export function validate(questions: Question[], categories?: string[]): string[] {
+export function validate(questions: Question[]): string[] {
   const out: string[] = [];
   const ids = new Set<string>();
+  const prompts = new Map<string, string>();
   for (const q of questions) {
     if (!q.id || ids.has(q.id)) out.push(`duplicate or missing id: ${q.id}`);
     ids.add(q.id);
-    if (categories && !categories.includes(q.cat)) out.push(`${q.id}: unknown category ${q.cat}`);
-    if (!q.q || !q.why || !q.area || !DIFFS[q.diff]) out.push(`${q.id}: missing q, why, area or diff`);
-    if (!q.a || q.a.length < 4) out.push(`${q.id}: needs at least 4 answers`);
+    if (!CLUSTER_IDS.includes(q.cluster)) out.push(`${q.id}: unknown cluster ${q.cluster}`);
+    if (!q.q || !q.why || !q.area || !q.topic || !DIFFS[q.diff]) out.push(`${q.id}: missing q, why, area, topic or diff`);
+    const wording = norm(q.q ?? "");
+    const twin = prompts.get(wording);
+    if (twin) out.push(`${q.id}: same prompt wording as ${twin}`);
+    prompts.set(wording, q.id);
+    if (!q.a || (q.a.length < MIN_ANSWERS && !CLOSED_SETS.has(q.id)) || q.a.length < 4) out.push(`${q.id}: needs at least ${MIN_ANSWERS} answers`);
     const seen = new Map<string, string>();
-    let glass = false;
+    const levels = new Set<number>();
     for (const row of q.a ?? []) {
       if (!LEVELS[row[1]]) out.push(`${q.id}: bad level on ${row[0]}`);
-      if (row[1] === 6) glass = true;
+      levels.add(row[1]);
       for (const alias of [row[0], ...row.slice(2)] as string[]) {
         const key = norm(alias).replace(/s$/, "");
+        if (!key) out.push(`${q.id}: empty answer or alias on ${row[0]}`);
         const owner = seen.get(key);
         if (owner && owner !== row[0]) out.push(`${q.id}: "${alias}" matches both ${owner} and ${row[0]}`);
         seen.set(key, row[0]);
       }
     }
-    if (!glass) out.push(`${q.id}: no DECA Glass answer`);
+    if (!levels.has(6)) out.push(`${q.id}: no DECA Glass answer`);
+    if (!levels.has(5)) out.push(`${q.id}: no ICDC answer`);
   }
   return out;
 }

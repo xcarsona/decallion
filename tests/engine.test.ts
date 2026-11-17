@@ -1,18 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { CATEGORIES, QUESTIONS } from "@/lib/questions";
-import { buildRound, dayIso, dayKey, match, msUntilNextDay, pool, prevDayKey, scoreAnswers, validate } from "@/lib/game-engine";
-import { apply, blank, liveStreak } from "@/lib/stats";
+import { CLUSTER_CHOICES, CLUSTER_IDS, QUESTIONS } from "@/lib/questions";
+import { DAILY_MIN, ROUND_SIZE, buildRound, dailyEnabled, dailyRound, dayIso, dayKey, inCluster, match, msUntilNextDay, pool, prevDayKey, scoreAnswers, validate } from "@/lib/game-engine";
+import { apply, bestOf, blank, dailyOf, liveStreak, migrate } from "@/lib/stats";
 import { cleanName } from "@/lib/leaderboard/names";
+import type { ClusterId, Question } from "@/types";
 
 const q = (id: string) => QUESTIONS.find((x) => x.id === id)!;
 const hit = (id: string, text: string) => match(q(id), text)?.[0] ?? null;
+const ids = (round: Question[]) => round.map((x) => x.id);
 
-describe("question bank", () => {
-  it("has no data problems", () => {
-    expect(validate(QUESTIONS, CATEGORIES)).toEqual([]);
-  });
-  it("covers every category", () => {
-    for (const c of CATEGORIES) expect(pool(QUESTIONS, { cats: [c] }).length).toBeGreaterThanOrEqual(3);
+/** A made-up bank with a known size per cluster, so round rules can be tested whatever the real bank holds. */
+function fakeBank(perCluster: number): Question[] {
+  return CLUSTER_IDS.flatMap((cluster) =>
+    Array.from({ length: perCluster }, (_, i): Question => ({
+      id: cluster.toUpperCase() + "-T" + String(i).padStart(2, "0"),
+      cluster,
+      topic: cluster + " topic " + (i % 4),
+      area: "Test",
+      diff: ((i % 3) + 1) as 1 | 2 | 3,
+      q: "Prompt " + cluster + " " + i,
+      why: "Because.",
+      a: [["One", 1], ["Two", 2], ["Three", 3], ["Four", 4], ["Five", 5], ["Six", 6]],
+    })),
+  );
+}
+const nextDay = (key: number) => dayKey(new Date(Date.UTC(Math.floor(key / 10000), (Math.floor(key / 100) % 100) - 1, (key % 100) + 1)));
+
+describe("bank checks", () => {
+  it("reports a bad cluster, a thin board and a missing top level", () => {
+    const base = fakeBank(1)[0];
+    expect(validate([{ ...base, cluster: "xyz" as ClusterId }]).join()).toContain("unknown cluster");
+    expect(validate([{ ...base, a: base.a.slice(0, 4) }]).join()).toContain("needs at least");
+    expect(validate([{ ...base, a: base.a.map((r) => (r[1] === 5 ? [r[0], 4] : r)) as Question["a"] }]).join()).toContain("no ICDC answer");
+    expect(validate([base, { ...base, id: "OTHER-1" }]).join()).toContain("same prompt wording");
+    expect(validate([base])).toEqual([]);
   });
 });
 
@@ -33,14 +54,42 @@ describe("answer matching", () => {
   });
 });
 
-describe("rounds", () => {
-  it("builds the same daily round for the same day, for everyone", () => {
-    const a = buildRound(QUESTIONS, { mode: "daily", seed: 20261117 }).map((x) => x.id);
-    const b = buildRound(QUESTIONS, { mode: "daily", seed: 20261117 }).map((x) => x.id);
-    const c = buildRound(QUESTIONS, { mode: "daily", seed: 20261118 }).map((x) => x.id);
-    expect(a).toEqual(b);
-    expect(a).not.toEqual(c);
-    expect(new Set(a).size).toBe(7);
+describe("daily rounds", () => {
+  const bank = fakeBank(DAILY_MIN);
+  it("gives everyone the same round for a cluster and day", () => {
+    for (const c of CLUSTER_CHOICES) {
+      const a = ids(buildRound(bank, { mode: "daily", cluster: c, seed: 20261117 }));
+      expect(a).toEqual(ids(buildRound(bank.slice().reverse(), { mode: "daily", cluster: c, seed: 20261117 })));
+      expect(new Set(a).size).toBe(ROUND_SIZE);
+      expect(a).not.toEqual(ids(buildRound(bank, { mode: "daily", cluster: c, seed: 20261118 })));
+    }
+  });
+  it("gives each cluster its own round on the same day", () => {
+    const rounds = CLUSTER_CHOICES.map((c) => ids(dailyRound(bank, c, 20261117)).join());
+    expect(new Set(rounds).size).toBe(CLUSTER_CHOICES.length);
+  });
+  it("never repeats a prompt within three days in a row, even with the smallest allowed pool", () => {
+    for (const c of CLUSTER_CHOICES) {
+      let day = 20261220;
+      let recent: string[][] = [];
+      for (let i = 0; i < 45; i++) {
+        const today = ids(dailyRound(bank, c, day));
+        expect(today.length).toBe(ROUND_SIZE);
+        for (const earlier of recent) expect(today.filter((id) => earlier.includes(id))).toEqual([]);
+        recent = [...recent.slice(-1), today];
+        day = nextDay(day);
+      }
+    }
+  });
+  it("stays closed for a cluster with fewer than 21 prompts", () => {
+    const small = fakeBank(DAILY_MIN - 1);
+    expect(dailyEnabled(small, "fin")).toBe(false);
+    expect(buildRound(small, { mode: "daily", cluster: "fin", seed: 20261117 })).toEqual([]);
+    expect(dailyEnabled(small, "all")).toBe(true);
+    expect(dailyEnabled(bank, "fin")).toBe(true);
+  });
+  it("mixes clusters in the All clusters round", () => {
+    expect(new Set(dailyRound(bank, "all", 20261117).map((x) => x.cluster)).size).toBe(CLUSTER_IDS.length);
   });
   it("keys the day to UTC", () => {
     expect(dayKey(new Date("2026-11-17T23:59:59Z"))).toBe(20261117);
@@ -49,17 +98,49 @@ describe("rounds", () => {
     expect(dayIso(20261107)).toBe("2026-11-07");
     expect(msUntilNextDay(new Date("2026-11-17T23:00:00Z"))).toBe(3600000);
   });
-  it("respects practice filters and uses the whole bank for endless", () => {
-    const law = buildRound(QUESTIONS, { mode: "practice", cats: ["Business Law"] });
-    expect(law.length).toBe(3);
-    expect(law.every((x) => x.cat === "Business Law")).toBe(true);
-    expect(buildRound(QUESTIONS, { mode: "practice", diff: 3 }).every((x) => x.diff === 3)).toBe(true);
-    expect(buildRound(QUESTIONS, { mode: "endless" }).length).toBe(QUESTIONS.length);
+});
+
+describe("cluster rounds", () => {
+  const bank = fakeBank(DAILY_MIN);
+  it("draws only from the chosen cluster in every mode", () => {
+    for (const c of CLUSTER_IDS) {
+      for (const mode of ["daily", "practice", "unlimited"] as const) {
+        const round = buildRound(bank, { mode, cluster: c, seed: 20261117 });
+        expect(round.length).toBeGreaterThan(0);
+        expect(round.filter((x) => x.cluster !== c)).toEqual([]);
+      }
+      // the ticked clusters only apply to All clusters; a single cluster always wins
+      const others = CLUSTER_IDS.filter((x) => x !== c);
+      expect(buildRound(bank, { mode: "practice", cluster: c, clusters: others }).every((x) => x.cluster === c)).toBe(true);
+    }
+  });
+  it("draws only from the chosen cluster with the real bank", () => {
+    for (const c of CLUSTER_IDS) {
+      for (const mode of ["practice", "unlimited"] as const) {
+        const round = buildRound(QUESTIONS, { mode, cluster: c });
+        expect(round.length).toBeGreaterThan(0);
+        expect(round.filter((x) => x.cluster !== c)).toEqual([]);
+      }
+      expect(buildRound(QUESTIONS, { mode: "daily", cluster: c, seed: 20261117 }).filter((x) => x.cluster !== c)).toEqual([]);
+    }
+  });
+  it("uses the whole cluster for unlimited and seven prompts for practice", () => {
+    expect(buildRound(bank, { mode: "unlimited", cluster: "mkt" }).length).toBe(DAILY_MIN);
+    expect(buildRound(bank, { mode: "unlimited", cluster: "all" }).length).toBe(bank.length);
+    expect(buildRound(bank, { mode: "practice", cluster: "ht" }).length).toBe(ROUND_SIZE);
+  });
+  it("respects ticked clusters and difficulty in All clusters practice", () => {
+    const round = buildRound(bank, { mode: "practice", cluster: "all", clusters: ["fin", "ht"], diff: 3 });
+    expect(round.length).toBe(ROUND_SIZE);
+    expect(round.every((x) => (x.cluster === "fin" || x.cluster === "ht") && x.diff === 3)).toBe(true);
+    expect(buildRound(bank, { mode: "practice", cluster: "all", clusters: [] })).toEqual([]);
+    expect(pool(bank, { cluster: "ent", diff: 1 }).every((x) => x.cluster === "ent" && x.diff === 1)).toBe(true);
+    expect(inCluster(bank, "all").length).toBe(bank.length);
   });
 });
 
 describe("server-side scoring", () => {
-  const round = buildRound(QUESTIONS, { mode: "daily", seed: 20261117 });
+  const round = buildRound(QUESTIONS, { mode: "daily", cluster: "all", seed: 20261117 });
   it("scores a perfect round at 700", () => {
     const best = round.map((x) => x.a.find((r) => r[1] === 6)![0]);
     expect(scoreAnswers(round, best)).toEqual({ score: 700, levels: [6, 6, 6, 6, 6, 6, 6] });
@@ -70,15 +151,38 @@ describe("server-side scoring", () => {
 });
 
 describe("stats", () => {
-  it("tracks bests and the daily streak", () => {
-    const day1 = apply(blank(), { mode: "daily", score: 300, dayKey: 20261117, prevDayKey: 20261116, log: [{ cat: "Finance", level: 6, pts: 100 }, { cat: "Finance", level: -1, pts: 0 }] });
+  it("tracks bests and the daily streak per cluster", () => {
+    const log = [{ cluster: "fin" as const, topic: "Finance", level: 6, pts: 100 }, { cluster: "fin" as const, topic: "Finance", level: -1, pts: 0 }];
+    const day1 = apply(blank(), { mode: "daily", cluster: "fin", score: 300, dayKey: 20261117, prevDayKey: 20261116, log });
     expect(day1.outcome).toEqual({ newBest: true, previousBest: 0, streak: 1 });
-    const day2 = apply(day1.stats, { mode: "daily", score: 200, dayKey: 20261118, prevDayKey: 20261117, log: [] });
+    const day2 = apply(day1.stats, { mode: "daily", cluster: "fin", score: 200, dayKey: 20261118, prevDayKey: 20261117, log: [] });
     expect(day2.outcome.streak).toBe(2);
     expect(day2.outcome.newBest).toBe(false);
     expect(day2.stats.levels.miss).toBe(1);
-    expect(day2.stats.cats.Finance.glass).toBe(1);
-    expect(liveStreak(day2.stats, 20261120, 20261119)).toBe(0);
+    expect(day2.stats.topics["fin|Finance"].glass).toBe(1);
+    expect(liveStreak(day2.stats, "fin", 20261120, 20261119)).toBe(0);
+    // another cluster's daily round is separate
+    expect(dailyOf(day2.stats, "mkt").last).toBe(0);
+    const other = apply(day2.stats, { mode: "daily", cluster: "mkt", score: 100, dayKey: 20261118, prevDayKey: 20261117, log: [] });
+    expect(other.outcome).toEqual({ newBest: true, previousBest: 0, streak: 1 });
+    expect(dailyOf(other.stats, "fin").streak).toBe(2);
+    expect(bestOf(other.stats, "fin", "daily")).toBe(300);
+    expect(bestOf(other.stats, "mkt", "daily")).toBe(100);
+  });
+  it("carries over stats saved before clusters existed", () => {
+    const s = migrate({
+      games: 4, prompts: 28, pts: 900, levels: { 6: 2, miss: 3 },
+      cats: { Accounting: { n: 5, pts: 200, glass: 1 }, Marketing: { n: 3, pts: 90, glass: 0 } },
+      best: { daily: 410, practice: 300, endless: 950 },
+      daily: { last: 20261116, streak: 3, bestStreak: 5, score: 410 },
+    });
+    expect(s.games).toBe(4);
+    expect(s.levels[6]).toBe(2);
+    expect(s.topics["fin|Accounting"]).toEqual({ n: 5, pts: 200, glass: 1 });
+    expect(s.topics["mkt|Marketing"].n).toBe(3);
+    expect(bestOf(s, "all", "unlimited")).toBe(950);
+    expect(bestOf(s, "all", "daily")).toBe(410);
+    expect(liveStreak(s, "all", 20261117, 20261116)).toBe(3);
   });
 });
 

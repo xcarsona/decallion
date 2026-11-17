@@ -9,7 +9,7 @@ export function PromptView({ question, timed, onAnswer, onLastSeconds }: { quest
   return (
     <div className="view">
       <div className="panel">
-        <div className="lbl">{question.cat} · {DIFFS[question.diff]}</div>
+        <div className="lbl">{question.topic} · {DIFFS[question.diff]}</div>
         <h2 id="q">{question.q}</h2>
         <div className="hint">▲ rarer answers climb higher ▲</div>
       </div>

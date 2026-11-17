@@ -3,9 +3,16 @@ export type Difficulty = 1 | 2 | 3;
 /** [display answer, level, ...accepted aliases] */
 export type AnswerRow = [string, Level, ...string[]];
 
+/** DECA's five career clusters. */
+export type ClusterId = "bma" | "ent" | "fin" | "ht" | "mkt";
+/** What the player picks: one cluster, or every cluster mixed. */
+export type ClusterChoice = ClusterId | "all";
+
 export interface Question {
   id: string;
-  cat: string;
+  cluster: ClusterId;
+  /** Sub-topic inside the cluster, for example "Accounting" inside Finance. */
+  topic: string;
   area: string;
   diff: Difficulty;
   q: string;
@@ -13,7 +20,7 @@ export interface Question {
   a: AnswerRow[];
 }
 
-export type Mode = "daily" | "practice" | "endless";
+export type Mode = "daily" | "practice" | "unlimited";
 
 /** One answered prompt in a round. `level` is -1 for a wrong answer or timeout. */
 export interface LogEntry {
@@ -26,7 +33,8 @@ export interface LogEntry {
 }
 
 export interface PracticeSetup {
-  cats: string[];
+  /** Clusters to draw from. Only editable when the player chose All clusters. */
+  clusters: ClusterId[];
   diff: 0 | Difficulty;
   timer: boolean;
 }
@@ -36,4 +44,5 @@ export interface ScoreRow {
   score: number;
   levels: number[];
   day: string;
+  cluster: ClusterChoice;
 }

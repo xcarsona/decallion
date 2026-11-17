@@ -8,9 +8,9 @@
   --mute:#8fa5c9;
   --glass:#7fe3f2;
   --gold:#f2c14e;
-  --miss:#ff8676;
+  --miss:#e0607f;
   --line:rgba(143,165,201,.35);
-  --t1:#9db0cf; --t2:#c7abff; --t3:#74a9ff; --t4:#e3a071; --t5:#f2c14e; --t6:#7fe3f2;
+  --t1:#c2ab8e; --t2:#b9a0ff; --t3:#ff8ad1; --t4:#ff9a4a; --t5:#ffffff; --t6:#7fe3f2;
   --pixel:var(--font-vt323),'VT323','Courier New',ui-monospace,monospace;
   color-scheme:dark;
 }

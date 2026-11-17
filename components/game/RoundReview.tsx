@@ -16,7 +16,7 @@ export function RoundReview({ mode, log, score }: { mode: Mode; log: LogEntry[] 
     );
   }
   const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
-  const share = `Decallion ${MODE_NAME[mode].toLowerCase()}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "endless" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
+  const share = `Decallion ${MODE_NAME[mode].toLowerCase()}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (
     <section className="card" id="results">
@@ -35,7 +35,7 @@ export function RoundReview({ mode, log, score }: { mode: Mode; log: LogEntry[] 
             ))}
           </ul>
           <div className="why">{l.question.why}</div>
-          <div className="tag">{l.question.cat} · {l.question.area} · {DIFFS[l.question.diff]} · {l.question.id}</div>
+          <div className="tag">{l.question.topic} · {l.question.area} · {DIFFS[l.question.diff]} · {l.question.id}</div>
         </div>
       ))}
     </section>
