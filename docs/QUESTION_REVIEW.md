@@ -8,12 +8,12 @@ Each new prompt was written by one AI agent, fact-checked by a second and play-t
 
 | Cluster | Prompts | Original | New | Topics |
 |---|---|---|---|---|
-| Business Management + Administration (`bma`) | 36 | 15 | 21 | 8 |
-| Entrepreneurship (`ent`) | 37 | 3 | 34 | 7 |
-| Finance (`fin`) | 37 | 9 | 28 | 7 |
-| Hospitality + Tourism (`ht`) | 37 | 3 | 34 | 6 |
-| Marketing (`mkt`) | 37 | 9 | 28 | 7 |
-| **Total** | **184** | **39** | **145** | |
+| Business Management + Administration (`bma`) | 50 | 15 | 35 | 8 |
+| Entrepreneurship (`ent`) | 50 | 3 | 47 | 7 |
+| Finance (`fin`) | 50 | 9 | 41 | 7 |
+| Hospitality + Tourism (`ht`) | 50 | 3 | 47 | 6 |
+| Marketing (`mkt`) | 50 | 9 | 41 | 7 |
+| **Total** | **250** | **39** | **211** | |
 
 ## Points the reviewing agents flagged for a person to decide
 
@@ -40,6 +40,22 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 - BCM-04: bare 'address' now credits Heading (level 3) rather than Inside address (level 4); an editorial choice.
 - ECO-06: the prompt mixes demand and supply shifters on one board by design; it reads fairly but a human may prefer two separate prompts.
 - LAW-04 level swap (OSHA 1, ADA 2) and ECO-04 Health programs at level 3 are editorial estimates.
+- BMA-07: a named closed set of exactly ten (Mintzberg roles), intro-college level; all ten are on the board so it is fair, but the owner may find it too closed or too hard for high-school competitors.
+- BCM-06: the communication process has only about nine standard elements and all nine are on the board; it is a near-closed set, similar in shape to the original LAW-01.
+- POB-07: area is 'Economics' for a social responsibility prompt; defensible (role of business in society) but the owner may prefer another area.
+- HRM-05: Stock options sits here as direct pay and also in the original HRM-01 as an employee benefit; both are defensible, but it is inconsistent across the two boards.
+- POB-07: 'matching gifts' and 'matching donations' are aliases of Corporate foundation (level 6); they are valid answers but not the same thing as a foundation.
+- BMA-06: 'contingency planning' is an alias of Scenario planning and 'environmental scan' of PEST analysis; related and creditable, but not strict synonyms.
+- BCM-05: 'flip chart' and the alias 'flowchart' (under Diagram) are two typos apart at 9 letters, so a badly misspelled entry could land on the wrong row; exact spellings match correctly.
+- ECO-07: board is full at 16, so CAFTA-DR, EFTA and CARICOM are valid answers that earn no credit.
+- BMA-07 (Mintzberg roles): a closed set of exactly 10 answers, all on the board. It is within the 8 to 16 rule but is recall of a fixed list, not an open prompt; keep only if that style is wanted.
+- BCM-06 (communication process): only 9 rows, also a near-closed list. 'barriers' and 'distractions' are accepted as Noise, and 'environment' as Context.
+- HRM-05: 'Stock options' counts as direct pay here, while the original HRM-01 lists stock options as a benefit. Both are defensible, but a player could notice the overlap.
+- HRM-05 overlaps a little with fin.ts PFL-08 (sources of household income) on salary, wages and tips; I judged the angle different enough to keep.
+- POB-06: 'Customer demand' and 'Suppliers' are counted as uncontrollable external forces (micro-environment); some textbooks limit this list to the macro forces only.
+- POB-07: its area is 'Economics'; confirm that is the instructional area name you want for social responsibility.
+- ECO-07: G7, G20 and BRICS are accepted as economic organizations; they are forums, not treaty bodies. United Nations is deliberately not accepted.
+- OPM-06: the merged row 'Falling objects or moving vehicles' joins two different hazards under one level 4 answer; split it again if you would prefer to drop another row instead.
 
 ### Entrepreneurship
 
@@ -63,6 +79,19 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 - GRO-02: bankruptcy is not accepted as an exit strategy (left out on purpose)
 - ENT-01 (original, untouched): Corporation, S corporation and B corporation are one typo apart, so a mistyped entry could land on the wrong row
 - Difficulty mix is 11 easy, 17 medium, 9 hard, a little heavy on medium; Growth and Exit has exactly 4 prompts and none at diff 1
+- FRN-07: 'Job franchise' and 'Investment franchise' (both level 6) come from franchise-industry typologies, not from every mainstream textbook. They are real categories, but if you want strictly textbook answers, drop them and raise 'Conversion franchise' to level 6 (the board would still have 9 rows).
+- FRN-07: 'dealership' is kept as an alias of Product distribution franchise (car dealerships are the classic example), though not every dealership is a franchise.
+- INO-06: still time-sensitive and fairly open. The board is at the 16-row limit, so '5G' or 'streaming' earn no credit. 'cryptocurrency', 'crypto' and 'bitcoin' are aliases of Blockchain, and 'automation' of Robotics; these are related rather than identical.
+- ENT-07: 'Tax deductions' (level 6) is true and appears in popular lists, but not all textbooks list it as a reward of entrepreneurship.
+- GRO-06: a bare 'customs' matches Customs paperwork (level 5), although a student might mean cultural customs (level 1). Either is a valid answer, but the higher level is awarded.
+- SBM-08: 'futa' is an alias of Register for unemployment insurance tax; the federal tax is paid rather than registered for, so it is a loose fit.
+- SUP-08: 'markup' and 'direct sales' are aliases of Product sales; both are loose (one is a pricing term, the other a channel term).
+- FND-06: 'Burn rate' and 'Churn rate' are two typos apart, so a badly mistyped entry could match the wrong row; exact entries are unaffected.
+- INO-06 (emerging technology): the most open-ended new prompt. The board is full at 16 rows, so plausible answers such as 5G, social media and e-commerce get no credit. Consider narrowing the wording or swapping a row.
+- FND-06: 'Net promoter score' was removed to make room for 'Cash flow'. Restore it in place of another row if you would rather keep it.
+- FRN-07: 'Job franchise' and 'Investment franchise' (level 6) and 'Co-branding' (level 5) appear in some franchising textbooks but not all. Worth a quick look by someone who knows the course material.
+- SUP-08: 'markup' is accepted as an alias for 'Product sales' and 'marketplace' for 'Commission'. Both are loose but defensible; I left them.
+- ENT-07: 'job security' is not accepted as a reward of entrepreneurship. Some textbooks list it and others call it a risk, so I left it off.
 
 ### Finance
 
@@ -86,6 +115,26 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 - PFL-07: Glass-Steagall Act is accepted as a consumer protection law (it created deposit insurance) although much of it was repealed in 1999
 - INS-03 and INV-05: short alias pairs 'e and o' / 'd and o' and 't bond' / 'i bond' are one typo apart; exact typing resolves correctly, only a mistyped entry could land on the wrong row
 - Difficulty mix is 11 easy, 14 medium, 12 hard; Banking, Insurance and Credit each sit at the minimum of 4 prompts
+- INS-05: 'Power surge' (level 6) is a named peril in standard policies, but coverage for electronics varies by policy; consider removing it if you want only clear-cut answers. 'Hurricane' is deliberately not accepted because wind is covered and storm flooding is not.
+- INS-05: 'snow' and 'ice' are accepted as aliases for Weight of ice or snow; these are loose.
+- CRD-06: Private mortgage insurance (level 4) is usually paid monthly rather than at closing, although an initial premium or escrow often is collected then. Earnest money and the down payment are credited toward the price rather than being fees.
+- CRD-07: Construction loan (level 6) is short-term financing that some textbooks do not class as a mortgage type.
+- INV-07: the board is the 11 standard market sectors, so industry answers such as 'retail', 'automotive' or 'banking' earn no credit; 'oil and gas' is still accepted for Energy.
+- PFL-08: a student who types 'investments' gets no credit because it spans the Interest, Dividends and Capital gains rows; Scholarships or grants (level 6) is debatable as income.
+- BNK-05: 'name' is accepted for the account holder row (level 4), though a student could mean the payee (level 2).
+- ACC-08: one-word aliases such as 'cost', 'public', 'private', 'management' and 'international' are accepted; Payroll accounting (level 5) is a loose fit as a branch.
+- INS-06: Permanent life now sits beside Whole life, Universal life and Variable life as a parent category, so a student can score both the category and its members.
+- ACC-02 (original, not changed): the why contains an escaped apostrophe (owners\' stake) and one row uses a double-quoted string; valid TypeScript, but against the no-apostrophe style rule.
+- PFL-08: 'Investment income' (level 2) now sits beside its own sub-types Interest, Dividends and Capital gains (levels 3 to 4). I think that is fair to the player, but an editor may prefer a different arrangement. The board also now has a single level 1 row instead of two.
+- PFL-08 vs HRM-05 in bma.ts ('Name a form of direct pay an employee can earn for doing a job'): they share wages, salary, tips, commission and bonus. I kept PFL-08 because it is much broader (investment, rental, benefits, royalties), but it is the closest cross-cluster overlap.
+- CRD-07 (type of mortgage) vs CRD-01 (type of loan or consumer credit, original): 'home equity loan' and 'heloc' are accepted on both, as a second mortgage on CRD-07. Judged different enough to keep.
+- CRD-06: the bare alias 'insurance' credits Homeowners insurance (level 3) although the board also has Private mortgage insurance and Title insurance rows. It is generous rather than wrong; remove the alias if you want it stricter.
+- CRD-06: 'Closing costs' (level 2) is an umbrella answer on a board that also lists individual closing costs. Kept because students will type it.
+- INS-06: 'Permanent life' (level 3) is a category that contains whole, universal and variable life, which are also rows. Standard textbook term, kept.
+- INS-05: 'Power surge' (level 6) relies on the standard-policy peril of sudden damage from artificially generated electrical current; coverage varies by policy, so worth a human glance.
+- INV-07: the board is the 11 standard market sectors, so non-standard answers such as 'retail', 'banking' or 'transportation' get no credit. That is by design, but the set is closed at 11 answers.
+- PFL-02 (original, in git HEAD) has only 5 answers. It was left alone as an original and the bank test accepts it, but it is the one board under 8 answers in this cluster.
+- The task text describes originals as the prompts in git HEAD (37 here); the earlier summary table counted 9 originals for Finance. I followed git HEAD, so the 28 prompts added in the previous commit were only checked for plain errors, not given the full play-test.
 
 ### Hospitality + Tourism
 
@@ -106,6 +155,24 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 - RFS-06 and RFS-07: the merged rows ('Holding food at safe temperatures', 'Overhead') mean hot holding vs refrigeration, and rent vs utilities, now score as one answer each.
 - EVT-01: 'graduation', 'reunion' and 'anniversary party' are not accepted; the board is full at 16.
 - LDG-05: 'Group rate' is level 1 and 'Rack rate' level 2. Left as written, but a room of hospitality students might say rack rate first.
+- RFS-09: 'Raising menu prices' (level 3) is kept only because the prompt now says food cost percentage; delete the row if the owner wants cost-side controls only.
+- HT-07: 'Employee feedback' (level 5) is an indirect way of gathering guest feedback (staff relay what guests say); arguable.
+- HT-07: 'suggestion box' is an alias of Comment cards; related but not the same tool.
+- HT-06: 'discretionary income' is an alias of Disposable income; they are distinct economic terms, though both are valid answers to the prompt.
+- LDG-09: 'military' is an alias of Government travelers while SMERF groups (level 6) also covers military groups; and the 'Transient guests' row overlaps conceptually with business and leisure travelers.
+- LDG-08 why: 'Housekeeping is usually the largest department in a hotel' is a common textbook claim (by staff count) that I did not verify against a source.
+- TRV-08: the new 'Proof of sufficient funds' row is a real entry or visa requirement in many countries, but confirm the level 6 placement.
+- SPE-09: 'Airline and hotel licensing' (level 6) and 'Product placement' (level 4) are legitimate ancillary revenue but less textbook-standard than the other rows.
+- EVT-06: 'parking problems' is a loose alias of Transportation delays.
+- Fuzzy-match collisions between rows were checked by reasoning only, not by running the matcher; the bank test covers exact alias clashes, not near-typo ones.
+- HT-07 (ways a hotel or restaurant gathers guest feedback) overlaps with MKR-01 in mkt.ts (methods of collecting primary research data) on surveys, focus groups and interviews. I kept it because the board is hospitality-specific (online reviews, comment cards, mystery shoppers, table visits); confirm you are happy with both.
+- HT-06 (outside factors that move travel demand) is a travel-specific cousin of POB-06 in bma.ts (external environment forces). The answers are different enough that I kept it.
+- SPE-07: the narrowing to sports only is an editorial call. Team physician, equipment manager and sports photographer are valid answers still not on the board, which is full at 16.
+- LDG-09: 'Tour groups' is now an alias of Groups (level 2) rather than its own level 3 row. 'Budget travelers' and 'Seniors' are plausible answers still not accepted because the board is at 16.
+- LDG-09: 'Distressed passengers' (level 6) is a real lodging segment but obscure; check it is in the textbook you teach from.
+- EVT-08: bare 'liability' now credits Indemnification. A student could mean liability insurance, which is the separate Insurance requirement row; remove the alias if that feels too loose.
+- EVT-06: 'schedule delays / running late' and 'illness outbreak' are plausible answers not on the board, which is full at 16.
+- SPE-09: 'International distribution' can overlap in a student's mind with overseas box office (Box office row); both are accepted, at different levels.
 
 ### Marketing
 
@@ -126,6 +193,23 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 - CHN-03: Rack jobber and Truck jobber are two typos apart, so a badly misspelt entry could be credited to the wrong one. Exact spellings match correctly.
 - PRC-03: three level 1 answers (Student discount, Quantity discount, Coupon). Quantity discount may sit better at level 2; I left it.
 - Original prompts MKT-02 (7 answers), MKT-05 (6) and SEL-03 (7) are below the 8-answer minimum. They are originals and pass the test as closed sets, so I did not touch them.
+- MKT-10 / docs/QUESTION_REVIEW.md: if that doc lists MKT-10 it is now stale; the replacement is MKT-11. I did not edit the doc because only mkt.ts was in scope.
+- PRC-05 vs SUP-07 (ent.ts): 'Selling price' still appears on both boards. The questions are now clearly different, but confirm you are happy with that small overlap.
+- PRC-05: 'Profit' (level 2) and 'Gross margin' (level 3, aliases 'margin', 'profit margin', 'gross profit') are separate rows. Some teachers treat these loosely as one idea; merge them if you prefer.
+- BRD-05: 'Price' (level 2) is kept as label information. Price is often on a shelf tag or sticker, not the label itself, so remove the row if you want to be strict.
+- BRD-05: 'logo' is an alias of 'Brand name'. A logo is not a name, though both appear on labels; it is lenient, not wrong.
+- BRD-06: the board joins two textbook lists (the five brand familiarity levels and the brand equity components). The combined 11 answers are all standard, but the question is two closed sets, not one open one.
+- MKR-07: the CRM prompt sits under the Market Research topic with area Customer Relations. It fits, but Marketing-Information Management would also be a sensible area.
+- CHN-05: 'direct distribution' and 'indirect distribution' are two typos apart. Exact matches win in the matcher, so correctly typed answers are safe, but a badly misspelled 'indirect' could score as 'direct'.
+- PROM-06: 'cooperative' and 'comparative' are also two typos apart, with the same caveat as CHN-05.
+- MKT-11: 'Home ownership' is the only level 6 answer. It is listed as a demographic variable in college marketing texts but is the least commonly taught row on the board.
+- SEL-07: the prompt 'Name a type of sales job or salesperson' is fairly open; industry-specific answers such as real estate agent or car salesperson get no credit. Consider rewording to 'classified by how or to whom they sell' if play-testers complain.
+- PRC-05: a student may type 'discount' for retail pricing math; I left it unaccepted because it is not the same as a markdown. Human call.
+- PROM-07: 'price' is a plausible part of a print ad but is not in the standard textbook list, so I left it off.
+- MKR-07 and BRD-05 are at the 16-answer cap, so I could not add 'Company name' (business-buyer CRM records) to MKR-07 without dropping another row.
+- MKT-11 overlaps a little with original MKT-02 (age, income and gender are aliases of Demographic there); I judged them distinct enough to keep both.
+- CHN-05: 'Vertical integration' (level 5) and 'Vertical marketing system' (level 6) are closely related concepts on the same board; both are correct, but check the split feels right.
+- Originals were not re-audited beyond the duplicate check. The working tree differs from HEAD by insertions only, so originals appear untouched.
 
 ## New prompts
 
@@ -154,6 +238,20 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | POB-05 | Principles of Business | Medium | 16 | Name an unethical or illegal business practice. |
 | LAW-04 | Business Law | Hard | 15 | Name a U.S. federal law that protects workers. |
 | LAW-05 | Business Law | Hard | 16 | Name a tort, a civil wrong that one party can sue another for. |
+| BA-05 | Business Administration | Easy | 14 | Name a title held by a top executive or officer of a corporation. |
+| BA-06 | Business Administration | Medium | 16 | Name a measure a business uses to protect its data and computer systems. |
+| POB-06 | Principles of Business | Hard | 12 | Name a force in the external environment that a business cannot control but must watch. |
+| POB-07 | Principles of Business | Easy | 16 | Name a way a business can show social responsibility. |
+| HRM-05 | Human Resources | Medium | 15 | Name a form of direct pay an employee can earn for doing a job. |
+| HRM-06 | Human Resources | Hard | 14 | Name a tactic or process used in labor relations between unions and management. |
+| OPM-05 | Operations | Medium | 14 | Name a factor a business weighs when choosing a supplier. |
+| OPM-06 | Operations | Easy | 16 | Name a workplace safety hazard. |
+| BCM-05 | Business Communication | Easy | 16 | Name a visual aid a speaker can use in a presentation. |
+| BCM-06 | Business Communication | Hard | 9 | Name an element of the communication process. |
+| BMA-06 | Business Management | Medium | 15 | Name a tool or framework used in strategic planning. |
+| BMA-07 | Business Management | Hard | 10 | Name one of the ten managerial roles described by Henry Mintzberg. |
+| LAW-06 | Business Law | Medium | 15 | Name a type of contract or legal agreement a business commonly signs. |
+| ECO-07 | Economics | Hard | 16 | Name an international trade agreement, trade bloc or economic organization. |
 
 ### Entrepreneurship
 
@@ -162,37 +260,50 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | ENT-04 | Entrepreneurship | Easy | 16 | Name a trait of successful entrepreneurs. |
 | ENT-05 | Entrepreneurship | Medium | 12 | Name a type of entrepreneurship or entrepreneur. |
 | ENT-06 | Entrepreneurship | Medium | 14 | Name a source of ideas for a new business. |
+| ENT-07 | Entrepreneurship | Easy | 12 | Name a reward or advantage of being an entrepreneur. |
 | SUP-01 | Startup Planning | Medium | 9 | Name a building block of the Business Model Canvas. |
 | SUP-02 | Startup Planning | Easy | 16 | Name a startup cost for a new business. |
 | SUP-03 | Startup Planning | Medium | 13 | Name a legal or registration step in starting a new business. |
 | SUP-04 | Startup Planning | Hard | 9 | Name an area examined in a feasibility study. |
 | SUP-05 | Startup Planning | Easy | 16 | Name a factor to consider when choosing a location for a new business. |
 | SUP-06 | Startup Planning | Medium | 12 | Name a professional or adviser a new business owner should consult. |
+| SUP-07 | Startup Planning | Hard | 15 | Name a matter that a written partnership agreement should settle. |
+| SUP-08 | Startup Planning | Medium | 16 | Name a revenue model, a way a business charges customers to make money. |
 | FND-01 | Funding | Medium | 14 | Name an element of an investor pitch. |
 | FND-02 | Funding | Hard | 15 | Name something a lender reviews before approving a small business loan. |
 | FND-03 | Funding | Medium | 16 | Name a way a startup can reduce the cash it needs to launch. |
 | FND-04 | Funding | Hard | 15 | Name a type of loan or debt financing a small business can use. |
 | FND-05 | Funding | Hard | 16 | Name a term used in startup equity investing, such as a type of investor, a funding stage, a document or a deal term. |
+| FND-06 | Funding | Hard | 16 | Name a metric used to track the growth or financial health of a startup. |
+| FND-07 | Funding | Medium | 13 | Name a financial statement or projection that belongs in the financial section of a business plan. |
 | SBM-01 | Small Business Management | Easy | 16 | Name a reason small businesses fail. |
 | SBM-02 | Small Business Management | Medium | 14 | Name an organization or program that helps people start or run a small business in the United States. |
 | SBM-03 | Small Business Management | Medium | 16 | Name a way a small business can improve its cash flow. |
 | SBM-07 | Small Business Management | Medium | 16 | Name a risk that could cause a loss for a small business. |
 | SBM-05 | Small Business Management | Easy | 16 | Name an ongoing operating expense of a small business. |
 | SBM-06 | Small Business Management | Easy | 16 | Name a task a small business commonly outsources. |
+| SBM-08 | Small Business Management | Hard | 16 | Name a step a small business takes when it hires its first employee. |
 | INO-01 | Innovation | Medium | 16 | Name a technique for generating new business or product ideas. |
 | INO-02 | Innovation | Hard | 16 | Name a concept from the lean startup method. |
 | INO-03 | Innovation | Medium | 15 | Name a type of innovation. |
 | INO-04 | Innovation | Easy | 16 | Name a way to test a business idea with customers before a full launch. |
 | INO-05 | Innovation | Easy | 16 | Name a competitive advantage a new business can build. |
+| INO-06 | Innovation | Easy | 16 | Name an emerging technology that is creating new business opportunities. |
+| INO-07 | Innovation | Easy | 15 | Name a quality that makes a business idea a real opportunity. |
 | FRN-01 | Franchising and Ownership | Medium | 15 | Name a fee or cost a franchisee pays. |
 | FRN-02 | Franchising and Ownership | Easy | 15 | Name an advantage of buying a franchise. |
 | FRN-03 | Franchising and Ownership | Easy | 13 | Name a disadvantage of buying a franchise. |
 | FRN-04 | Franchising and Ownership | Hard | 16 | Name an item disclosed in a Franchise Disclosure Document. |
 | FRN-05 | Franchising and Ownership | Hard | 12 | Name a factor to weigh when choosing a form of business ownership. |
+| FRN-06 | Franchising and Ownership | Medium | 16 | Name something a buyer should examine before buying an existing business. |
+| FRN-07 | Franchising and Ownership | Hard | 11 | Name a type of franchise or franchising arrangement. |
+| FRN-08 | Franchising and Ownership | Easy | 12 | Name an advantage of a sole proprietorship. |
 | GRO-01 | Growth and Exit | Medium | 14 | Name a strategy a business can use to grow. |
 | GRO-02 | Growth and Exit | Medium | 11 | Name an exit strategy for a business owner. |
 | GRO-03 | Growth and Exit | Hard | 13 | Name a way a business can enter a foreign market. |
 | GRO-04 | Growth and Exit | Hard | 11 | Name a method or measure used to value a business that is for sale. |
+| GRO-05 | Growth and Exit | Medium | 15 | Name a problem a business can face when it grows quickly. |
+| GRO-06 | Growth and Exit | Medium | 16 | Name a challenge a business faces when it expands into another country. |
 
 ### Finance
 
@@ -226,12 +337,28 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | CRD-03 | Credit | Medium | 15 | Name an item of information found on a credit report. |
 | CRD-04 | Credit | Hard | 16 | Name a term or condition spelled out in a loan or credit card agreement. |
 | CRD-05 | Credit | Hard | 15 | Name a debt-relief option or arrangement open to a borrower who is struggling to repay. |
+| BNK-05 | Banking | Easy | 13 | Name a piece of information printed or written on a personal check. |
+| BNK-06 | Banking | Medium | 12 | Name a function of money or a characteristic that makes something work well as money. |
+| BNK-07 | Banking | Hard | 13 | Name a function or goal of the Federal Reserve System. |
+| INS-05 | Insurance | Easy | 16 | Name a cause of loss that a standard homeowners insurance policy typically covers. |
+| INS-06 | Insurance | Hard | 14 | Name a type of life insurance policy. |
+| CRD-06 | Credit | Medium | 16 | Name a cost a home buyer pays at or before closing when buying with a mortgage. |
+| CRD-07 | Credit | Hard | 13 | Name a type of mortgage. |
+| INV-06 | Investing | Medium | 16 | Name a type of retirement or tax-advantaged savings account or plan. |
+| INV-07 | Investing | Medium | 11 | Name a sector of the stock market. |
+| FIN-07 | Finance | Hard | 12 | Name a type of financial market. |
+| FIN-08 | Finance | Hard | 16 | Name a type of budget a business prepares. |
+| PFL-08 | Personal Financial Literacy | Easy | 16 | Name a source of income for an individual or household. |
+| ACC-08 | Accounting | Medium | 14 | Name a branch or specialized field of accounting. |
 
 ### Hospitality + Tourism
 
 | Id | Topic | Difficulty | Answers | Prompt |
 |---|---|---|---|---|
 | HT-04 | Hospitality and Tourism | Easy | 16 | Name an amenity a hotel may offer its guests. |
+| HT-05 | Hospitality and Tourism | Easy | 14 | Name a step an employee should take when handling a guest complaint. |
+| HT-06 | Hospitality and Tourism | Medium | 16 | Name a factor outside a business that can raise or lower demand for travel. |
+| HT-07 | Hospitality and Tourism | Medium | 12 | Name a way a hotel or restaurant gathers feedback from its guests. |
 | LDG-01 | Lodging | Easy | 16 | Name a type of hotel guest room. |
 | LDG-02 | Lodging | Easy | 16 | Name a job position in a hotel. |
 | LDG-03 | Lodging | Hard | 12 | Name a metric a hotel uses to measure its performance. |
@@ -239,6 +366,8 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | LDG-05 | Lodging | Hard | 16 | Name a type of room rate a hotel may offer. |
 | LDG-06 | Lodging | Medium | 14 | Name a benefit a hotel loyalty program gives its members. |
 | LDG-07 | Lodging | Hard | 16 | Name a room status term used by hotel housekeeping and the front desk. |
+| LDG-08 | Lodging | Easy | 16 | Name a task the housekeeping department carries out in a hotel. |
+| LDG-09 | Lodging | Hard | 16 | Name a market segment of guests that a hotel targets. |
 | RFS-01 | Restaurants and Food Service | Easy | 16 | Name a type of restaurant, classified by its service style or format rather than its cuisine. |
 | RFS-02 | Restaurants and Food Service | Medium | 16 | Name a kitchen (back-of-house) position in a restaurant. |
 | RFS-03 | Restaurants and Food Service | Easy | 15 | Name a front-of-house position in a restaurant. |
@@ -247,6 +376,7 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | RFS-06 | Restaurants and Food Service | Easy | 16 | Name a practice that keeps food safe in a commercial kitchen. |
 | RFS-07 | Restaurants and Food Service | Hard | 16 | Name a cost or metric a restaurant manager tracks. |
 | RFS-08 | Restaurants and Food Service | Medium | 9 | Name one of the nine major food allergens that U.S. food businesses must watch for. |
+| RFS-09 | Restaurants and Food Service | Hard | 16 | Name a way a restaurant keeps its food cost percentage under control. |
 | TRV-01 | Travel and Tourism | Easy | 16 | Name a type of tourism, classified by the purpose of the trip. |
 | TRV-02 | Travel and Tourism | Hard | 11 | Name a travel intermediary that sells, packages or distributes travel. |
 | TRV-03 | Travel and Tourism | Easy | 16 | Name a mode of transportation travelers use. |
@@ -254,17 +384,24 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | TRV-05 | Travel and Tourism | Medium | 16 | Name a practice a hotel or destination can adopt to make tourism more sustainable. |
 | TRV-06 | Travel and Tourism | Hard | 15 | Name a source of ancillary revenue for an airline beyond the base ticket price. |
 | TRV-07 | Travel and Tourism | Easy | 16 | Name a type of visitor attraction. |
+| TRV-08 | Travel and Tourism | Easy | 15 | Name a document a traveler may need for an international trip. |
 | EVT-01 | Events | Easy | 16 | Name a type of event a planner might organize. |
 | EVT-02 | Events | Medium | 16 | Name something an event planner must arrange when planning an event. |
 | EVT-03 | Events | Easy | 16 | Name a type of event venue. |
 | EVT-04 | Events | Hard | 11 | Name a room seating layout used for a meeting or event. |
 | EVT-05 | Events | Medium | 16 | Name a vendor or professional an event planner hires for an event. |
+| EVT-06 | Events | Easy | 16 | Name a risk an event planner should prepare for. |
+| EVT-07 | Events | Medium | 16 | Name a measure used to judge whether an event was a success. |
+| EVT-08 | Events | Hard | 16 | Name a clause or term commonly found in a contract between an event planner and a venue. |
 | SPE-01 | Sports and Entertainment | Easy | 15 | Name a revenue stream for a professional sports team. |
 | SPE-02 | Sports and Entertainment | Hard | 16 | Name a right or asset a team or event can include in a sponsorship package for a company. |
 | SPE-03 | Sports and Entertainment | Medium | 14 | Name a type of ticket or ticket package a team or venue sells. |
 | SPE-04 | Sports and Entertainment | Easy | 16 | Name a category of licensed merchandise a team or entertainment brand sells. |
 | SPE-05 | Sports and Entertainment | Medium | 16 | Name a promotion a team uses to boost attendance at games. |
 | SPE-06 | Sports and Entertainment | Hard | 15 | Name a type of property whose name or image is licensed for use on merchandise. |
+| SPE-07 | Sports and Entertainment | Easy | 16 | Name a career in the sports industry other than professional athlete. |
+| SPE-08 | Sports and Entertainment | Medium | 16 | Name a way a professional athlete or entertainer earns income. |
+| SPE-09 | Sports and Entertainment | Hard | 13 | Name a source of revenue for a movie studio from a film it releases. |
 
 ### Marketing
 
@@ -273,29 +410,42 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 | MKT-07 | Marketing | Easy | 16 | Name a cultural, social, personal or psychological factor that influences consumer buying behavior. |
 | MKT-08 | Marketing | Medium | 15 | Name a section of a marketing plan. |
 | MKT-09 | Marketing | Hard | 14 | Name a category used to classify consumer or business products. |
+| MKT-11 | Marketing | Medium | 13 | Name a demographic variable used to segment a consumer market. |
 | SEL-04 | Professional Selling | Hard | 9 | Name a specialized method a salesperson can use to answer a customer objection. |
 | SEL-05 | Professional Selling | Medium | 12 | Name a way a salesperson can find new prospects. |
 | SEL-06 | Professional Selling | Easy | 14 | Name a way a business keeps customers coming back after the sale. |
+| SEL-07 | Professional Selling | Medium | 14 | Name a type of sales job or salesperson. |
+| SEL-08 | Professional Selling | Easy | 14 | Name a source a salesperson can use to build product knowledge. |
 | PROM-01 | Promotion | Easy | 16 | Name an advertising medium. |
 | PROM-02 | Promotion | Medium | 16 | Name a sales promotion tool. |
 | PROM-03 | Promotion | Medium | 14 | Name a public relations tool. |
 | PROM-04 | Promotion | Hard | 16 | Name a metric used to measure digital marketing results. |
 | PROM-05 | Promotion | Medium | 14 | Name an element of visual merchandising. |
+| PROM-06 | Promotion | Hard | 13 | Name a type of advertising, classified by its purpose or sponsor. |
+| PROM-07 | Promotion | Medium | 13 | Name a part of a print advertisement. |
 | PRC-01 | Pricing | Easy | 15 | Name a factor that affects the price a business sets. |
 | PRC-02 | Pricing | Medium | 11 | Name a goal a business may be trying to reach through its pricing. |
 | PRC-03 | Pricing | Medium | 15 | Name a type of discount or allowance a seller offers to buyers. |
 | PRC-04 | Pricing | Hard | 10 | Name a pricing practice that laws restrict or prohibit. |
+| PRC-05 | Pricing | Medium | 14 | Name a term used in retail pricing math, the calculations a store uses to set and change its selling prices. |
+| PRC-06 | Pricing | Easy | 13 | Name a reason a retailer would mark down the price of an item. |
 | CHN-01 | Channels | Easy | 16 | Name a type of retailer. |
 | CHN-02 | Channels | Medium | 10 | Name an activity that is part of physical distribution. |
 | CHN-03 | Channels | Hard | 13 | Name a type of wholesaler or agent intermediary. |
 | CHN-04 | Channels | Hard | 13 | Name a job that intermediaries perform for producers in a distribution channel. |
+| CHN-05 | Channels | Hard | 12 | Name a distribution strategy or type of channel arrangement a producer can use. |
+| CHN-06 | Channels | Medium | 12 | Name a type of shopping center or retail store location. |
 | MKR-01 | Market Research | Easy | 11 | Name a method of collecting primary market research data. |
 | MKR-02 | Market Research | Medium | 14 | Name a source of secondary market research data. |
 | MKR-03 | Market Research | Medium | 12 | Name a step in the marketing research process. |
 | MKR-04 | Market Research | Hard | 12 | Name a sampling method used in research. |
 | MKR-05 | Market Research | Medium | 11 | Name a type of question used on a market research survey. |
+| MKR-06 | Market Research | Hard | 14 | Name a source of error or bias that can make survey results unreliable. |
+| MKR-07 | Market Research | Easy | 16 | Name a kind of information a business keeps about a customer in a customer relationship management (CRM) database. |
 | BRD-01 | Branding | Easy | 13 | Name an element of a brand. |
 | BRD-02 | Branding | Hard | 13 | Name a branding strategy or type of brand. |
 | BRD-03 | Branding | Easy | 11 | Name a job that packaging does for a product. |
 | BRD-04 | Branding | Medium | 11 | Name a basis a company can use to position a product in the minds of customers. |
+| BRD-05 | Branding | Easy | 16 | Name a piece of information found on a product label. |
+| BRD-06 | Branding | Hard | 11 | Name a level of brand familiarity or a component of brand equity. |
 

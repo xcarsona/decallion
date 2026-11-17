@@ -18,8 +18,8 @@ describe("question bank", () => {
     });
     console.info(["Prompts per cluster:", ...lines, "  all " + String(QUESTIONS.length).padStart(4)].join("\n"));
     expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(QUESTIONS.length);
-    for (const c of CLUSTER_IDS) expect(counts[c]).toBeGreaterThanOrEqual(30);
-    expect(QUESTIONS.length).toBeGreaterThanOrEqual(150);
+    for (const c of CLUSTER_IDS) expect(counts[c]).toBeGreaterThanOrEqual(50);
+    expect(QUESTIONS.length).toBeGreaterThanOrEqual(250);
   });
   it("opens the daily round in every cluster", () => {
     for (const c of CLUSTER_IDS) expect(dailyEnabled(QUESTIONS, c)).toBe(true);
