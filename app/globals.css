@@ -35,8 +35,8 @@ button:active{transform:translateY(2px)}
 button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* game screen */
-.screen{position:relative;height:640px;overflow:hidden;border:3px solid #1c3a78;background:#0c2350}
-.screen canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.screen{--cl:var(--glass);position:relative;height:640px;overflow:hidden;border:3px solid #1c3a78;background:#0c2350}
+.screen>canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #sky{image-rendering:pixelated}
 .screen::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
   background:repeating-linear-gradient(to bottom,rgba(0,0,0,.2) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.45) 100%)}
@@ -152,3 +152,70 @@ nav a[aria-current="page"]{color:var(--gold);text-decoration:none}
 .board tr.me td{color:var(--gold)}
 .sq{display:inline-flex;gap:2px;vertical-align:middle}
 .sq i{width:10px;height:10px;display:block;background:var(--c,#16305f)}
+/* ---- cluster picker, mode picker and the cluster tint (--cl is set on .screen to the chosen cluster's colour) ---- */
+canvas.clicon{display:block;flex:none;width:24px;height:24px;image-rendering:pixelated}
+/* the picker dims the scene behind it so the labels stay readable over the skyline and the elevator car */
+.view.pick{padding-bottom:16px;gap:12px;background:rgba(4,12,34,.5)}
+.pickhead{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.85)}
+.pickhead h2{font-size:32px}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px;width:100%;max-width:600px}
+.cbtn{--cc:var(--glass);display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;padding:14px 6px 10px;background:transparent;border:2px solid transparent;box-shadow:none;
+  color:var(--ink);font-size:19px;line-height:1.05;letter-spacing:.05em;text-transform:none;text-shadow:0 2px 6px rgba(0,0,0,.9)}
+.cbtn .float{display:block;animation:floaty var(--bd,3s) ease-in-out var(--bdl,0s) infinite alternate}
+.cbtn .clicon{width:96px;height:96px;filter:drop-shadow(0 0 10px var(--cc));transition:transform .18s ease,filter .18s ease}
+.cbtn .nm{text-wrap:balance}
+.cbtn:hover,.cbtn:focus-visible{filter:none;background:rgba(9,24,58,.6);border-color:var(--cc);color:#fff}
+.cbtn:hover .clicon,.cbtn:focus-visible .clicon{transform:translateY(-8px) scale(1.08);filter:drop-shadow(0 0 8px var(--cc)) drop-shadow(0 0 20px var(--cc)) brightness(1.3)}
+.cbtn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.cbtn:active{transform:none}
+@keyframes floaty{from{transform:translateY(-6px)}to{transform:translateY(6px)}}
+
+.modehead{display:flex;align-items:center;gap:14px}
+.modehead .clicon{width:48px;height:48px;filter:drop-shadow(0 0 8px var(--cl))}
+.modehead h2{font-size:32px}
+.menu button:disabled{cursor:not-allowed;opacity:.55}
+.menu button:disabled:hover{filter:none;border-color:var(--line);box-shadow:none}
+.menu button .best{display:block;font-style:normal;color:var(--ink)}
+
+.screen .lbl{color:var(--cl)}
+.screen .box,.screen .panel{border-color:color-mix(in srgb,var(--cl) 50%,transparent)}
+.screen .pips i.now{background:var(--cl);box-shadow:0 0 8px var(--cl)}
+.screen .dock button:not(.ghost){border-color:var(--cl);background:var(--cl);box-shadow:0 4px 0 rgba(0,0,0,.5),0 0 18px color-mix(in srgb,var(--cl) 45%,transparent)}
+.screen .dock button.ghost{border-color:var(--cl)}
+.screen .dock input[type=text]{border-color:var(--cl)}
+.screen .menu button b{color:var(--cl)}
+.screen .menu button:not(:disabled):hover,.screen .menu button:focus-visible{border-color:var(--cl);box-shadow:0 0 16px color-mix(in srgb,var(--cl) 35%,transparent)}
+.screen .chips button[aria-pressed="true"]{border-color:var(--cl);background:var(--cl)}
+.screen #endTitle{text-shadow:0 0 14px color-mix(in srgb,var(--cl) 60%,transparent)}
+.endlbl{display:flex;align-items:center;gap:8px}
+.mid .count{display:flex;align-items:center;gap:7px}
+.mid .clicon{width:20px;height:20px;filter:drop-shadow(0 0 4px var(--cl))}
+@media (max-width:760px){
+  .cgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px}
+  .cbtn{font-size:16px;padding:10px 4px 6px;gap:6px;letter-spacing:.03em}
+  .cbtn .clicon{width:72px;height:72px}
+  .pickhead h2,.modehead h2{font-size:26px}
+  .view.pick{gap:6px;background:rgba(4,12,34,.8)}
+  /* step two has to show all three modes without scrolling inside the panel */
+  .view.modes{padding-top:78px;padding-bottom:78px}
+  .view.modes .panel{padding:12px 14px;gap:8px}
+  .modehead .clicon{width:40px;height:40px}
+  .modehead .more{display:none}
+  .modehead h2{font-size:22px}
+  .view.modes .menu{gap:6px}
+  .view.modes .menu button{padding:6px 12px}
+  .view.modes .menu button span{font-size:16px}
+  .screen .lbl{letter-spacing:.14em}
+  /* the dock is one row of buttons at this width, so the panel can use the space above it */
+  .view{padding-bottom:88px}
+  .modehead{gap:10px}
+  .mid .count{gap:4px}
+  .mid .clicon{width:16px;height:16px}
+}
+/* reduced motion: nothing in the picker moves (the global rule above already removes the bob) */
+@media (prefers-reduced-motion:reduce){
+  .cbtn .float{animation:none!important}
+  .cbtn .clicon{transition:none}
+  .cbtn:hover .clicon,.cbtn:focus-visible .clicon{transform:none}
+  .screen button:active{transform:none}
+}

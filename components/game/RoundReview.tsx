@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { MODE_NAME } from "./EndView";
 import { DIFFS } from "@/lib/game-engine";
+import { clusterInfo } from "@/lib/questions";
 import { LEVELS, MAX_PER_PROMPT, ft } from "@/lib/scoring";
-import type { LogEntry, Mode } from "@/types";
+import type { ClusterChoice, LogEntry, Mode } from "@/types";
 
-export function RoundReview({ mode, log, score }: { mode: Mode; log: LogEntry[] | null; score: number }) {
+export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[] | null; score: number }) {
   const [copied, setCopied] = useState("Copy result");
   if (!log) {
     return (
@@ -16,7 +17,7 @@ export function RoundReview({ mode, log, score }: { mode: Mode; log: LogEntry[] 
     );
   }
   const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
-  const share = `Decallion ${MODE_NAME[mode].toLowerCase()}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
+  const share = `Decallion ${MODE_NAME[mode].toLowerCase()} · ${clusterInfo(cluster).short}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (
     <section className="card" id="results">

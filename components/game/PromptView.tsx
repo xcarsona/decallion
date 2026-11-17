@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import { Clock } from "./Clock";
 import { DIFFS, SECONDS } from "@/lib/game-engine";
+import { CLUSTERS } from "@/lib/questions";
 import type { Question } from "@/types";
 
 export function PromptView({ question, timed, onAnswer, onLastSeconds }: { question: Question; timed: boolean; onAnswer: (text: string, timedOut: boolean) => void; onLastSeconds: () => void }) {
@@ -9,7 +10,7 @@ export function PromptView({ question, timed, onAnswer, onLastSeconds }: { quest
   return (
     <div className="view">
       <div className="panel">
-        <div className="lbl">{question.topic} · {DIFFS[question.diff]}</div>
+        <div className="lbl" id="qLabel">{CLUSTERS[question.cluster].short} · {question.topic} · {DIFFS[question.diff]}</div>
         <h2 id="q">{question.q}</h2>
         <div className="hint">▲ rarer answers climb higher ▲</div>
       </div>

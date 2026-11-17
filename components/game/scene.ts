@@ -13,6 +13,10 @@ export interface Scene {
   fxFinale(score: number): void;
   tone(freq: number, dur: number, delay?: number, type?: OscillatorType, vol?: number): void;
   wake(): void;
+  /** Short three-note chime for picking something in a menu. Silent when sound is off. */
+  select(): void;
+  /** Colour of the elevator car outline, its glow and the rising streaks. Takes a #rrggbb colour. */
+  setAccent(color: string): void;
   setSound(on: boolean): void;
   destroy(): void;
 }
@@ -33,6 +37,7 @@ const SKY: [number, RGB, RGB][] = [
   [760, [2, 6, 20], [12, 28, 74]],
 ];
 const CLOUD: [number, number, number][] = [[0, 0, 30], [36, 6, 24], [-34, 8, 22], [14, -14, 22], [66, 12, 15], [-62, 14, 13]];
+const ACCENT = "#7fe3f2";
 const color = (level: Level | -1) => (level === -1 ? MISS_COLOR : LEVELS[level].color);
 
 export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTMLCanvasElement, soundOn: boolean): Scene {
@@ -46,6 +51,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
   let tick: (shown: number) => void = () => {};
   let frameId = 0;
   let sound = soundOn;
+  let accent = ACCENT, accentRgb = "127,227,242";
   let audio: AudioContext | null = null;
   const parts: Particle[] = [];
 
@@ -292,7 +298,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
     g.stroke();
     const rising = target - alt;
     if (rising > 2 && !reduced) {
-      g.strokeStyle = "rgba(127,227,242,.55)";
+      g.strokeStyle = `rgba(${accentRgb},.55)`;
       for (let i = 0; i < 7; i++) {
         const lx = X - 30 + i * 10, l = 14 + Math.random() * Math.min(70, rising * 2);
         g.beginPath();
@@ -307,12 +313,15 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
     g.translate(-X, -Yc);
     g.beginPath();
     g.roundRect(X - 23, Yc - 30, 46, 62, 9);
-    g.fillStyle = "rgba(127,227,242,.16)";
+    g.fillStyle = `rgba(${accentRgb},.16)`;
     g.fill();
-    g.strokeStyle = "#7fe3f2";
+    g.strokeStyle = accent;
     g.lineWidth = 2;
+    g.shadowColor = accent;
+    g.shadowBlur = 5;
     g.stroke();
-    g.fillStyle = "#7fe3f2";
+    g.shadowBlur = 0;
+    g.fillStyle = accent;
     g.fillRect(X - 27, Yc - 34, 54, 5);
     g.fillRect(X - 27, Yc + 30, 54, 5);
     g.fillStyle = "#eef3fb";
@@ -393,6 +402,17 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
     fxFinale,
     tone,
     wake,
+    select() {
+      wake();
+      tone(659, 0.09, 0, "square", 0.035);
+      tone(880, 0.09, 0.07, "square", 0.035);
+      tone(1319, 0.16, 0.14, "triangle", 0.07);
+    },
+    setAccent(c) {
+      accent = /^#[0-9a-f]{6}$/i.test(c) ? c : ACCENT;
+      const n = parseInt(accent.slice(1), 16);
+      accentRgb = `${n >> 16},${(n >> 8) & 255},${n & 255}`;
+    },
     setSound(on) {
       sound = on;
     },

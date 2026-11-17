@@ -1,12 +1,14 @@
+import { ClusterIcon } from "./ClusterIcon";
 import { ScoreSubmit } from "./ScoreSubmit";
 import { ROUND_SIZE } from "@/lib/game-engine";
+import { clusterInfo } from "@/lib/questions";
 import { LEVELS, LEVEL_KEYS, MAX_PER_PROMPT, ft } from "@/lib/scoring";
 import type { RecordOutcome } from "@/lib/stats";
-import type { LogEntry, Mode } from "@/types";
+import type { ClusterChoice, LogEntry, Mode } from "@/types";
 
 export const MODE_NAME: Record<Mode, string> = { daily: "Daily climb", practice: "Practice", unlimited: "Unlimited" };
 
-export function EndView({ mode, log, score, outcome, day, onAgain, onHome }: { mode: Mode; log: LogEntry[]; score: number; outcome: RecordOutcome | null; day: number; onAgain: () => void; onHome: () => void }) {
+export function EndView({ cluster, mode, log, score, outcome, day, onAgain, onHome }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number; outcome: RecordOutcome | null; day: number; onAgain: () => void; onHome: () => void }) {
   const n = log.length, max = n * MAX_PER_PROMPT;
   const glass = log.filter((l) => l.level === 6).length, miss = log.filter((l) => l.level === -1).length;
   const perfect = mode !== "unlimited" && n === ROUND_SIZE && score >= max;
@@ -18,7 +20,7 @@ export function EndView({ mode, log, score, outcome, day, onAgain, onHome }: { m
     <div className="view">
       <div className="panel tall">
         <div className="headrow">
-          <div className="lbl">{MODE_NAME[mode]} · final altitude</div>
+          <div className="lbl endlbl" id="endLabel"><ClusterIcon cluster={cluster} size={24} />{clusterInfo(cluster).short} · {MODE_NAME[mode]} · final altitude</div>
           {outcome?.newBest && outcome.previousBest > 0 && <span className="newbest">New personal best</span>}
         </div>
         <h2 id="endTitle">{perfect ? "7,000 ft. You took the glass." : `You topped out at ${ft(score)} ft.`}</h2>
@@ -33,7 +35,8 @@ export function EndView({ mode, log, score, outcome, day, onAgain, onHome }: { m
           {miss > 0 && <span className="cx">{miss} × No credit</span>}
         </div>
         <p className="mute" id="endNote">{note}</p>
-        {mode === "daily" && outcome && <ScoreSubmit day={day} answers={log.map((l) => l.typed)} />}
+        {/* the leaderboard only knows the mixed daily round for now */}
+        {cluster === "all" && mode === "daily" && outcome && <ScoreSubmit day={day} answers={log.map((l) => l.typed)} />}
       </div>
       <div className="dock wrapok">
         <button type="button" id="again" onClick={onAgain}>Play again</button>
