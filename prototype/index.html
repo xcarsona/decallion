@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decallion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Deca<span>llion</span></h1>
+    <div class="row">
+      <span class="mute">Rare-answer business trivia for DECA competitors</span>
+      <button class="ghost mini" id="homeBtn" type="button">Home</button>
+      <button class="ghost mini" id="snd" type="button">Sound on</button>
+    </div>
+  </header>
+
+  <div class="screen" id="screen">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <canvas id="ui" aria-hidden="true"></canvas>
+    <div class="hud">
+      <div class="box"><span>ALTITUDE</span><b id="alt">0 ft</b></div>
+      <div class="mid"><div class="pips" id="pips"></div><div id="count">READY</div></div>
+      <div class="box r"><span>SCORE</span><b id="pts">0</b></div>
+    </div>
+
+    <div class="view" id="vHome">
+      <div class="panel tall">
+        <div class="lbl">Choose a climb</div>
+        <h2>The answer nobody else gives climbs highest.</h2>
+        <div class="menu">
+          <button id="mDaily" type="button"><b>Daily climb</b><span id="mDailyNote">7 prompts, the same for everyone today</span></button>
+          <button id="mPractice" type="button"><b>Practice</b><span>Pick categories, difficulty and timer</span></button>
+          <button id="mEndless" type="button"><b>Endless</b><span>Keep climbing until three misses</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="vSetup" hidden>
+      <div class="panel tall">
+        <div class="headrow"><div class="lbl">Practice setup</div><span class="mute" id="avail"></span></div>
+        <div class="field"><span>Categories</span>
+          <div class="chips" id="catChips"></div>
+          <div class="chips"><button type="button" id="catAll">All</button><button type="button" id="catNone">None</button></div>
+        </div>
+        <div class="field"><span>Difficulty</span><div class="chips" id="diffChips"></div></div>
+        <div class="field"><span>Timer</span><div class="chips" id="timerChips"></div></div>
+      </div>
+      <div class="dock wrapok">
+        <button id="setupGo" type="button">Start climb</button>
+        <button class="ghost" id="setupBack" type="button">Back</button>
+      </div>
+    </div>
+
+    <div class="view" id="vPlay" hidden>
+      <div class="panel">
+        <div class="lbl" id="cat"></div>
+        <h2 id="q"></h2>
+        <div class="hint">▲ rarer answers climb higher ▲</div>
+      </div>
+      <form class="dock" id="form" autocomplete="off">
+        <div class="clock" id="clock">25</div>
+        <input type="text" id="answer" aria-label="Your answer" autocapitalize="off" spellcheck="false">
+        <button type="submit" id="submit">Climb</button>
+      </form>
+    </div>
+
+    <div class="view" id="vReveal" hidden>
+      <div class="reveal" id="reveal" aria-live="polite">
+        <canvas id="icon" width="12" height="12"></canvas>
+        <strong id="bTier"></strong>
+        <div class="ans" id="bAns"></div>
+        <div class="gain" id="bPts"></div>
+        <div class="note" id="bNote"></div>
+      </div>
+      <div class="dock"><button class="ghost" id="next" type="button">Ascend ▲</button></div>
+    </div>
+
+    <div class="view" id="vEnd" hidden>
+      <div class="panel tall">
+        <div class="headrow"><div class="lbl" id="endLbl">Final altitude</div><span class="newbest" id="newBest" hidden>New personal best</span></div>
+        <h2 id="endTitle"></h2>
+        <p id="endLine"></p>
+        <div class="tally" id="endTally"></div>
+        <p class="mute" id="endNote"></p>
+      </div>
+      <div class="dock wrapok">
+        <button id="again" type="button">Play again</button>
+        <button class="ghost" id="endHome" type="button">Home</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="below">
+    <div class="col">
+      <section class="card">
+        <h2>Answer levels</h2>
+        <ul class="tiers" id="tierList"></ul>
+        <p class="mute">1 point is 10 ft. Seven prompts top out at 7,000 ft. Wrong answers and timeouts add nothing.</p>
+      </section>
+      <section class="card">
+        <h2>How it works</h2>
+        <p>Every prompt has many correct answers. Type one. You get a single answer and 25 seconds.</p>
+        <p>The fewer competitors likely to give your answer, the higher its level. Answer boards stay sealed until the round ends.</p>
+        <p class="mute" id="bankNote"></p>
+      </section>
+    </div>
+    <div class="col">
+      <section class="card" id="statsCard">
+        <div class="headrow"><h2>Your stats</h2><button class="ghost mini" id="resetStats" type="button">Reset stats</button></div>
+        <div class="figs" id="figs"></div>
+        <div class="field"><span>Answers by level</span><div class="dist" id="dist"></div><div class="legend" id="legend"></div></div>
+        <div class="field"><span>By category</span><div class="tablewrap"><table><thead><tr><th>Category</th><th class="num">Prompts</th><th class="num">Avg pts</th><th class="num">Glass</th></tr></thead><tbody id="catRows"></tbody></table></div></div>
+        <p class="mute" id="statsNote"></p>
+      </section>
+      <section class="card" id="results">
+        <h2>Round review</h2>
+        <p class="mute" id="sealed">Sealed until you finish a round. Every answer board opens here, with an explanation.</p>
+        <div id="open" hidden style="display:flex;flex-direction:column;gap:12px">
+          <textarea id="share" rows="3" readonly aria-label="Shareable result"></textarea>
+          <div><button class="mini" id="copy" type="button">Copy result</button></div>
+          <div id="review" style="display:flex;flex-direction:column;gap:12px"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>Unofficial practice game. Not affiliated with or endorsed by DECA Inc. Answer levels are editorial estimates, not live player data.</footer>
+</div>
+<script src="js/questions.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
