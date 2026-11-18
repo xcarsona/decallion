@@ -35,8 +35,8 @@ export function EndView({ cluster, mode, log, score, outcome, day, onAgain, onHo
           {miss > 0 && <span className="cx">{miss} × No credit</span>}
         </div>
         <p className="mute" id="endNote">{note}</p>
-        {/* the leaderboard only knows the mixed daily round for now */}
-        {cluster === "all" && mode === "daily" && outcome && <ScoreSubmit day={day} answers={log.map((l) => l.typed)} />}
+        {/* every cluster has its own board; only a counted daily round can be posted */}
+        {mode === "daily" && outcome && <ScoreSubmit day={day} cluster={cluster} answers={log.map((l) => l.typed)} />}
       </div>
       <div className="dock wrapok">
         <button type="button" id="again" onClick={onAgain}>Play again</button>
