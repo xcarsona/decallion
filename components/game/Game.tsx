@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ClusterPicker } from "./ClusterPicker";
 import { EndView } from "./EndView";
 import { Hud, type Pip } from "./Hud";
@@ -8,12 +8,14 @@ import { PracticeSetup } from "./PracticeSetup";
 import { PromptView } from "./PromptView";
 import { RevealView } from "./RevealView";
 import { RoundReview } from "./RoundReview";
-import { StatsPanel } from "./StatsPanel";
 import { createScene, type Scene } from "./scene";
+import { StatsSummary } from "@/components/log/StatsSummary";
+import { useToday } from "@/components/ui/useToday";
 import { STRIKES, buildRound, dailyEnabled, dayKey, match, prevDayKey } from "@/lib/game-engine";
 import { ALL_CLUSTERS, CLUSTER_IDS, QUESTIONS, clusterInfo } from "@/lib/questions";
+import { appendRound, makeRound } from "@/lib/log";
 import { LEVELS, LEVEL_KEYS, pointsFor } from "@/lib/scoring";
-import { dailyOf, load, record, reset, type RecordOutcome } from "@/lib/stats";
+import { countsNow, load, record, snapshot, subscribe, type RecordOutcome } from "@/lib/stats";
 import type { ClusterChoice, LogEntry, Mode, PracticeSetup as Setup, Question } from "@/types";
 
 type View = "clusters" | "modes" | "setup" | "play" | "climb" | "reveal" | "end";
@@ -34,9 +36,10 @@ export default function Game() {
   const scene = useRef<Scene | null>(null);
   const answered = useRef(true);
 
-  const [today] = useState(() => dayKey());
+  const today = useToday();
   const yesterday = prevDayKey(today);
-  const [stats, setStats] = useState(load);
+  // Stats are read from storage, not kept here: another tab or the log page's Clear button can change them.
+  const stats = useSyncExternalStore(subscribe, snapshot);
   const [sound, setSound] = useState(soundPref);
   const [view, setView] = useState<View>("clusters");
   const [mode, setMode] = useState<Mode>("daily");
@@ -47,13 +50,38 @@ export default function Game() {
   const [idx, setIdx] = useState(0);
   const [log, setLog] = useState<LogEntry[]>([]);
   const [counts, setCounts] = useState(true);
+  const [roundDay, setRoundDay] = useState(today); // the UTC day the current round was started on
   const [outcome, setOutcome] = useState<RecordOutcome | null>(null);
   const [review, setReview] = useState<{ cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number } | null>(null);
   const [shown, setShown] = useState(0);
 
+  const score = log.reduce((sum, l) => sum + l.pts, 0);
+  const strikes = log.filter((l) => l.level === -1).length;
+  const timed = mode === "practice" ? setup.timer : true;
+  const roundOver = idx + 1 >= round.length || (mode === "unlimited" && strikes >= STRIKES);
+
+  /* Next.js keeps this page in memory while another page is open and restores it later. Leaving in the middle of a
+     prompt must not hand back the same prompt with a fresh clock, so that prompt is closed as a timeout. */
+  const leave = useRef(() => {});
+  const resume = useRef(0);
+  useEffect(() => {
+    resume.current = !round.length ? 0 : mode === "unlimited" && view === "end" ? Math.min(score, 650) : score;
+    leave.current = () => {
+      if (view === "play" && round[idx] && !answered.current) {
+        answered.current = true;
+        setLog([...log, { question: round[idx], row: null, typed: "", pts: 0, level: -1, timedOut: true }]);
+        setView("reveal");
+      } else if (view === "climb") {
+        setView("reveal"); // the climb animation stops with the scene, so go straight to the level
+      }
+    };
+  });
+  useLayoutEffect(() => () => leave.current(), []);
+
   useEffect(() => {
     const s = createScene(screenRef.current!, skyRef.current!, uiRef.current!, soundPref());
     s.onTick(setShown);
+    s.climbTo(resume.current); // a round kept while another page was open carries on from its altitude
     scene.current = s;
     return () => {
       s.destroy();
@@ -67,11 +95,6 @@ export default function Game() {
   useEffect(() => {
     scene.current?.setAccent(tint);
   }, [tint]);
-
-  const score = log.reduce((sum, l) => sum + l.pts, 0);
-  const strikes = log.filter((l) => l.level === -1).length;
-  const timed = mode === "practice" ? setup.timer : true;
-  const roundOver = idx + 1 >= round.length || (mode === "unlimited" && strikes >= STRIKES);
 
   function goHome() {
     scene.current?.reset();
@@ -92,7 +115,8 @@ export default function Game() {
   function start(m: Mode) {
     scene.current?.wake();
     if (m === "daily" && !dailyEnabled(QUESTIONS, cluster)) return;
-    const next = buildRound(QUESTIONS, m === "practice" ? { mode: m, cluster, clusters: setup.clusters, diff: setup.diff } : { mode: m, cluster, seed: today });
+    const day = dayKey(); // read now: the page may have been open since before midnight UTC
+    const next = buildRound(QUESTIONS, m === "practice" ? { mode: m, cluster, clusters: setup.clusters, diff: setup.diff } : { mode: m, cluster, seed: day });
     if (!next.length) return goHome();
     scene.current?.reset();
     answered.current = false;
@@ -102,7 +126,8 @@ export default function Game() {
     setLog([]);
     setOutcome(null);
     setReview(null);
-    setCounts(m !== "daily" || dailyOf(stats, cluster).last !== today); // only the first daily run of the day counts
+    setRoundDay(day);
+    setCounts(countsNow(load(), m, cluster, day)); // only the first daily run of the day counts
     setView("play");
   }
 
@@ -130,11 +155,14 @@ export default function Game() {
 
   function finish() {
     let out: RecordOutcome | null = null;
-    if (counts) {
-      const result = record(stats, { mode, cluster, score, dayKey: today, prevDayKey: yesterday, log: log.map((l) => ({ cluster: l.question.cluster, topic: l.question.topic, level: l.level, pts: l.pts })) });
-      setStats(result.stats);
-      out = result.outcome;
+    // Add to what is in storage now, and check again that the daily was not logged elsewhere while this round ran.
+    const saved = load();
+    const counted = counts && countsNow(saved, mode, cluster, roundDay);
+    if (counted) {
+      out = record(saved, { mode, cluster, score, dayKey: roundDay, prevDayKey: prevDayKey(roundDay), log: log.map((l) => ({ cluster: l.question.cluster, topic: l.question.topic, level: l.level, pts: l.pts })) }).outcome;
     }
+    // every finished round goes in the training log, including a replayed daily round that did not count
+    appendRound(makeRound({ at: new Date(), day: roundDay, cluster, mode, score, counted, log }));
     setOutcome(out);
     setReview({ cluster, mode, log, score });
     setView("end");
@@ -191,7 +219,7 @@ export default function Game() {
         {view === "reveal" && last && (
           <RevealView entry={last} last={roundOver} onNext={next} missNote={mode === "unlimited" ? `Miss ${strikes} of ${STRIKES}.` : last.typed ? "Not on the board." : "The clock ran out."} />
         )}
-        {view === "end" && <EndView cluster={cluster} mode={mode} log={log} score={score} outcome={outcome} day={today} onAgain={() => start(mode)} onHome={goHome} />}
+        {view === "end" && <EndView cluster={cluster} mode={mode} log={log} score={score} outcome={outcome} day={roundDay} onAgain={() => start(mode)} onHome={goHome} />}
       </div>
 
       <div className="below">
@@ -214,7 +242,7 @@ export default function Game() {
           </section>
         </div>
         <div className="col">
-          <StatsPanel stats={stats} cluster={cluster} today={today} yesterday={yesterday} onReset={() => { setStats(reset()); goHome(); }} />
+          <StatsSummary stats={stats} cluster={chosen} today={today} yesterday={yesterday} />
           <RoundReview cluster={review?.cluster ?? cluster} mode={review?.mode ?? mode} log={review?.log ?? null} score={review?.score ?? 0} />
         </div>
       </div>

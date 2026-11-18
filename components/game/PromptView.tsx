@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { Clock } from "./Clock";
-import { DIFFS, SECONDS } from "@/lib/game-engine";
+import { DIFFS, MAX_ANSWER_LENGTH, SECONDS } from "@/lib/game-engine";
 import { CLUSTERS } from "@/lib/questions";
 import type { Question } from "@/types";
 
@@ -24,7 +24,7 @@ export function PromptView({ question, timed, onAnswer, onLastSeconds }: { quest
         }}
       >
         <Clock seconds={SECONDS} timed={timed} onExpire={() => onAnswer(input.current?.value ?? "", true)} onLastSeconds={onLastSeconds} />
-        <input ref={input} id="answer" type="text" aria-label="Your answer" autoCapitalize="off" spellCheck={false} autoFocus />
+        <input ref={input} id="answer" type="text" aria-label="Your answer" maxLength={MAX_ANSWER_LENGTH} autoCapitalize="off" spellCheck={false} autoFocus />
         <button type="submit" id="submit">Climb</button>
       </form>
     </div>

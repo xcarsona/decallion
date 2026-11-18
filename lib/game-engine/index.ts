@@ -6,6 +6,8 @@ import { LEVELS, pointsFor } from "@/lib/scoring";
 
 export const SECONDS = 25;
 export const ROUND_SIZE = 7;
+/** Longest typed answer that is kept. The answer box, the training log and the leaderboard all use it. */
+export const MAX_ANSWER_LENGTH = 80;
 export const STRIKES = 3;
 export const DIFFS: Record<number, string> = { 1: "Easy", 2: "Medium", 3: "Hard" };
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CLUSTER_CHOICES, CLUSTER_IDS, QUESTIONS } from "@/lib/questions";
 import { DAILY_MIN, ROUND_SIZE, buildRound, dailyEnabled, dailyRound, dayIso, dayKey, inCluster, match, msUntilNextDay, pool, prevDayKey, scoreAnswers, validate } from "@/lib/game-engine";
-import { apply, bestOf, blank, dailyOf, liveStreak, migrate } from "@/lib/stats";
+import { apply, bestOf, blank, dailyOf, liveStreak, migrate, totalsOf } from "@/lib/stats";
 import { cleanName } from "@/lib/leaderboard/names";
 import type { ClusterId, Question } from "@/types";
 
@@ -168,6 +168,11 @@ describe("stats", () => {
     expect(dailyOf(other.stats, "fin").streak).toBe(2);
     expect(bestOf(other.stats, "fin", "daily")).toBe(300);
     expect(bestOf(other.stats, "mkt", "daily")).toBe(100);
+    // totals are kept per chosen cluster as well as overall
+    expect(other.stats.games).toBe(3);
+    expect(totalsOf(other.stats, "fin")).toEqual({ games: 2, prompts: 2, pts: 100 });
+    expect(totalsOf(other.stats, "mkt")).toEqual({ games: 1, prompts: 0, pts: 0 });
+    expect(totalsOf(other.stats, "all")).toEqual({ games: 0, prompts: 0, pts: 0 });
   });
   it("carries over stats saved before clusters existed", () => {
     const s = migrate({
@@ -177,6 +182,8 @@ describe("stats", () => {
       daily: { last: 20261116, streak: 3, bestStreak: 5, score: 410 },
     });
     expect(s.games).toBe(4);
+    expect(totalsOf(s, "all")).toEqual({ games: 4, prompts: 28, pts: 900 });
+    expect(totalsOf(s, "fin").games).toBe(0);
     expect(s.levels[6]).toBe(2);
     expect(s.topics["fin|Accounting"]).toEqual({ n: 5, pts: 200, glass: 1 });
     expect(s.topics["mkt|Marketing"].n).toBe(3);
