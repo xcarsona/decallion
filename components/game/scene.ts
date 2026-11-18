@@ -45,7 +45,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
   const u = ui.getContext("2d")!;
   const family = getComputedStyle(screen).fontFamily; // the pixel font, as loaded by the page
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let W = 0, H = 0, DPR = 1;
+  let W = 0, H = 0, DPR = 1, rulerTop = 78; // ruler labels start below the HUD
   let alt = 0, target = 0, lastShown = -1, tPrev = 0, shake = 0, flash = 0, rain = 0, fxX = 0, fxY = 0;
   let pending: { at: number; wait: number; done: () => void } | null = null;
   let tick: (shown: number) => void = () => {};
@@ -79,6 +79,8 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
     sky.height = Math.ceil(H / PX);
     ui.width = Math.round(W * DPR);
     ui.height = Math.round(H * DPR);
+    const hud = screen.querySelector(".hud");
+    if (hud) rulerTop = hud.getBoundingClientRect().bottom - screen.getBoundingClientRect().top + 10;
   }
   const observer = new ResizeObserver(resize);
   observer.observe(screen);
@@ -254,7 +256,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
       u.moveTo(W, y);
       u.lineTo(W - (major ? 20 : 9), y);
       u.stroke();
-      if (major && y > 78 && Math.abs(y - yy) > 11) {
+      if (major && y > rulerTop && Math.abs(y - yy) > 11) {
         u.fillStyle = "rgba(143,165,201,.95)";
         u.fillText(w === 0 ? "GROUND" : `${ft(w)} ft`, W - 25, y);
       }

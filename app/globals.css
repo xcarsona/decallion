@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
+/* Single theme: night-navy CRT. Two page frames share this file:
+   .app  (app/(game))  the game fills the viewport: slim top bar, the screen, one line of disclaimer.
+   .wrap (app/(site))  the training log and the leaderboard are ordinary scrolling pages. */
 :root{
-  /* Layout: one wide retro game screen (HUD on top, prompt card centre, answer dock at the bottom, altitude ruler on the right edge); levels and the round review sit below it. Single theme: night-navy CRT. */
   --navy:#07142e;
   --panel:#0f2552;
   --ink:#eef3fb;
@@ -17,51 +19,127 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--navy);color:var(--ink);font-family:var(--pixel);font-size:20px;line-height:1.15;letter-spacing:.03em}
-.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 40px;display:flex;flex-direction:column;gap:16px}
-header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
 h1{font-size:40px;line-height:1;margin:0;letter-spacing:.14em;text-transform:uppercase;font-weight:400;text-shadow:0 0 12px rgba(127,227,242,.5)}
 h1 span{color:var(--glass)}
 h2{font-size:30px;line-height:1.05;margin:0;font-weight:400;text-wrap:balance}
+h3{font-size:24px;line-height:1.05;margin:0;font-weight:400}
 p{margin:0;max-width:60ch}
-.mute{color:var(--mute)}
-.lbl{font-size:16px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
+[hidden]{display:none!important}
 
+/* ---- controls ---- */
 button{font:inherit;font-size:22px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border-radius:0;border:3px solid var(--glass);background:var(--glass);color:#052046;padding:10px 22px;box-shadow:0 4px 0 rgba(0,0,0,.5),0 0 18px rgba(127,227,242,.35)}
 button.ghost{background:#0b1d44;color:var(--ink)}
 button.mini{font-size:16px;padding:3px 10px;border-width:2px;box-shadow:none;letter-spacing:.12em}
 button:hover{filter:brightness(1.12)}
 button:active{transform:translateY(2px)}
-button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+button:focus-visible,input:focus-visible,.sheetbody:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+input[type=text]{flex:1 1 auto;min-width:0;max-width:520px;font:inherit;font-size:28px;letter-spacing:.06em;padding:8px 14px;border-radius:0;border:3px solid var(--glass);background:#06122c;color:var(--ink)}
+textarea{width:100%;font:inherit;background:#06122c;color:var(--ink);border:2px solid var(--line);border-radius:0;padding:8px;resize:none}
 
-/* game screen */
-.screen{--cl:var(--glass);position:relative;height:640px;overflow:hidden;border:3px solid #1c3a78;background:#0c2350}
+/* ---- shared pieces ---- */
+.mute{color:var(--mute)}
+.warn{color:var(--gold)}
+.lbl{font-size:16px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
+.headrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card{background:var(--panel);border:2px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card a,.panel a,.sheet a{color:var(--glass);text-decoration:underline;text-underline-offset:3px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>span{font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-size:17px;letter-spacing:.04em;text-transform:none;padding:2px 9px;border:2px solid var(--line);background:transparent;color:var(--mute);box-shadow:none}
+.chips button[aria-pressed="true"]{border-color:var(--glass);color:#052046;background:var(--glass)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px 18px}
+.figs div{border-left:3px solid var(--line);padding-left:10px}
+.figs b{display:block;font-weight:400;font-size:30px;line-height:1;color:var(--glass);font-variant-numeric:tabular-nums}
+.figs span{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:18px}
+th{font-weight:400;text-align:left;color:var(--mute);letter-spacing:.14em;text-transform:uppercase;font-size:15px;padding:2px 8px 4px 0;border-bottom:2px solid var(--line)}
+td{padding:3px 8px 3px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+canvas.clicon{display:block;flex:none;width:24px;height:24px;image-rendering:pixelated}
+.sq{display:inline-flex;gap:2px;vertical-align:middle}
+.sq i{width:10px;height:10px;display:block;background:var(--c,#16305f)}
+
+/* answer levels: .c1 to .c6 set --c to the level colour, .cx to the miss colour */
+.c1{--c:var(--t1)}.c2{--c:var(--t2)}.c3{--c:var(--t3)}.c4{--c:var(--t4)}.c5{--c:var(--t5)}.c6{--c:var(--t6)}.cx{--c:var(--miss)}
+.tiers{display:flex;flex-direction:column;gap:6px;list-style:none;margin:0;padding:0}
+.tiers li{border-left:5px solid var(--c);padding:4px 10px;background:rgba(255,255,255,.05);display:flex;justify-content:space-between;gap:8px}
+.tiers li b{font-weight:400}
+.tiers li span{color:var(--c);font-variant-numeric:tabular-nums}
+
+/* a prompt with its answer board: the round review panel and the training log */
+.rev{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:2px dashed var(--line)}
+.rev .q{font-size:22px}
+.rev .you{color:var(--c)}
+.rev .why{color:var(--ink);font-size:18px}
+.rev .tag{color:var(--mute);font-size:16px;letter-spacing:.08em}
+.bank{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
+.bank li{font-size:18px;padding:1px 8px;border:2px solid var(--c);color:var(--c)}
+.bank li.mine{background:var(--c);color:#06224a}
+
+/* ---- site chrome ---- */
+.sitehead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+nav{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+nav a{color:var(--glass);text-decoration:underline;text-underline-offset:3px}
+nav a[aria-current="page"]{color:var(--gold);text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.sitefoot{color:var(--mute);font-size:17px;border-top:2px dashed var(--line);padding-top:10px}
+
+/* ---- game page frame: exactly one viewport tall, so the page itself never scrolls ---- */
+.app{height:100vh;height:100dvh;min-height:360px;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:6px;
+  padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+.app .sitehead{flex:none;flex-wrap:nowrap;padding:0 4px}
+.app h1{font-size:30px}
+.fine{flex:none;color:var(--mute);font-size:14px;line-height:1.05;letter-spacing:.02em;text-align:center;text-wrap:balance}
+
+/* ---- the game screen: scene canvases at the back, the stage (tool strip, HUD, current view) over them, scanlines on top ---- */
+.screen{--cl:var(--glass);position:relative;flex:1 1 auto;min-height:0;display:flex;overflow:hidden;border:3px solid #1c3a78;background:#0c2350;box-shadow:0 0 0 2px #040b1e,0 0 26px rgba(79,157,255,.16)}
 .screen>canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #sky{image-rendering:pixelated}
 .screen::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
   background:repeating-linear-gradient(to bottom,rgba(0,0,0,.2) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.45) 100%)}
-.hud{position:absolute;left:0;right:0;top:10px;display:flex;justify-content:center;align-items:flex-start;gap:clamp(8px,6vw,90px);padding:0 12px;z-index:3;pointer-events:none}
+.stage{position:relative;z-index:2;flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+/* the cluster picker and the round intro dim the scene so their text stays readable over the skyline and the elevator car */
+.screen[data-view="clusters"] .stage{background:rgba(4,12,34,.5)}
+.screen[data-view="intro"] .stage{background:rgba(4,12,34,.6)}
+
+.sbar{flex:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px 0}
+.tagline{font-size:17px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 6px rgba(0,0,0,.8)}
+.tools{display:flex;gap:8px;flex:none;margin-left:auto}
+.tools button{background:rgba(9,24,58,.8);border-color:var(--line);color:var(--ink)}
+.tools button:hover,.tools button:focus-visible{border-color:var(--cl);filter:none}
+
+.hud{flex:none;display:flex;justify-content:center;align-items:flex-start;gap:clamp(8px,6vw,90px);padding:6px 12px 0}
 .box{background:rgba(9,24,58,.8);border:2px solid var(--line);padding:6px 14px;min-width:120px}
 .box span{display:block;font-size:14px;letter-spacing:.3em;color:var(--mute)}
 .box b{display:block;font-weight:400;font-size:34px;line-height:1;color:var(--glass);font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(127,227,242,.6)}
 .box.r{text-align:right}
 .box.r b{color:var(--gold);text-shadow:0 0 10px rgba(242,193,78,.6)}
-.mid{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:8px;font-size:14px;letter-spacing:.3em;color:var(--mute)}
+.mid{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:8px;font-size:14px;letter-spacing:.3em;color:var(--mute);text-shadow:0 2px 6px rgba(0,0,0,.8)}
+.mid .count{display:flex;align-items:center;gap:7px}
+.mid .clicon{width:20px;height:20px;filter:drop-shadow(0 0 4px var(--cl))}
 .pips{display:flex;gap:5px}
 .pips i{width:14px;height:14px;background:#16305f;display:block}
 .pips i.done{background:var(--gold)}
 .pips i.now{background:var(--glass);box-shadow:0 0 8px var(--glass)}
-.view{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:92px 44px 104px 16px;animation:fadein .3s ease both}
-.panel{width:100%;max-width:580px;background:rgba(15,37,82,.86);border:2px solid var(--line);padding:22px 26px;display:flex;flex-direction:column;gap:14px;
+
+/* ---- views: each fills the stage under the HUD. .vbody centres the content and scrolls if it must; .dock is pinned to the bottom ---- */
+.view{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;animation:viewin .24s ease-out both}
+.vbody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;padding:12px 60px;overflow-y:auto}
+.panel{flex:none;width:100%;max-width:580px;background:rgba(15,37,82,.86);border:2px solid var(--line);padding:22px 26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 6px 0 rgba(0,0,0,.35);
   background-image:repeating-linear-gradient(to bottom,rgba(255,255,255,.035) 0 2px,transparent 2px 4px)}
 .panel h2{font-size:40px}
+.panel.tall{max-height:100%;overflow-y:auto}
 .hint{color:var(--mute);font-size:18px;letter-spacing:.14em}
-.dock{position:absolute;left:16px;right:16px;bottom:16px;display:flex;gap:12px;justify-content:center;align-items:stretch;flex-wrap:nowrap}
+.dock{flex:none;display:flex;gap:12px;justify-content:center;align-items:stretch;flex-wrap:nowrap;padding:4px 16px 16px}
 .dock.wrapok{flex-wrap:wrap}
-input[type=text]{flex:1 1 auto;min-width:0;max-width:520px;font:inherit;font-size:28px;letter-spacing:.06em;padding:8px 14px;border-radius:0;border:3px solid var(--glass);background:#06122c;color:var(--ink)}
 .clock{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:26px;color:var(--glass);
   background:radial-gradient(#06122c 58%,transparent 60%),conic-gradient(var(--glass) calc(var(--t,1)*360deg),#16305f 0)}
 .clock.low{color:var(--miss);background:radial-gradient(#06122c 58%,transparent 60%),conic-gradient(var(--miss) calc(var(--t,1)*360deg),#16305f 0);animation:blink .5s steps(2) infinite}
+
+/* level reveal */
 .reveal{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;text-shadow:0 3px 12px rgba(0,0,0,.8)}
 #icon{position:static;width:108px;height:108px;image-rendering:pixelated;filter:drop-shadow(0 0 14px var(--c));animation:bobble 1.6s ease-in-out infinite alternate}
 .reveal strong{font-weight:400;font-size:64px;line-height:1;letter-spacing:.22em;text-transform:uppercase;color:var(--c);text-shadow:0 0 18px var(--c);animation:pop .5s cubic-bezier(.2,1.5,.4,1) both}
@@ -70,113 +148,78 @@ input[type=text]{flex:1 1 auto;min-width:0;max-width:520px;font:inherit;font-siz
 .reveal .gain b{font-weight:400;color:var(--c)}
 .reveal .note{color:var(--mute);letter-spacing:.14em}
 
-/* below the screen */
-.below{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px;align-items:start}
-.card{background:var(--panel);border:2px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.tiers{display:flex;flex-direction:column;gap:6px;list-style:none;margin:0;padding:0}
-.tiers li{border-left:5px solid var(--c);padding:4px 10px;background:rgba(255,255,255,.05);display:flex;justify-content:space-between;gap:8px}
-.tiers li span{color:var(--c);font-variant-numeric:tabular-nums}
-.c1{--c:var(--t1)}.c2{--c:var(--t2)}.c3{--c:var(--t3)}.c4{--c:var(--t4)}.c5{--c:var(--t5)}.c6{--c:var(--t6)}.cx{--c:var(--miss)}
-.rev{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:2px dashed var(--line)}
-.rev .q{font-size:22px}
-.rev .you{color:var(--c)}
-.bank{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
-.bank li{font-size:18px;padding:1px 8px;border:2px solid var(--c);color:var(--c)}
-.bank li.mine{background:var(--c);color:#06224a}
-textarea{width:100%;font:inherit;background:#06122c;color:var(--ink);border:2px solid var(--line);border-radius:0;padding:8px;resize:none}
-footer{color:var(--mute);font-size:17px;border-top:2px dashed var(--line);padding-top:10px}
-[hidden]{display:none!important}
-
-@keyframes pop{0%{transform:scale(.5)}60%{transform:scale(1.1)}100%{transform:none}}
-@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes blink{50%{opacity:.55}}
-@keyframes bobble{from{transform:translateY(-4px)}to{transform:translateY(4px)}}
-@media (max-width:760px){
-  h1{font-size:32px}
-  .screen{height:620px}
-  .hud{gap:8px;padding:0 8px;justify-content:space-between}
-  .box{min-width:0;padding:4px 8px;flex:none}.box b{font-size:24px;white-space:nowrap}.box span{font-size:12px;letter-spacing:.14em}
-  .mid{font-size:12px;letter-spacing:.1em;white-space:nowrap}.pips i{width:11px;height:11px}.pips{gap:3px}
-  .panel{padding:16px}.panel h2{font-size:30px}
-  .reveal strong{font-size:44px;letter-spacing:.12em}
-  .view{padding-right:40px}
-  .below{grid-template-columns:minmax(0,1fr)}
-  button{font-size:20px;padding:10px 14px;letter-spacing:.12em}
-}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
-
-/* ---- home menu, practice setup, results, stats ---- */
-.panel.tall{max-height:100%;overflow-y:auto}
-.menu{display:flex;flex-direction:column;gap:10px}
-.menu button{display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;width:100%;background:#0b1d44;color:var(--ink);border-color:var(--line);box-shadow:none;padding:10px 14px}
-.menu button:hover,.menu button:focus-visible{border-color:var(--glass);box-shadow:0 0 16px rgba(127,227,242,.3)}
-.menu button b{font-weight:400;color:var(--glass);white-space:nowrap}
-.menu button span{font-size:17px;letter-spacing:.04em;text-transform:none;color:var(--mute);text-align:right}
-.field{display:flex;flex-direction:column;gap:6px}
-.field>span{font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{font-size:17px;letter-spacing:.04em;text-transform:none;padding:2px 9px;border:2px solid var(--line);background:transparent;color:var(--mute);box-shadow:none}
-.chips button[aria-pressed="true"]{border-color:var(--glass);color:#052046;background:var(--glass)}
-.tally{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:19px}
-.tally span{color:var(--c)}
-.newbest{color:var(--gold);letter-spacing:.2em;text-transform:uppercase;animation:blink 1s steps(2) infinite}
-.below{grid-template-columns:minmax(0,320px) minmax(0,1fr)}
-.col{display:flex;flex-direction:column;gap:16px;min-width:0}
-.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px 18px}
-.figs div{border-left:3px solid var(--line);padding-left:10px}
-.figs b{display:block;font-weight:400;font-size:30px;line-height:1;color:var(--glass);font-variant-numeric:tabular-nums}
-.figs span{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
-.dist{display:flex;height:18px;background:#16305f}
-.dist i{display:block;height:100%;background:var(--c)}
-.legend{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:17px}
-.legend span{color:var(--c)}
-.tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:18px}
-th{font-weight:400;text-align:left;color:var(--mute);letter-spacing:.14em;text-transform:uppercase;font-size:15px;padding:2px 8px 4px 0;border-bottom:2px solid var(--line)}
-td{padding:3px 8px 3px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
-td.num,th.num{text-align:right}
-.rev .why{color:var(--ink);font-size:18px}
-.rev .tag{color:var(--mute);font-size:16px;letter-spacing:.08em}
-.headrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-@media (max-width:760px){.below{grid-template-columns:minmax(0,1fr)}.menu button{flex-direction:column;gap:2px}.menu button span{text-align:left}.view{padding-top:84px}}
-@media (max-width:760px){.chips button{font-size:16px;padding:1px 7px;letter-spacing:.02em}.panel.tall{gap:10px}}
-
-/* ---- site chrome and leaderboard (new in the Next.js build) ---- */
-nav{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-nav a,.card a,.panel a{color:var(--glass);text-decoration:underline;text-underline-offset:3px}
-nav a[aria-current="page"]{color:var(--gold);text-decoration:none}
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.lbform{display:flex;flex-direction:column;gap:6px;border-top:2px dashed var(--line);padding-top:10px}
-.lbform input[type=text]{font-size:20px;padding:3px 8px;border-width:2px;max-width:220px}
-.board td.rank{color:var(--mute);width:3ch}
-.board tr.me td{color:var(--gold)}
-.sq{display:inline-flex;gap:2px;vertical-align:middle}
-.sq i{width:10px;height:10px;display:block;background:var(--c,#16305f)}
-/* ---- cluster picker, mode picker and the cluster tint (--cl is set on .screen to the chosen cluster's colour) ---- */
-canvas.clicon{display:block;flex:none;width:24px;height:24px;image-rendering:pixelated}
-/* the picker dims the scene behind it so the labels stay readable over the skyline and the elevator car */
-.view.pick{padding-bottom:16px;gap:12px;background:rgba(4,12,34,.5)}
+/* step one: the cluster picker. --cc is the button's cluster colour */
 .pickhead{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.85)}
-.pickhead h2{font-size:32px}
-.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px;width:100%;max-width:600px}
+.pickhead h2{font-size:36px}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px;width:100%;max-width:680px}
 .cbtn{--cc:var(--glass);display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;padding:14px 6px 10px;background:transparent;border:2px solid transparent;box-shadow:none;
-  color:var(--ink);font-size:19px;line-height:1.05;letter-spacing:.05em;text-transform:none;text-shadow:0 2px 6px rgba(0,0,0,.9)}
+  color:var(--ink);font-size:21px;line-height:1.05;letter-spacing:.05em;text-transform:none;text-shadow:0 2px 6px rgba(0,0,0,.9)}
 .cbtn .float{display:block;animation:floaty var(--bd,3s) ease-in-out var(--bdl,0s) infinite alternate}
-.cbtn .clicon{width:96px;height:96px;filter:drop-shadow(0 0 10px var(--cc));transition:transform .18s ease,filter .18s ease}
+.cbtn .clicon{width:clamp(72px,14vh,120px);height:clamp(72px,14vh,120px);filter:drop-shadow(0 0 10px var(--cc));transition:transform .18s ease,filter .18s ease}
 .cbtn .nm{text-wrap:balance}
 .cbtn:hover,.cbtn:focus-visible{filter:none;background:rgba(9,24,58,.6);border-color:var(--cc);color:#fff}
 .cbtn:hover .clicon,.cbtn:focus-visible .clicon{transform:translateY(-8px) scale(1.08);filter:drop-shadow(0 0 8px var(--cc)) drop-shadow(0 0 20px var(--cc)) brightness(1.3)}
 .cbtn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .cbtn:active{transform:none}
-@keyframes floaty{from{transform:translateY(-6px)}to{transform:translateY(6px)}}
 
+/* step two: the mode menu, and the practice setup */
 .modehead{display:flex;align-items:center;gap:14px}
 .modehead .clicon{width:48px;height:48px;filter:drop-shadow(0 0 8px var(--cl))}
 .modehead h2{font-size:32px}
+.menu{display:flex;flex-direction:column;gap:10px}
+.menu button{display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;width:100%;background:#0b1d44;color:var(--ink);border-color:var(--line);box-shadow:none;padding:10px 14px}
+.menu button:hover,.menu button:focus-visible{border-color:var(--glass);box-shadow:0 0 16px rgba(127,227,242,.3)}
+.menu button b{font-weight:400;color:var(--glass);white-space:nowrap}
+.menu button span{font-size:17px;letter-spacing:.04em;text-transform:none;color:var(--mute);text-align:right}
+.menu button .best{display:block;font-style:normal;color:var(--ink)}
 .menu button:disabled{cursor:not-allowed;opacity:.55}
 .menu button:disabled:hover{filter:none;border-color:var(--line);box-shadow:none}
-.menu button .best{display:block;font-style:normal;color:var(--ink)}
 
+/* round intro: one big button over the scene, so a click, Enter or Space skips it */
+.intro{flex:1 1 auto;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;padding:16px;border:0;background:transparent;box-shadow:none;
+  color:var(--ink);font-size:20px;letter-spacing:.03em;text-transform:none}
+.intro:hover{filter:none}
+.intro:active{transform:none}
+.intro:focus-visible{outline:none}
+.introcard{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:460px;padding:26px 22px 16px;background:rgba(15,37,82,.94);border:3px solid var(--cl);
+  box-shadow:0 0 0 3px #06122c,0 0 34px color-mix(in srgb,var(--cl) 40%,transparent);animation:crt .3s steps(6,end) both}
+.intro:focus-visible .introcard{outline:3px solid var(--gold);outline-offset:4px}
+.introicon .clicon{width:96px;height:96px;margin-bottom:6px;filter:drop-shadow(0 0 12px var(--cl));animation:pop .5s .1s cubic-bezier(.2,1.5,.4,1) both}
+.introname{font-size:40px;line-height:1;text-align:center;text-wrap:balance}
+.introline{font-size:24px}
+.introbar{display:block;width:100%;height:6px;margin-top:10px;background:#16305f}
+.introbar i{display:block;height:100%;background:var(--cl);transform-origin:left;animation:drain var(--ms,1.4s) linear both}
+.introskip{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+
+/* results: the score counts up, then everything marked .after appears */
+.endlbl{display:flex;align-items:center;gap:8px}
+.endft{font-size:1.35em;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums;text-shadow:0 0 14px rgba(242,193,78,.55)}
+.after{display:flex;flex-direction:column;gap:14px}
+.dock.after{flex-direction:row}
+.view.end[data-done="false"] .after{visibility:hidden}
+.view.end[data-done="true"] .after{animation:viewin .28s ease-out both}
+.tally{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:19px}
+.tally span{color:var(--c)}
+.newbest{color:var(--gold);letter-spacing:.2em;text-transform:uppercase;animation:blink 1s steps(2) infinite}
+.lbform{display:flex;flex-direction:column;gap:6px;border-top:2px dashed var(--line);padding-top:10px}
+.lbform input[type=text]{font-size:20px;padding:3px 8px;border-width:2px;max-width:220px}
+
+/* ---- slide-up panels (How to play, Round review): modal dialogs inside the screen ---- */
+.sheetwrap{position:absolute;inset:0;z-index:4;display:flex;align-items:flex-end;justify-content:center;padding:0 12px;background:rgba(3,9,26,.66);animation:fade .2s ease-out both}
+.sheet{width:100%;max-width:860px;max-height:calc(100% - 48px);display:flex;flex-direction:column;background:#0c1f47;border:3px solid var(--cl);border-bottom:0;box-shadow:0 -8px 30px rgba(0,0,0,.6);
+  animation:sheetup .28s cubic-bezier(.2,.9,.3,1) both}
+.sheethead{flex:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;border-bottom:2px dashed var(--line)}
+.sheethead h2{font-size:32px}
+.sheetbody{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;padding:16px 16px 22px}
+.sheetbody:focus-visible{outline-offset:-3px}
+.sheet h3{color:var(--cl)}
+.helpgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 28px}
+.helpgrid section{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sheet .card{background:rgba(255,255,255,.04);padding:14px 16px}
+#statsCard .headrow span{font-size:16px;letter-spacing:.14em;text-transform:uppercase}
+.review{display:flex;flex-direction:column;gap:12px}
+
+/* ---- cluster tint: --cl is set on .screen to the chosen cluster's colour ---- */
 .screen .lbl{color:var(--cl)}
 .screen .box,.screen .panel{border-color:color-mix(in srgb,var(--cl) 50%,transparent)}
 .screen .pips i.now{background:var(--cl);box-shadow:0 0 8px var(--cl)}
@@ -186,40 +229,8 @@ canvas.clicon{display:block;flex:none;width:24px;height:24px;image-rendering:pix
 .screen .menu button b{color:var(--cl)}
 .screen .menu button:not(:disabled):hover,.screen .menu button:focus-visible{border-color:var(--cl);box-shadow:0 0 16px color-mix(in srgb,var(--cl) 35%,transparent)}
 .screen .chips button[aria-pressed="true"]{border-color:var(--cl);background:var(--cl)}
-.screen #endTitle{text-shadow:0 0 14px color-mix(in srgb,var(--cl) 60%,transparent)}
-.endlbl{display:flex;align-items:center;gap:8px}
-.mid .count{display:flex;align-items:center;gap:7px}
-.mid .clicon{width:20px;height:20px;filter:drop-shadow(0 0 4px var(--cl))}
-@media (max-width:760px){
-  .cgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px}
-  .cbtn{font-size:16px;padding:10px 4px 6px;gap:6px;letter-spacing:.03em}
-  .cbtn .clicon{width:72px;height:72px}
-  .pickhead h2,.modehead h2{font-size:26px}
-  .view.pick{gap:6px;background:rgba(4,12,34,.8)}
-  /* step two has to show all three modes without scrolling inside the panel */
-  .view.modes{padding-top:78px;padding-bottom:78px}
-  .view.modes .panel{padding:12px 14px;gap:8px}
-  .modehead .clicon{width:40px;height:40px}
-  .modehead .more{display:none}
-  .modehead h2{font-size:22px}
-  .view.modes .menu{gap:6px}
-  .view.modes .menu button{padding:6px 12px}
-  .view.modes .menu button span{font-size:16px}
-  .screen .lbl{letter-spacing:.14em}
-  /* the dock is one row of buttons at this width, so the panel can use the space above it */
-  .view{padding-bottom:88px}
-  .modehead{gap:10px}
-  .mid .count{gap:4px}
-  .mid .clicon{width:16px;height:16px}
-}
-/* reduced motion: nothing in the picker moves (the global rule above already removes the bob) */
-@media (prefers-reduced-motion:reduce){
-  .cbtn .float{animation:none!important}
-  .cbtn .clicon{transition:none}
-  .cbtn:hover .clicon,.cbtn:focus-visible .clicon{transform:none}
-  .screen button:active{transform:none}
-}
-/* ---- training log (/log) and the stats summary card under the game. --cc is the row's cluster colour ---- */
+
+/* ---- training log (/log). --cc is the row's cluster colour ---- */
 .logpage{display:flex;flex-direction:column;gap:16px;min-width:0}
 .logpage button:disabled{cursor:not-allowed;opacity:.55;filter:none}
 .clname{display:inline-flex;align-items:center;gap:8px;color:var(--cc,var(--ink));min-width:0}
@@ -239,25 +250,132 @@ button.logrow:active{transform:none}
 .logrow .alt{color:var(--cc,var(--glass))}
 .logrow .caret{text-align:right;color:var(--mute);font-size:24px;line-height:1}
 .logboards{display:flex;flex-direction:column;gap:12px;padding:0 12px 14px}
-#statsCard .headrow span{font-size:16px;letter-spacing:.14em;text-transform:uppercase}
-@media (max-width:760px){
-  /* round row: date and caret, cluster and mode, level squares, then points and altitude */
-  button.logrow{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}
-  .logrow .caret{grid-column:2;grid-row:1;text-align:right}
-  .logrow .sq{grid-column:1 / -1;max-width:none}
-  .logrow .score{text-align:left}
-  .logrow .mode,.logrow .alt{text-align:right}
-  /* topics table: the cluster shows as its icon and row colour, so the numbers fit without scrolling */
-  #logTopics .cltext{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-  #logTopics th,#logTopics td{padding-right:4px}
-  #logTopics th{letter-spacing:.06em}
-  #logTopics td:first-child{white-space:normal}
-}
 
-/* ---- leaderboard page (/leaderboard). Kept in this file: a page-only stylesheet is preloaded on every page that links to it ---- */
+/* ---- leaderboard (/leaderboard). Kept in this file: a page-only stylesheet is preloaded on every page that links to it ---- */
 .lbtabs{display:flex;flex-direction:column;gap:8px;margin:8px 0}
 .lbtabs .chips button{display:inline-flex;align-items:center;gap:6px}
 /* the selected cluster tab takes its cluster's colour (--cc); the icon stays readable on the faint fill */
 #lbClusters button[aria-pressed="true"]{border-color:var(--cc);color:var(--cc);background:color-mix(in srgb,var(--cc) 18%,transparent)}
 /* names, scores and days stay on one line; a wide board scrolls inside its own box */
 #lbTable th,#lbTable td{white-space:nowrap}
+.board td.rank{color:var(--mute);width:3ch}
+.board tr.me td{color:var(--gold)}
+
+/* ---- motion ---- */
+@keyframes viewin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sheetup{from{transform:translateY(100%)}to{transform:none}}
+@keyframes crt{from{clip-path:inset(50% 0)}to{clip-path:inset(0)}}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes pop{0%{transform:scale(.5)}60%{transform:scale(1.1)}100%{transform:none}}
+@keyframes blink{50%{opacity:.55}}
+@keyframes bobble{from{transform:translateY(-4px)}to{transform:translateY(4px)}}
+@keyframes floaty{from{transform:translateY(-6px)}to{transform:translateY(6px)}}
+
+/* ---- phones ---- */
+@media (max-width:760px){
+  h1{font-size:32px}
+  button{font-size:20px;padding:10px 14px;letter-spacing:.12em}
+  .chips button{font-size:16px;padding:1px 7px;letter-spacing:.02em}
+
+  .app{gap:4px;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+  .app h1{font-size:25px}
+  .app nav{gap:11px;flex-wrap:nowrap;font-size:19px}
+  .fine{font-size:13px}
+  .tagline{display:none}
+  .sbar{padding:6px 6px 0}
+  .tools{margin:0;width:100%;justify-content:space-between}
+  .tools button{padding:5px 9px}
+  .hud{gap:8px;padding:6px 6px 0;justify-content:space-between}
+  .box{min-width:0;padding:4px 8px;flex:none}.box b{font-size:24px;white-space:nowrap}.box span{font-size:12px;letter-spacing:.14em}
+  .mid{font-size:12px;letter-spacing:.1em;white-space:nowrap}.pips i{width:11px;height:11px}.pips{gap:3px}
+  .mid .count{gap:4px}
+  .mid .clicon{width:16px;height:16px}
+  .screen .lbl{letter-spacing:.14em}
+
+  /* the right padding keeps content clear of the altitude ruler */
+  .vbody{padding:10px 40px 10px 10px}
+  .dock{padding:4px 10px 12px;gap:8px}
+  .panel{padding:16px}.panel h2{font-size:30px}
+  .panel.tall{gap:10px}
+  .hint{font-size:16px;letter-spacing:.06em}
+  /* the reveal sits over the elevator car at this width, so it gets a backing to stay readable */
+  .reveal{width:100%;padding:16px 10px;background:rgba(7,20,46,.86);border:2px solid color-mix(in srgb,var(--c) 45%,transparent)}
+  .reveal strong{font-size:44px;letter-spacing:.12em}
+  .reveal .ans,.reveal .gain{font-size:26px}
+  .screen[data-view="clusters"] .stage{background:rgba(4,12,34,.8)}
+  .screen[data-view="clusters"] .vbody{padding-right:10px;gap:8px}
+  .cgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px}
+  .cbtn{font-size:17px;padding:10px 4px 8px;gap:6px;letter-spacing:.03em}
+  .cbtn .clicon{width:clamp(56px,10vh,84px);height:clamp(56px,10vh,84px)}
+  .pickhead h2,.modehead h2{font-size:26px}
+  .modehead{gap:10px}
+  .modehead .clicon{width:40px;height:40px}
+  .modehead .more{display:none}
+  .menu button{flex-direction:column;gap:2px}
+  .menu button span{text-align:left}
+  .introname{font-size:32px}
+  .introline{font-size:21px}
+  .after{gap:10px}
+  .view.end .dock button{font-size:18px;padding:10px;letter-spacing:.08em}
+
+  .sheetwrap{padding:0}
+  .sheet{max-height:calc(100% - 40px);border-left:0;border-right:0}
+  .sheethead{padding:8px 12px}
+  .sheethead h2{font-size:26px}
+  .sheethead button{padding:5px 10px}
+  .sheetbody{padding:12px 12px 18px}
+  .helpgrid{grid-template-columns:minmax(0,1fr)}
+
+  /* log round row: date and caret, cluster and mode, level squares, then points and altitude */
+  button.logrow{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}
+  .logrow .caret{grid-column:2;grid-row:1;text-align:right}
+  .logrow .sq{grid-column:1 / -1;max-width:none}
+  .logrow .score{text-align:left}
+  .logrow .mode,.logrow .alt{text-align:right}
+  /* log topics table: the cluster shows as its icon and row colour, so the numbers fit without scrolling */
+  #logTopics .cltext{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  #logTopics th,#logTopics td{padding-right:4px}
+  #logTopics th{letter-spacing:.06em}
+  #logTopics td:first-child{white-space:normal}
+}
+
+/* ---- short screens: tighten the cards so they fit without scrolling inside; a phone on its side also gets a smaller HUD and answer bar ---- */
+@media (max-height:640px){
+  .vbody{padding-top:6px;padding-bottom:6px}
+  .panel{padding:14px 20px;gap:10px}
+  .menu{gap:6px}
+  .menu button{padding:6px 12px}
+}
+@media (max-height:520px){
+  .app{gap:4px}
+  .app h1{font-size:25px}
+  .sbar{padding-top:5px}
+  .hud{padding-top:4px}
+  .box{padding:3px 10px}.box b{font-size:24px}.box span{font-size:12px}
+  .mid{padding-top:2px;gap:4px}
+  .vbody{padding-top:6px;padding-bottom:6px;gap:6px}
+  .panel{padding:10px 16px;gap:8px}.panel h2{font-size:26px}
+  .hint{display:none}
+  .dock{padding-bottom:8px}
+  .dock button{padding-top:6px;padding-bottom:6px}
+  .dock input[type=text]{font-size:22px;padding:5px 10px}
+  .clock{width:46px;height:46px;font-size:21px}
+  .pickhead h2{font-size:26px}
+  #icon{display:none}
+  .reveal{gap:4px}
+  .reveal strong{font-size:40px}
+  .reveal .ans,.reveal .gain{font-size:22px}
+  .introcard{padding:12px 18px 10px;gap:4px}
+  .introicon .clicon{width:56px;height:56px;margin:0}
+  .introname{font-size:28px}
+  .introline{font-size:20px}
+}
+
+/* ---- reduced motion: no transitions, no intro animation, still picker icons. The score count is skipped in EndView, the scene in scene.ts ---- */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .cbtn:hover .clicon,.cbtn:focus-visible .clicon{transform:none}
+  .screen button:active{transform:none}
+  .introbar{visibility:hidden}
+}

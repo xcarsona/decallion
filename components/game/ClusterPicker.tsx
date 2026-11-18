@@ -33,21 +33,23 @@ export function ClusterPicker({ focus, onPick }: { focus: ClusterChoice | null; 
 
   return (
     <div className="view pick">
-      <div className="pickhead">
-        <div className="lbl">Step 1 of 2</div>
-        <h2 id="pickTitle">Choose a career cluster</h2>
-      </div>
-      <div className="cgrid" id="clusterGrid" ref={grid} role="group" aria-labelledby="pickTitle" onKeyDown={onKeyDown}>
-        {CLUSTER_CHOICES.map((c, i) => {
-          const info = clusterInfo(c);
-          const style = { "--cc": info.color, "--bd": `${BOB[i % BOB.length][0]}s`, "--bdl": `${BOB[i % BOB.length][1]}s` } as React.CSSProperties;
-          return (
-            <button type="button" key={c} className="cbtn" data-cluster={c} style={style} onClick={() => onPick(c)}>
-              <span className="float"><ClusterIcon cluster={c} /></span>
-              <span className="nm">{info.name}</span>
-            </button>
-          );
-        })}
+      <div className="vbody">
+        <div className="pickhead">
+          <div className="lbl">Step 1 of 2</div>
+          <h2 id="pickTitle">Choose a career cluster</h2>
+        </div>
+        <div className="cgrid" id="clusterGrid" ref={grid} role="group" aria-labelledby="pickTitle" onKeyDown={onKeyDown}>
+          {CLUSTER_CHOICES.map((c, i) => {
+            const info = clusterInfo(c);
+            const style = { "--cc": info.color, "--bd": `${BOB[i % BOB.length][0]}s`, "--bdl": `${BOB[i % BOB.length][1]}s` } as React.CSSProperties;
+            return (
+              <button type="button" key={c} className="cbtn" data-cluster={c} style={style} onClick={() => onPick(c)}>
+                <span className="float"><ClusterIcon cluster={c} /></span>
+                <span className="nm">{info.name}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

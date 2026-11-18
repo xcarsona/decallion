@@ -33,37 +33,39 @@ export function ModePicker({ cluster, stats, today, yesterday, onStart, onPracti
   else if (daily.last === today) status = `Logged today: ${ft(daily.score)} ft. Replays do not count.`;
   return (
     <div className="view modes">
-      <div className="panel tall">
-        <div className="modehead">
-          <ClusterIcon cluster={cluster} />
-          <div>
-            <div className="lbl">Step 2 of 2<span className="more"> · choose a climb</span></div>
-            <h2 id="modeTitle">{info.name}</h2>
+      <div className="vbody">
+        <div className="panel tall">
+          <div className="modehead">
+            <ClusterIcon cluster={cluster} />
+            <div>
+              <div className="lbl">Step 2 of 2<span className="more"> · choose a climb</span></div>
+              <h2 id="modeTitle">{info.name}</h2>
+            </div>
           </div>
-        </div>
-        <div className="menu">
-          <button type="button" id="mDaily" disabled={!open} autoFocus={open} onClick={() => onStart("daily")}>
-            <b>Daily climb</b>
-            <span>
-              <span id="dailyStatus">{status}</span> <NextRound />
-              {streak > 0 && <> <span id="dailyStreak">Streak: {streak} day{streak === 1 ? "" : "s"}.</span></>}
-              {best("daily")}
-            </span>
-          </button>
-          <button type="button" id="mPractice" disabled={!count} autoFocus={!open} onClick={onPractice}>
-            <b>Practice</b>
-            <span>
-              {cluster === "all" ? "Pick clusters, difficulty and timer." : "Pick difficulty and timer."}
-              {best("practice")}
-            </span>
-          </button>
-          <button type="button" id="mUnlimited" disabled={!count} onClick={() => onStart("unlimited")}>
-            <b>Unlimited</b>
-            <span>
-              Keep climbing until {STRIKES} misses.
-              {best("unlimited")}
-            </span>
-          </button>
+          <div className="menu">
+            <button type="button" id="mDaily" disabled={!open} autoFocus={open} onClick={() => onStart("daily")}>
+              <b>Daily climb</b>
+              <span>
+                <span id="dailyStatus">{status}</span> <NextRound />
+                {streak > 0 && <> <span id="dailyStreak">Streak: {streak} day{streak === 1 ? "" : "s"}.</span></>}
+                {best("daily")}
+              </span>
+            </button>
+            <button type="button" id="mPractice" disabled={!count} autoFocus={!open} onClick={onPractice}>
+              <b>Practice</b>
+              <span>
+                {cluster === "all" ? "Pick clusters, difficulty and timer." : "Pick difficulty and timer."}
+                {best("practice")}
+              </span>
+            </button>
+            <button type="button" id="mUnlimited" disabled={!count} onClick={() => onStart("unlimited")}>
+              <b>Unlimited</b>
+              <span>
+                Keep climbing until {STRIKES} misses.
+                {best("unlimited")}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
       <div className="dock wrapok">

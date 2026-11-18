@@ -9,10 +9,12 @@ export function PromptView({ question, timed, onAnswer, onLastSeconds }: { quest
   const input = useRef<HTMLInputElement>(null);
   return (
     <div className="view">
-      <div className="panel">
-        <div className="lbl" id="qLabel">{CLUSTERS[question.cluster].short} · {question.topic} · {DIFFS[question.diff]}</div>
-        <h2 id="q">{question.q}</h2>
-        <div className="hint">▲ rarer answers climb higher ▲</div>
+      <div className="vbody">
+        <div className="panel">
+          <div className="lbl" id="qLabel">{CLUSTERS[question.cluster].short} · {question.topic} · {DIFFS[question.diff]}</div>
+          <h2 id="q">{question.q}</h2>
+          <div className="hint">▲ rarer answers climb higher ▲</div>
+        </div>
       </div>
       <form
         className="dock"

@@ -7,7 +7,7 @@ import type { ClusterChoice } from "@/types";
 
 const avg = (pts: number, n: number) => (n > 0 ? Math.round(pts / n) : 0);
 
-/* The short stats card under the game. `cluster` is null on the cluster picker, where it shows overall figures.
+/* The short stats card in the game's How to play panel. `cluster` is null on the cluster picker, where it shows overall figures.
    The full breakdown is on /log. */
 export function StatsSummary({ stats, cluster, today, yesterday }: { stats: Stats; cluster: ClusterChoice | null; today: number; yesterday: number }) {
   let figs: [string | number, string][];
@@ -30,7 +30,7 @@ export function StatsSummary({ stats, cluster, today, yesterday }: { stats: Stat
   return (
     <section className="card" id="statsCard" data-cluster={cluster ?? "overall"}>
       <div className="headrow">
-        <h2>Your stats</h2>
+        <h3>Your stats</h3>
         <span className="mute">{cluster ? clusterInfo(cluster).short : "Every cluster"}</span>
       </div>
       <div className="figs" id="figs">

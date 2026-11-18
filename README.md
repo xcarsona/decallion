@@ -7,7 +7,7 @@ fewer competitors would give climbs higher. Unofficial: not affiliated with or e
 
 | Path | What it is |
 |---|---|
-| `app/` | Next.js App Router pages: the game (`/`), the leaderboard (`/leaderboard`), the training log (`/log`) and the scores API (`/api/scores`) |
+| `app/` | Next.js App Router pages: the game (`/`, in `app/(game)`, a full-height layout), the leaderboard (`/leaderboard`) and the training log (`/log`) (both in `app/(site)`, a scrolling page layout), and the scores API (`/api/scores`) |
 | `components/game/` | The game screens as React components, plus `scene.ts`, the canvas animation and sound |
 | `lib/questions/bank/` | The question bank, one file per career cluster. Data only |
 | `lib/questions/clusters.ts` | The five clusters: names, colours and icons |
@@ -41,7 +41,13 @@ You pick a career cluster, then a mode.
 - **Practice:** seven prompts. You choose the difficulty and whether the timer runs.
 - **Unlimited:** keeps going until three misses.
 - **Levels:** Roll Call 10, Club Meeting 25, Districts 45, State 65, ICDC 80, DECA Glass 100. One point is 10 ft.
-- Answer boards stay hidden until the round ends.
+- Answer boards stay hidden until the round ends. The results screen then has a Review answers button that opens
+  every board.
+
+The game screen fills the window: altitude and score at the top, the prompt in the middle, the answer bar at the
+bottom. A round opens with a short intro card (click, Enter or Space skips it) and the clock starts when the first
+prompt appears. How to play, the answer levels and a short stats summary are in the How to play panel. Opening it
+does not pause the clock.
 
 The daily round is seeded from the UTC date and the cluster, so everyone playing a cluster gets the same seven prompts
 and the round changes at midnight UTC. A prompt is not repeated within three days. For that reason a cluster needs

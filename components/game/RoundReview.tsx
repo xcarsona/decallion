@@ -6,22 +6,15 @@ import { clusterInfo } from "@/lib/questions";
 import { LEVELS, MAX_PER_PROMPT, ft } from "@/lib/scoring";
 import type { ClusterChoice, LogEntry, Mode } from "@/types";
 
-export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[] | null; score: number }) {
+/** The share text and every prompt of a finished round with its full answer board. Shown in the Round review panel,
+    which opens only from the results screen: boards stay hidden while a round is being played. */
+export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number }) {
   const [copied, setCopied] = useState("Copy result");
-  if (!log) {
-    return (
-      <section className="card">
-        <h2>Round review</h2>
-        <p className="mute">Sealed until you finish a round. Every answer board opens here, with an explanation.</p>
-      </section>
-    );
-  }
   const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
   const share = `Decallion ${MODE_NAME[mode].toLowerCase()} · ${clusterInfo(cluster).short}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (
-    <section className="card" id="results">
-      <h2>Round review</h2>
+    <div className="review" id="results">
       <textarea id="share" rows={3} readOnly aria-label="Shareable result" value={share} />
       <div><button type="button" className="mini" onClick={copy}>{copied}</button></div>
       {log.map((l, i) => (
@@ -39,6 +32,6 @@ export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterCho
           <div className="tag">{l.question.topic} · {l.question.area} · {DIFFS[l.question.diff]} · {l.question.id}</div>
         </div>
       ))}
-    </section>
+    </div>
   );
 }

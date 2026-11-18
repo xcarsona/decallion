@@ -10,36 +10,38 @@ export function PracticeSetup({ cluster, setup, onChange, onGo, onBack }: { clus
   const toggle = (c: ClusterId) => onChange({ ...setup, clusters: setup.clusters.includes(c) ? setup.clusters.filter((x) => x !== c) : [...setup.clusters, c] });
   return (
     <div className="view">
-      <div className="panel tall">
-        <div className="headrow">
-          <div className="lbl">Practice setup</div>
-          <span className="mute" id="avail">{n ? `${n} prompts match · round of ${Math.min(n, ROUND_SIZE)}` : "No prompts match"}</span>
-        </div>
-        {cluster === "all" ? (
+      <div className="vbody">
+        <div className="panel tall">
+          <div className="headrow">
+            <div className="lbl">Practice setup</div>
+            <span className="mute" id="avail">{n ? `${n} prompts match · round of ${Math.min(n, ROUND_SIZE)}` : "No prompts match"}</span>
+          </div>
+          {cluster === "all" ? (
+            <div className="field">
+              <span>Clusters</span>
+              <div className="chips" id="catChips">
+                {CLUSTER_IDS.map((c) => <Chip key={c} label={CLUSTERS[c].name} pressed={setup.clusters.includes(c)} onClick={() => toggle(c)} />)}
+              </div>
+              <div className="chips">
+                <Chip label="All" onClick={() => onChange({ ...setup, clusters: CLUSTER_IDS.slice() })} />
+                <Chip label="None" onClick={() => onChange({ ...setup, clusters: [] })} />
+              </div>
+            </div>
+          ) : (
+            <p id="setupCluster">Drawing only from {clusterInfo(cluster).name}.</p>
+          )}
           <div className="field">
-            <span>Clusters</span>
-            <div className="chips" id="catChips">
-              {CLUSTER_IDS.map((c) => <Chip key={c} label={CLUSTERS[c].name} pressed={setup.clusters.includes(c)} onClick={() => toggle(c)} />)}
-            </div>
-            <div className="chips">
-              <Chip label="All" onClick={() => onChange({ ...setup, clusters: CLUSTER_IDS.slice() })} />
-              <Chip label="None" onClick={() => onChange({ ...setup, clusters: [] })} />
+            <span>Difficulty</span>
+            <div className="chips" id="diffChips">
+              {DIFF_OPTIONS.map(([v, label]) => <Chip key={v} label={label} pressed={setup.diff === v} onClick={() => onChange({ ...setup, diff: v })} />)}
             </div>
           </div>
-        ) : (
-          <p id="setupCluster">Drawing only from {clusterInfo(cluster).name}.</p>
-        )}
-        <div className="field">
-          <span>Difficulty</span>
-          <div className="chips" id="diffChips">
-            {DIFF_OPTIONS.map(([v, label]) => <Chip key={v} label={label} pressed={setup.diff === v} onClick={() => onChange({ ...setup, diff: v })} />)}
-          </div>
-        </div>
-        <div className="field">
-          <span>Timer</span>
-          <div className="chips" id="timerChips">
-            <Chip label="25 seconds" pressed={setup.timer} onClick={() => onChange({ ...setup, timer: true })} />
-            <Chip label="Off" pressed={!setup.timer} onClick={() => onChange({ ...setup, timer: false })} />
+          <div className="field">
+            <span>Timer</span>
+            <div className="chips" id="timerChips">
+              <Chip label="25 seconds" pressed={setup.timer} onClick={() => onChange({ ...setup, timer: true })} />
+              <Chip label="Off" pressed={!setup.timer} onClick={() => onChange({ ...setup, timer: false })} />
+            </div>
           </div>
         </div>
       </div>

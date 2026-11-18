@@ -5,8 +5,8 @@ import type { ClusterInfo } from "@/lib/questions";
 import type { ClusterChoice } from "@/types";
 
 /* Original 12x12 pixel icons, one per career cluster plus the All clusters mix, in the style of LevelIcon.
-   '#' is the cluster colour, 'o' the highlight, 'x' a dark inset, 'd' a deep shade of the cluster colour. In the "all" icon the digits 1-5 are the five
-   cluster colours, one square each. */
+   '#' is the cluster colour, 'o' the highlight, 'x' a dark inset, 'd' a deep shade of the cluster colour and 'l' a pale tint of it.
+   In the "all" icon the digits 1-5 are the five cluster colours, one square each. */
 const ICONS: Record<ClusterInfo["icon"], string[]> = {
   briefcase: [
     "....####....",
@@ -50,19 +50,20 @@ const ICONS: Record<ClusterInfo["icon"], string[]> = {
     "...######...",
     ".....##.....",
   ],
+  // a desk globe: pale land on a blue ball, held by a tilted arm on a stand
   globe: [
-    "....#d#.....",
-    "..#d#d#d#...",
-    ".##d#d#d##..",
-    ".#d##d##d#..",
-    "##d##d##d##.",
-    "ddddddddddd.",
-    "##d##d##d##.",
-    ".#d##d##d#..",
-    ".##d#d#d##..",
-    "..#d#d#d#...",
-    "....#d#.....",
-    "............",
+    "...####..d..",
+    ".##ll###..d.",
+    ".#lll####.d.",
+    "##ll##l###.d",
+    "###l#lll##.d",
+    "####lll###.d",
+    "#####l####.d",
+    ".########.d.",
+    ".#######.d..",
+    "...####dd...",
+    ".....dd.....",
+    "..dddddddd..",
   ],
   phone: [
     "...######...",
@@ -94,9 +95,9 @@ const ICONS: Record<ClusterInfo["icon"], string[]> = {
   ],
 };
 const DARK = "#0b1d44";
-/** The cluster colour mixed part of the way to the dark inset, for lines drawn on top of it. */
-function shade(hex: string): string {
-  const mix = (i: number) => Math.round(parseInt(hex.slice(i, i + 2), 16) * 0.6 + parseInt(DARK.slice(i, i + 2), 16) * 0.4);
+/** The cluster colour mixed part of the way to another colour: the dark inset for a deep shade, white for a pale tint. */
+function blend(hex: string, to: string, part: number): string {
+  const mix = (i: number) => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - part) + parseInt(to.slice(i, i + 2), 16) * part);
   return `rgb(${mix(1)},${mix(3)},${mix(5)})`;
 }
 
@@ -112,7 +113,7 @@ export function ClusterIcon({ cluster, size, highlight = "#fff" }: { cluster: Cl
       for (let x = 0; x < 12; x++) {
         const ch = row[x];
         if (ch === ".") continue;
-        c.fillStyle = ch === "#" ? info.color : ch === "o" ? highlight : ch === "x" ? DARK : ch === "d" ? shade(info.color) : CLUSTERS[CLUSTER_IDS[Number(ch) - 1]].color;
+        c.fillStyle = ch === "#" ? info.color : ch === "o" ? highlight : ch === "x" ? DARK : ch === "d" ? blend(info.color, DARK, 0.4) : ch === "l" ? blend(info.color, "#ffffff", 0.72) : CLUSTERS[CLUSTER_IDS[Number(ch) - 1]].color;
         c.fillRect(x, y, 1, 1);
       }
     });
