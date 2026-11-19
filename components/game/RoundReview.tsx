@@ -15,7 +15,8 @@ export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterCho
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (
     <div className="review" id="results">
-      <textarea id="share" rows={3} readOnly aria-label="Shareable result" value={share} />
+      {/* four rows: on a phone the first line wraps. Browsers with field-sizing fit the box to the text instead. */}
+      <textarea id="share" rows={4} readOnly aria-label="Shareable result" value={share} />
       <div><button type="button" className="mini" onClick={copy}>{copied}</button></div>
       {log.map((l, i) => (
         <div className="rev" key={i}>

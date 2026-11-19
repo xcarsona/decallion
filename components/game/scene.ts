@@ -153,12 +153,15 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
     for (let y = base - b.h + 8; y < base - 8; y += 12) for (let x = b.x + 6; x < b.x + b.w - 8; x += 10) if (r() < 0.42) g.fillRect(x, y, 4, 6);
   }
 
-  function frame(t: number) {
-    const dt = Math.min(0.05, (t - tPrev) / 1000 || 0);
-    tPrev = t;
+  function frame(now: number) {
+    const dt = Math.min(0.05, (now - tPrev) / 1000 || 0);
+    tPrev = now;
+    // Reduced motion: the drawing clock stands still, so stars, spotlights and the glass do not pulse or sweep.
+    // The scene then only changes when the altitude does.
+    const t = reduced ? 0 : now;
     alt += (target - alt) * (reduced ? 1 : 1 - Math.exp(-dt * 2.4));
     if (Math.abs(target - alt) < 0.3) alt = target;
-    if (pending && Math.abs(target - alt) < 1 && t - pending.at > pending.wait) {
+    if (pending && Math.abs(target - alt) < 1 && now - pending.at > pending.wait) {
       const done = pending.done;
       pending = null;
       done();
@@ -214,7 +217,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
     // clouds
     g.fillStyle = "#fff";
     for (const c of clouds) {
-      c.x += c.v * dt;
+      if (!reduced) c.x += c.v * dt;
       if (c.x > 1.25) c.x = -0.25;
       if (c.x < -0.25) c.x = 1.25;
       const y = cy + (alt - c.w) * PPU * c.f;
@@ -289,7 +292,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
       g.fillRect(cx - 22, ty + 28, 44, 5);
     }
     // elevator car
-    const bob = reduced ? 0 : Math.sin(t / 600) * 3, sx = shake > 0 ? (Math.random() - 0.5) * shake * 12 : 0;
+    const bob = reduced ? 0 : Math.sin(t / 600) * 3, sx = shake > 0 && !reduced ? (Math.random() - 0.5) * shake * 12 : 0;
     shake = Math.max(0, shake - dt * 2.5);
     const X = cx + sx, Yc = cy + bob;
     g.strokeStyle = "rgba(238,243,251,.28)";
@@ -377,7 +380,7 @@ export function createScene(screen: HTMLElement, sky: HTMLCanvasElement, ui: HTM
       g.restore();
     }
     g.globalAlpha = 1;
-    if (flash > 0) {
+    if (flash > 0 && !reduced) {
       g.fillStyle = `rgba(200,246,255,${flash * 0.35})`;
       g.fillRect(0, 0, W, H);
       flash = Math.max(0, flash - dt * 2);

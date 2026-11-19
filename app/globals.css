@@ -34,7 +34,7 @@ button:hover{filter:brightness(1.12)}
 button:active{transform:translateY(2px)}
 button:focus-visible,input:focus-visible,.sheetbody:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 input[type=text]{flex:1 1 auto;min-width:0;max-width:520px;font:inherit;font-size:28px;letter-spacing:.06em;padding:8px 14px;border-radius:0;border:3px solid var(--glass);background:#06122c;color:var(--ink)}
-textarea{width:100%;font:inherit;background:#06122c;color:var(--ink);border:2px solid var(--line);border-radius:0;padding:8px;resize:none}
+textarea{width:100%;font:inherit;background:#06122c;color:var(--ink);border:2px solid var(--line);border-radius:0;padding:8px;resize:none;field-sizing:content}
 
 /* ---- shared pieces ---- */
 .mute{color:var(--mute)}
@@ -238,7 +238,7 @@ nav a[aria-current="page"]{color:var(--gold);text-decoration:none}
 #logClusters td:first-child,#logClusters th:first-child,#logTopics td:first-child,#logTopics th:first-child{padding-left:12px}
 #logClusters td,#logClusters th,#logTopics td,#logTopics th{white-space:nowrap}
 .logrounds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.logrounds li{border:2px solid var(--line);border-left:5px solid var(--cc,var(--line));background:rgba(255,255,255,.04);min-width:0}
+.logrounds>li{border:2px solid var(--line);border-left:5px solid var(--cc,var(--line));background:rgba(255,255,255,.04);min-width:0}
 button.logrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1.2fr) auto 7ch 9ch 2ch;align-items:center;gap:6px 14px;width:100%;
   padding:8px 12px;border:0;background:transparent;box-shadow:none;color:var(--ink);font-size:19px;letter-spacing:.03em;text-transform:none;text-align:left}
 button.logrow:hover,button.logrow:focus-visible{background:rgba(255,255,255,.06);filter:none}
@@ -346,6 +346,22 @@ button.logrow:active{transform:none}
   .panel{padding:14px 20px;gap:10px}
   .menu{gap:6px}
   .menu button{padding:6px 12px}
+}
+/* a small phone held upright (360 x 640): the mode menu and the practice setup still fit their card */
+@media (max-width:760px) and (max-height:700px){
+  .panel{padding:10px 12px}
+  .panel.tall{gap:6px}
+  .modehead h2{font-size:21px;line-height:1.1}
+  .modehead .clicon{width:32px;height:32px}
+  .menu{gap:5px}
+  .menu button{padding:4px 10px;gap:0}
+  .menu button b{font-size:18px}
+  .menu button span{font-size:15px;line-height:1.2}
+  .field{gap:3px}
+  /* results: the three buttons share one row, which leaves the card more room (it still scrolls inside if it must) */
+  .view.end .dock{gap:6px}
+  .view.end .dock button{font-size:15px;padding:8px;letter-spacing:.04em}
+  .view.end .panel h2{font-size:24px}
 }
 @media (max-height:520px){
   .app{gap:4px}

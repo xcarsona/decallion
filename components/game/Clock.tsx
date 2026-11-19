@@ -16,7 +16,8 @@ export function Clock({ seconds, timed, onExpire, onLastSeconds }: { seconds: nu
     let id = 0;
     let lastSec = 0;
     const tick = (now: number) => {
-      const ms = Math.max(0, deadline - now);
+      // a frame's timestamp can be a little earlier than the moment the deadline was set, so cap at the full time
+      const ms = Math.min(seconds * 1000, Math.max(0, deadline - now));
       const sec = Math.ceil(ms / 1000);
       setLeft(ms);
       if (ms < 5000 && sec > 0 && sec !== lastSec) {
