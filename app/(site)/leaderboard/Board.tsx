@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { ClusterIcon } from "@/components/game/ClusterIcon";
+import { useToday } from "@/components/ui/useToday";
 import { CLUSTER_IDS, clusterInfo, isClusterChoice } from "@/lib/questions";
 import { ft } from "@/lib/scoring";
 import type { ClusterChoice, ScoreRow } from "@/types";
@@ -37,14 +38,16 @@ export function Board() {
   const fromUrl = params.get("cluster");
   const cluster: ClusterChoice = isClusterChoice(fromUrl) ? fromUrl : isClusterChoice(stored) ? stored : "all";
 
-  const want = `${scope}:${cluster}`;
+  // Today and Yesterday are the viewer's own dates, the same ones their daily rounds use.
+  const today = useToday();
+  const want = `${scope}:${cluster}:${today}`;
   const [loaded, setLoaded] = useState<{ key: string; result: Result } | null>(null);
   const state: Result | { status: "loading" } = loaded && loaded.key === want ? loaded.result : { status: "loading" };
 
   useEffect(() => {
     let live = true;
-    const key = `${scope}:${cluster}`;
-    fetch(`/api/scores?scope=${scope}&cluster=${cluster}`)
+    const key = `${scope}:${cluster}:${today}`;
+    fetch(`/api/scores?scope=${scope}&cluster=${cluster}&day=${today}`)
       .then(async (res) => {
         const data = await res.json();
         if (!live) return;
@@ -54,7 +57,7 @@ export function Board() {
     return () => {
       live = false;
     };
-  }, [scope, cluster]);
+  }, [scope, cluster, today]);
 
   function pickCluster(c: ClusterChoice) {
     try {
@@ -89,7 +92,7 @@ export function Board() {
           ))}
         </div>
       </div>
-      <p className="mute">One entry per name, per day, per cluster. Scores are worked out on the server from the answers you typed. Rounds change at midnight UTC.</p>
+      <p className="mute">One entry per name, per day, per cluster. Scores are worked out on the server from the answers you typed. Rounds change at midnight, your time.</p>
       {state.status === "loading" && <p className="mute" aria-busy="true">Loading scores</p>}
       {state.status === "error" && <p id="lbPageError" style={{ color: "var(--miss)" }}>{state.message}</p>}
       {state.status === "ready" && state.rows.length === 0 && <p id="lbEmpty">No {info.short} scores here yet. <Link href="/">Play the daily climb</Link> and post the first one.</p>}

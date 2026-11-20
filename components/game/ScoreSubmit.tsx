@@ -5,7 +5,7 @@ import { useToday } from "@/components/ui/useToday";
 import { clusterInfo } from "@/lib/questions";
 import type { ClusterChoice } from "@/types";
 
-type State = { kind: "idle" } | { kind: "sending" } | { kind: "done"; rank: number | null; today: boolean } | { kind: "error"; message: string };
+type State = { kind: "idle" } | { kind: "sending" } | { kind: "done"; rank: number | null } | { kind: "error"; message: string };
 
 function savedName(): string {
   try {
@@ -32,24 +32,25 @@ export function ScoreSubmit({ day, cluster, answers }: { day: number; cluster: C
       try {
         localStorage.setItem("decallion-name", data.name);
       } catch { /* storage blocked */ }
-      // the server says which day the score went under: a round started before midnight UTC is on yesterday's board
-      setState({ kind: "done", rank: typeof data.rank === "number" ? data.rank : null, today: data.today !== false });
+      setState({ kind: "done", rank: typeof data.rank === "number" ? data.rank : null });
     } catch {
       setState({ kind: "error", message: "Could not reach the leaderboard. Check your connection and try again." });
     }
   }
 
+  // The score goes under the day the round was started on. If midnight has passed since, that is yesterday's board.
+  const isToday = day === today;
   if (state.kind === "done") {
     return (
       <p id="lbDone">
-        Posted{state.rank ? `. You are #${state.rank} in ${board}` : ` to the ${board} board`} {state.today ? "today" : "for yesterday's round"}.{" "}
-        <Link href={`/leaderboard?cluster=${cluster}`}>See the leaderboard</Link>{!state.today && ". It is under Yesterday."}
+        Posted{state.rank ? `. You are #${state.rank} in ${board}` : ` to the ${board} board`} {isToday ? "today" : "for yesterday's round"}.{" "}
+        <Link href={`/leaderboard?cluster=${cluster}`}>See the leaderboard</Link>{!isToday && ". It is under Yesterday."}
       </p>
     );
   }
   return (
     <form className="lbform" onSubmit={submit}>
-      <label htmlFor="lbName" className="mute" id="lbLabel">Post to {day === today ? "today" : "yesterday"}&apos;s {board} leaderboard</label>
+      <label htmlFor="lbName" className="mute" id="lbLabel">Post to {isToday ? "today" : "yesterday"}&apos;s {board} leaderboard</label>
       <div className="row" style={{ justifyContent: "flex-start" }}>
         <input id="lbName" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name" maxLength={16} autoComplete="nickname" />
         <button type="submit" className="mini" disabled={state.kind === "sending"}>{state.kind === "sending" ? "Posting" : "Post score"}</button>

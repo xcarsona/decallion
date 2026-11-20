@@ -79,8 +79,14 @@ export function shuffle<T>(list: T[], rand: () => number): T[] {
   return a;
 }
 
-/* The daily round is keyed to the UTC date so every player in the world gets the same seven prompts. */
+/* The daily round is keyed to a calendar date, written as a number such as 20261117. Each player gets the round for
+   their own date, so it changes at their midnight, and everyone gets the same seven prompts for the same date. */
+/** Today for the player: the calendar date on their own clock. */
 export function dayKey(d: Date = new Date()): number {
+  return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+}
+/** The calendar date in UTC. The server uses this, because it does not know the player's time zone. */
+export function utcDayKey(d: Date = new Date()): number {
   return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
 }
 function keyToDate(key: number): Date {
@@ -89,17 +95,27 @@ function keyToDate(key: number): Date {
 export function prevDayKey(key: number): number {
   const d = keyToDate(key);
   d.setUTCDate(d.getUTCDate() - 1);
-  return dayKey(d);
+  return utcDayKey(d);
+}
+export function nextDayKey(key: number): number {
+  const d = keyToDate(key);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return utcDayKey(d);
+}
+/** A player's date is never more than a day away from the UTC date, whatever their time zone. */
+export function isPlayableDay(day: unknown, utcToday: number = utcDayKey()): day is number {
+  return day === utcToday || day === prevDayKey(utcToday) || day === nextDayKey(utcToday);
 }
 /** 20261117 -> "2026-11-17" */
 export function dayIso(key: number): string {
   return keyToDate(key).toISOString().slice(0, 10);
 }
+/** Time left until the player's next midnight, when their daily rounds change. */
 export function msUntilNextDay(now: Date = new Date()): number {
-  return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) - now.getTime();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
 }
 
-/** Whole days since 1 January 2026 (UTC) for a day key. */
+/** Whole days since 1 January 2026 for a day key. */
 const EPOCH = Date.UTC(2026, 0, 1);
 function dayIndex(key: number): number {
   return Math.round((keyToDate(key).getTime() - EPOCH) / 86400000);
@@ -125,7 +141,7 @@ export interface RoundOptions {
   /** Practice in All clusters only: the clusters the player ticked. */
   clusters?: ClusterId[];
   diff?: number;
-  /** Day key for the daily round. Defaults to today (UTC). */
+  /** Day key for the daily round. Defaults to the player's today. */
   seed?: number;
   rand?: () => number;
 }
@@ -186,7 +202,7 @@ export function dailyRound(questions: Question[], cluster: ClusterChoice, day: n
   let round: Question[] = [];
   let recent: string[][] = [];
   for (let i = Math.min(0, end); i <= end; i++) {
-    const key = dayKey(new Date(EPOCH + i * 86400000));
+    const key = utcDayKey(new Date(EPOCH + i * 86400000));
     const used = new Set(recent.flat());
     round = spread(shuffle(list, rng(dailySeed(key, cluster))).filter((q) => !used.has(q.id)), ROUND_SIZE, groupFor(cluster));
     recent = [...recent.slice(-1), round.map((q) => q.id)];

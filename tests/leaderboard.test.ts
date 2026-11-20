@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ANSWER_LENGTH, ROUND_SIZE, buildRound, prevDayKey, scoreAnswers } from "@/lib/game-engine";
+import { MAX_ANSWER_LENGTH, ROUND_SIZE, buildRound, nextDayKey, prevDayKey, scoreAnswers } from "@/lib/game-engine";
 import { createLimiter } from "@/lib/leaderboard/ratelimit";
 import { parseCluster, parseSubmission, scoreSubmission } from "@/lib/leaderboard/submission";
 import { CLUSTER_CHOICES, QUESTIONS } from "@/lib/questions";
@@ -85,11 +85,14 @@ describe("leaderboard submission", () => {
     expect(all.score).toBeLessThan(fin.score);
   });
 
-  it("accepts today and yesterday, and rejects older or later days", () => {
+  it("accepts the player's date within a day of the UTC date, and rejects older or later days", () => {
+    // TODAY is the server's UTC date. A player west of UTC can still be on yesterday, one east of it on tomorrow.
     const yesterday = prevDayKey(TODAY);
+    const tomorrow = nextDayKey(TODAY);
     expect(submit(body({ day: yesterday, answers: best("fin", yesterday) })).score).toBe(700);
+    expect(submit(body({ day: tomorrow, answers: best("fin", tomorrow) })).score).toBe(700);
     expect(submit(body()).day).toBe(TODAY);
-    for (const day of [prevDayKey(yesterday), 20251117, TODAY + 1, String(TODAY), undefined, null]) {
+    for (const day of [prevDayKey(yesterday), nextDayKey(tomorrow), 20251117, String(TODAY), undefined, null]) {
       const parsed = parseSubmission(body({ day }), TODAY);
       expect(parsed.ok).toBe(false);
       if (!parsed.ok) expect(parsed.error).toContain("closed");

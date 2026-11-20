@@ -1,7 +1,7 @@
 /* The checks on a posted daily round that need no database, so they can be unit tested.
    Only name, day, cluster and answers are read from the request. A score, levels or points sent by the browser are
    never looked at: the server rebuilds the round and scores the typed answers itself. */
-import { MAX_ANSWER_LENGTH, ROUND_SIZE, buildRound, dayKey, prevDayKey, scoreAnswers } from "@/lib/game-engine";
+import { MAX_ANSWER_LENGTH, ROUND_SIZE, buildRound, isPlayableDay, scoreAnswers, utcDayKey } from "@/lib/game-engine";
 import { cleanName } from "@/lib/leaderboard/names";
 import { QUESTIONS, isClusterChoice } from "@/lib/questions";
 import type { ClusterChoice, Question } from "@/types";
@@ -22,15 +22,16 @@ export function parseCluster(value: unknown): Parsed<{ cluster: ClusterChoice }>
 }
 
 /** Checks a POST body. `today` is the current UTC day key; it is a parameter so tests can fix the date. */
-export function parseSubmission(body: unknown, today: number = dayKey()): Parsed<{ submission: Submission }> {
+export function parseSubmission(body: unknown, today: number = utcDayKey()): Parsed<{ submission: Submission }> {
   if (typeof body !== "object" || body === null || Array.isArray(body)) return { ok: false, error: "The request was not valid JSON." };
   const { name: rawName, day, cluster: rawCluster, answers } = body as Record<string, unknown>;
 
   const name = cleanName(rawName);
   if (!name.ok) return { ok: false, error: name.reason };
 
-  // A round started just before midnight UTC may be submitted just after it, so yesterday's key is accepted too.
-  if (typeof day !== "number" || (day !== today && day !== prevDayKey(today))) {
+  // The day is the player's own calendar date. Around the world that is the UTC date or one day either side of it,
+  // which also covers a round started just before the player's midnight and posted just after.
+  if (!isPlayableDay(day, today)) {
     return { ok: false, error: "That daily round has closed. Play today's round to post a score." };
   }
 

@@ -2,7 +2,7 @@
    Rounds store prompt ids, not whole prompts; the log page looks them up in the bank.
    Totals, bests and streaks are NOT worked out from this list. They come from lib/stats, which also counts rounds
    that are older than the 500 kept here or were played before the log existed. */
-import { MAX_ANSWER_LENGTH, dayIso, dayKey, match } from "@/lib/game-engine";
+import { MAX_ANSWER_LENGTH, dayIso, dayKey, match, utcDayKey } from "@/lib/game-engine";
 import { CLUSTER_CHOICES, CLUSTER_IDS, clusterInfo, isClusterChoice } from "@/lib/questions";
 import { LEVELS } from "@/lib/scoring";
 import { bestOf, dailyOf, liveStreak, totalsOf, type Stats } from "@/lib/stats";
@@ -20,7 +20,7 @@ export interface LoggedRound {
   id: string;
   /** When the round finished, ISO date-time (UTC). */
   at: string;
-  /** UTC day key, for example 20261117. */
+  /** The player's calendar date when the round started, as a day key such as 20261117. */
   day: number;
   /** The cluster the player chose, which may be "all". */
   cluster: ClusterChoice;
@@ -62,7 +62,7 @@ const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : 0
 /** True for a day key that names a real date, such as 20261117. */
 function isDayKey(v: unknown): v is number {
   if (typeof v !== "number" || !Number.isInteger(v) || v < 20000101 || v > 29991231) return false;
-  return dayKey(new Date(Date.UTC(Math.floor(v / 10000), (Math.floor(v / 100) % 100) - 1, v % 100))) === v;
+  return utcDayKey(new Date(Date.UTC(Math.floor(v / 10000), (Math.floor(v / 100) % 100) - 1, v % 100))) === v;
 }
 
 /** Reads whatever was saved and keeps only well-formed rounds. */

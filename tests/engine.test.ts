@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CLUSTER_CHOICES, CLUSTER_IDS, QUESTIONS } from "@/lib/questions";
-import { DAILY_MIN, ROUND_SIZE, buildRound, dailyEnabled, dailyRound, dayIso, dayKey, inCluster, match, msUntilNextDay, pool, prevDayKey, scoreAnswers, validate } from "@/lib/game-engine";
+import { DAILY_MIN, ROUND_SIZE, buildRound, dailyEnabled, dailyRound, dayIso, dayKey, inCluster, isPlayableDay, match, msUntilNextDay, nextDayKey, pool, prevDayKey, scoreAnswers, utcDayKey, validate } from "@/lib/game-engine";
 import { apply, bestOf, blank, dailyOf, liveStreak, migrate, totalsOf } from "@/lib/stats";
 import { cleanName } from "@/lib/leaderboard/names";
 import type { ClusterId, Question } from "@/types";
@@ -24,7 +24,7 @@ function fakeBank(perCluster: number): Question[] {
     })),
   );
 }
-const nextDay = (key: number) => dayKey(new Date(Date.UTC(Math.floor(key / 10000), (Math.floor(key / 100) % 100) - 1, (key % 100) + 1)));
+const nextDay = nextDayKey;
 
 describe("bank checks", () => {
   it("reports a bad cluster, a thin board and a missing top level", () => {
@@ -91,12 +91,27 @@ describe("daily rounds", () => {
   it("mixes clusters in the All clusters round", () => {
     expect(new Set(dailyRound(bank, "all", 20261117).map((x) => x.cluster)).size).toBe(CLUSTER_IDS.length);
   });
-  it("keys the day to UTC", () => {
-    expect(dayKey(new Date("2026-11-17T23:59:59Z"))).toBe(20261117);
-    expect(dayKey(new Date("2026-11-18T00:00:00Z"))).toBe(20261118);
+  it("keys the day to the player's own calendar date, changing at their midnight", () => {
+    // new Date(year, month, day, hour, minute) is a time on the local clock, whatever zone the tests run in
+    expect(dayKey(new Date(2026, 10, 17, 23, 59, 59))).toBe(20261117);
+    expect(dayKey(new Date(2026, 10, 18, 0, 0, 0))).toBe(20261118);
+    expect(dayKey(new Date(2026, 10, 18, 18, 30))).toBe(20261118); // evening is still the same day
+    expect(dayKey(new Date(2026, 10, 19, 9, 0))).toBe(20261119); // and the next morning is a new one
+    expect(msUntilNextDay(new Date(2026, 10, 17, 23, 0, 0))).toBe(3600000);
+    expect(ids(dailyRound(bank, "fin", dayKey(new Date(2026, 10, 18, 19, 0))))).not.toEqual(ids(dailyRound(bank, "fin", dayKey(new Date(2026, 10, 19, 9, 0)))));
+  });
+  it("does day arithmetic on the calendar, and keeps a UTC date for the server", () => {
+    expect(utcDayKey(new Date("2026-11-17T23:59:59Z"))).toBe(20261117);
+    expect(utcDayKey(new Date("2026-11-18T00:00:00Z"))).toBe(20261118);
     expect(prevDayKey(20270101)).toBe(20261231);
+    expect(nextDayKey(20261231)).toBe(20270101);
+    expect(nextDayKey(20260228)).toBe(20260301);
     expect(dayIso(20261107)).toBe("2026-11-07");
-    expect(msUntilNextDay(new Date("2026-11-17T23:00:00Z"))).toBe(3600000);
+  });
+  it("accepts a player's date one day either side of the UTC date, and nothing further", () => {
+    expect([20261116, 20261117, 20261118].map((d) => isPlayableDay(d, 20261117))).toEqual([true, true, true]);
+    expect([20261115, 20261119, 20251117, "20261117", null, undefined, NaN].map((d) => isPlayableDay(d, 20261117))).toEqual([false, false, false, false, false, false, false]);
+    expect(isPlayableDay(20270101, 20261231)).toBe(true);
   });
 });
 

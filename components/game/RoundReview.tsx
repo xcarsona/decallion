@@ -10,7 +10,7 @@ import type { ClusterChoice, LogEntry, Mode } from "@/types";
     which opens only from the results screen: boards stay hidden while a round is being played. */
 export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number }) {
   const [copied, setCopied] = useState("Copy result");
-  const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
+  const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const share = `Decallion ${MODE_NAME[mode].toLowerCase()} · ${clusterInfo(cluster).short}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (

@@ -53,7 +53,7 @@ export default function Game() {
   const [idx, setIdx] = useState(0);
   const [log, setLog] = useState<LogEntry[]>([]);
   const [counts, setCounts] = useState(true);
-  const [roundDay, setRoundDay] = useState(today); // the UTC day the current round was started on
+  const [roundDay, setRoundDay] = useState(today); // the day, on the player's clock, the current round was started on
   const [outcome, setOutcome] = useState<RecordOutcome | null>(null);
   const [panel, setPanel] = useState<Panel>(null);
   const [shown, setShown] = useState(0);
@@ -120,7 +120,7 @@ export default function Game() {
   function start(m: Mode) {
     scene.current?.wake();
     if (m === "daily" && !dailyEnabled(QUESTIONS, cluster)) return;
-    const day = dayKey(); // read now: the page may have been open since before midnight UTC
+    const day = dayKey(); // read now: the page may have been open since before midnight
     const next = buildRound(QUESTIONS, m === "practice" ? { mode: m, cluster, clusters: setup.clusters, diff: setup.diff } : { mode: m, cluster, seed: day });
     if (!next.length) return goHome();
     scene.current?.reset();
@@ -249,7 +249,7 @@ export default function Game() {
               <h3>How it works</h3>
               <p>Every prompt has many correct answers. Type one. You get a single answer and 25 seconds.</p>
               <p>The fewer competitors likely to give your answer, the higher its level. Answer boards stay sealed until the round ends.</p>
-              <p>Pick a career cluster, or All clusters for a mix. Each has its own daily round, the same for everyone, changing at midnight UTC.</p>
+              <p>Pick a career cluster, or All clusters for a mix. Each has its own daily round, the same for everyone on the same date. It changes at midnight, your time.</p>
               <p className="mute">{QUESTIONS.length} prompts across {CLUSTER_IDS.length} career clusters.</p>
             </section>
             <section>

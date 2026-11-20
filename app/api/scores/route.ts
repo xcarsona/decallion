@@ -1,11 +1,12 @@
 /* Daily leaderboard API, one board per cluster.
-   GET  /api/scores?scope=today|yesterday|all&cluster=all|bma|ent|fin|ht|mkt   top 50 scores
+   GET  /api/scores?scope=today|yesterday|all&cluster=all|bma|ent|fin|ht|mkt&day=20261117   top 50 scores
+        day is the viewer's own calendar date (today for them). Without it the UTC date is used.
    POST /api/scores  { name, day, cluster, answers }                           submit a daily round
 
    The browser sends the answers it typed, never a score. The server rebuilds that cluster's round for that day from
    the shared seed and scores it with the same engine the game uses, so a posted score cannot be invented. */
 import { NextResponse } from "next/server";
-import { dayIso, dayKey, prevDayKey } from "@/lib/game-engine";
+import { dayIso, isPlayableDay, prevDayKey, utcDayKey } from "@/lib/game-engine";
 import { createLimiter } from "@/lib/leaderboard/ratelimit";
 import { parseCluster, parseSubmission, scoreSubmission } from "@/lib/leaderboard/submission";
 import { getServerClient } from "@/lib/supabase/server";
@@ -35,7 +36,10 @@ export async function GET(request: Request) {
   const db = getServerClient();
   if (!db) return NextResponse.json(NOT_CONFIGURED, { status: 503 });
 
-  const today = dayKey();
+  // "Today" is the viewer's own date, because that is the round they are playing. It can be a day either side of UTC.
+  const asked = params.get("day");
+  const today = asked === null ? utcDayKey() : Number(asked);
+  if (!isPlayableDay(today)) return fail(400, "Unknown day.");
   let query = db.from("daily_scores").select("name, score, levels, day, cluster").eq("cluster", cluster.cluster);
   if (scope === "today") query = query.eq("day", dayIso(today));
   else if (scope === "yesterday") query = query.eq("day", dayIso(prevDayKey(today)));
@@ -71,14 +75,11 @@ export async function POST(request: Request) {
   const db = getServerClient();
   if (!db) return NextResponse.json(NOT_CONFIGURED, { status: 503 });
 
-  // A round started just before midnight UTC is saved under the day it was played, which is yesterday by now.
-  const today = day === dayKey();
-
   const { error } = await db.from("daily_scores").insert({ day: dayIso(day), cluster, name, name_key: name.toLowerCase(), score, levels });
   if (error) {
     if (error.code === "23505") {
       if (oldNameIndex(error)) return NextResponse.json(NEEDS_MIGRATION, { status: 503 });
-      return fail(409, `That name already has a score for this cluster ${today ? "today" : "on that day"}. Use a different name.`);
+      return fail(409, "That name already has a score for this cluster and day. Use a different name.");
     }
     if (columnMissing(error)) return NextResponse.json(NEEDS_MIGRATION, { status: 503 });
     return fail(502, "Your score could not be saved. Try again in a moment.");
@@ -89,5 +90,5 @@ export async function POST(request: Request) {
      If the count fails the score is still saved, so the reply just leaves the rank out. */
   const ahead = await db.from("daily_scores").select("id", { count: "exact", head: true }).eq("day", dayIso(day)).eq("cluster", cluster).gte("score", score);
   const rank = ahead.error || !ahead.count ? undefined : ahead.count;
-  return NextResponse.json({ name, cluster, score, levels, day: dayIso(day), today, rank });
+  return NextResponse.json({ name, cluster, score, levels, day: dayIso(day), rank });
 }
