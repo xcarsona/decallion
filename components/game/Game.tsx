@@ -231,10 +231,10 @@ export default function Game() {
         {view === "setup" && <PracticeSetup cluster={cluster} setup={setup} onChange={setSetup} onGo={() => start("practice")} onBack={() => setView("modes")} />}
         {view === "intro" && <Intro cluster={cluster} mode={mode} prompts={round.length} timed={timed} onDone={() => setView("play")} />}
         {view === "play" && round[idx] && (
-          <PromptView key={`${round[idx].id}-${idx}`} question={round[idx]} timed={timed} onAnswer={answer} onLastSeconds={() => scene.current?.tone(880, 0.05, 0, "square", 0.03)} />
+          <PromptView key={`${round[idx].id}-${idx}`} question={round[idx]} timed={timed} onAnswer={answer} onLastSeconds={() => scene.current?.tone(880, 0.05, 0, "square", 0.03)} onWrongTry={() => scene.current?.tone(150, 0.16, 0, "sawtooth", 0.04)} />
         )}
         {view === "reveal" && last && (
-          <RevealView entry={last} last={roundOver} onNext={next} missNote={mode === "unlimited" ? `Miss ${strikes} of ${STRIKES}.` : last.typed ? "Not on the board." : "The clock ran out."} />
+          <RevealView entry={last} last={roundOver} onNext={next} missNote={mode === "unlimited" ? `Miss ${strikes} of ${STRIKES}.` : last.timedOut ? "The clock ran out." : last.typed ? "Not on the board." : "Skipped."} />
         )}
         {view === "end" && (
           <EndView cluster={cluster} mode={mode} log={log} score={score} outcome={outcome} day={roundDay} onTick={countTick} onLand={countLanded} onAgain={() => start(mode)} onReview={() => setPanel("review")} onHome={goHome} />
@@ -247,7 +247,8 @@ export default function Game() {
           <div className="helpgrid">
             <section>
               <h3>How it works</h3>
-              <p>Every prompt has many correct answers. Type one. You get a single answer and 25 seconds.</p>
+              <p>Every prompt has many correct answers. Type one. You have 25 seconds.</p>
+              <p>If your answer is not on the board, try another until the clock runs out. The first answer that is on the board is final, so you cannot swap it for a rarer one.</p>
               <p>The fewer competitors likely to give your answer, the higher its level. Answer boards stay sealed until the round ends.</p>
               <p>Pick a career cluster, or All clusters for a mix. Each has its own daily round, the same for everyone on the same date. It changes at midnight, your time.</p>
               <p className="mute">{QUESTIONS.length} prompts across {CLUSTER_IDS.length} career clusters.</p>

@@ -133,6 +133,12 @@ nav a[aria-current="page"]{color:var(--gold);text-decoration:none}
 .panel h2{font-size:40px}
 .panel.tall{max-height:100%;overflow-y:auto}
 .hint{color:var(--mute);font-size:18px;letter-spacing:.14em}
+/* the line under the prompt: the hint, or "not on the board, try again" with a Skip button */
+.retry{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;font-size:19px}
+#retry{color:var(--miss);animation:fadein .2s ease both}
+#retry span{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+input.nope{animation:nope .28s steps(6) both}
+@keyframes nope{0%,100%{transform:none}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 .dock{flex:none;display:flex;gap:12px;justify-content:center;align-items:stretch;flex-wrap:nowrap;padding:4px 16px 16px}
 .dock.wrapok{flex-wrap:wrap}
 .clock{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:26px;color:var(--glass);

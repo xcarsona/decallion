@@ -48,6 +48,32 @@ describe("answer matching", () => {
     expect(hit("ACC-02", "accounts recievable")).toBe("Accounts receivable");
     expect(hit("MKT-01", "products")).toBe("Product");
   });
+  it("forgives word order, joining words, swapped letters and more typos in longer answers", () => {
+    const board: Question = {
+      ...fakeBank(1)[0],
+      a: [["Bond", 1], ["Accounts receivable", 2], ["Penetration pricing", 3, "penetration"], ["Cost of goods sold", 3, "cogs"], ["Research and development", 4, "r&d"], ["Psychological pricing", 5], ["Theory Z", 6]],
+    };
+    const got = (text: string) => match(board, text)?.[0] ?? null;
+    expect(got("pricing, penetration")).toBe("Penetration pricing"); // word order
+    expect(got("research development")).toBe("Research and development"); // joining word left out
+    expect(got("cost goods sold")).toBe("Cost of goods sold");
+    expect(got("goods sold cost")).toBe("Cost of goods sold");
+    expect(got("accoutns receivable")).toBe("Accounts receivable"); // two letters swapped is one mistake
+    expect(got("acounts recievables")).toBe("Accounts receivable"); // plural plus two mistakes
+    expect(got("psycologcal pricng")).toBe("Psychological pricing"); // three mistakes in a long answer
+    expect(got("psycolgcal prcng")).toBeNull(); // five is too many
+    expect(got("R & D")).toBe("Research and development");
+    expect(got("theory z")).toBe("Theory Z");
+    expect(got("band")).toBeNull(); // short answers must be spelled right: one letter off is another word
+    expect(got("bonds")).toBe("Bond");
+    expect(got("pricing")).toBeNull(); // part of an answer is not the answer
+  });
+  it("prefers an exact answer on a later row to a near miss on an earlier one", () => {
+    const board: Question = { ...fakeBank(1)[0], a: [["Co-branding", 1], ["Rebranding", 2], ["Rack jobber", 3], ["Truck jobber", 4], ["Five", 5], ["Six", 6]] };
+    expect(match(board, "rebranding")?.[0]).toBe("Rebranding");
+    expect(match(board, "truck jobber")?.[0]).toBe("Truck jobber");
+    expect(match(board, "truck jober")?.[0]).toBe("Truck jobber");
+  });
   it("rejects wrong and empty answers", () => {
     expect(hit("SEL-03", "banana")).toBeNull();
     expect(hit("SEL-03", "   ")).toBeNull();

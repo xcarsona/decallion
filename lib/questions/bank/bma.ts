@@ -243,7 +243,7 @@ export const BMA: Question[] = [
 {id:'OPM-05',cluster:'bma',topic:'Operations',area:'Operations',diff:2,q:'Name a factor a business weighs when choosing a supplier.',
  why:'The cheapest vendor is not always the best value. Buyers also weigh lead time, the gap between placing an order and receiving it, because late deliveries can stop production.',
  a:[['Price',1,'cost','pricing','lowest price'],['Quality',1,'product quality','quality of goods'],['Delivery speed',2,'lead time','delivery time','shipping time','speed','fast delivery','shipping speed'],
- ['Reliability',2,'dependability','on time delivery','reliable','consistency'],['Location',3,'distance','proximity'],['Customer service',3,'service','support','communication','responsiveness'],['Reputation',3,'reviews','references','track record','experience'],
+ ['Reliability',2,'dependability','delivers on time','on time','reliable','consistency'],['Location',3,'distance','proximity'],['Customer service',3,'service','support','communication','responsiveness'],['Reputation',3,'reviews','references','track record','experience'],
  ['Payment terms',4,'credit terms','terms','trade credit','financing'],['Discounts',4,'quantity discounts','volume discounts','bulk discounts'],['Capacity',5,'production capacity','ability to meet demand','availability'],
  ['Return policy',5,'warranty','returns','guarantees'],['Minimum order quantity',5,'minimum order','moq','order minimums'],['Financial stability',6,'financial health','stability'],['Ethical practices',6,'ethics','sustainability','labor practices','social responsibility']]},
 {id:'OPM-06',cluster:'bma',topic:'Operations',area:'Risk Management',diff:1,q:'Name a workplace safety hazard.',

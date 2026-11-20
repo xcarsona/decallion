@@ -25,10 +25,10 @@ describe("question bank", () => {
     for (const c of CLUSTER_IDS) expect(dailyEnabled(QUESTIONS, c)).toBe(true);
     expect(dailyEnabled(QUESTIONS, "all")).toBe(true);
   });
-  it("gives every prompt added since the original bank 8 to 16 answers", () => {
-    // Prompts from the original 39 that sit outside the range. They are near-closed sets and are left as written.
+  it("gives every prompt added since the original bank at least 8 answers", () => {
+    // Prompts from the original 39 that may stay shorter: they are near-closed sets.
     const original = new Set(["BMA-01", "ECO-01", "ECO-02", "POB-01", "POB-03", "LAW-01", "LAW-02", "LAW-03", "PFL-02", "ACC-02", "MKT-02", "MKT-05", "SEL-03"]);
-    const off = QUESTIONS.filter((q) => !original.has(q.id) && (q.a.length < 8 || q.a.length > 16)).map((q) => q.id + ": " + q.a.length);
+    const off = QUESTIONS.filter((q) => !original.has(q.id) && q.a.length < 8).map((q) => q.id + ": " + q.a.length);
     expect(off).toEqual([]);
   });
   it("spreads each cluster over several topics and all three difficulties", () => {

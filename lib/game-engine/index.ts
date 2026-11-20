@@ -11,49 +11,79 @@ export const MAX_ANSWER_LENGTH = 80;
 export const STRIKES = 3;
 export const DIFFS: Record<number, string> = { 1: "Easy", 2: "Medium", 3: "Hard" };
 
-export function norm(s: string): string {
+/** The words of an answer: lower case, punctuation removed, "the", "a" and "an" dropped. */
+function words(s: string): string[] {
   return String(s)
     .toLowerCase()
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9 ]/g, " ")
     .replace(/\b(the|a|an)\b/g, " ")
-    .replace(/\s+/g, "");
+    .split(/\s+/)
+    .filter(Boolean);
 }
+/** An answer with case, punctuation, spaces and small words removed: "The Four P's" becomes "fourps". */
+export function norm(s: string): string {
+  return words(s).join("");
+}
+/** A looser form of an answer, for comparing: joining words are dropped, each word loses its plural "s", and the
+    words are put in alphabetical order. So word order, plurals and "and"/"of" do not matter:
+    "pricing, penetration" and "penetration pricing" give the same key. */
+export function looseKey(s: string): string {
+  return words(s)
+    .filter((w) => !LINK_WORDS.has(w))
+    .map((w) => (w.length > 3 ? w.replace(/s$/, "") : w))
+    .sort()
+    .join("");
+}
+const LINK_WORDS = new Set(["and", "of", "for", "to", "in", "on", "or"]);
 
-function lev(a: string, b: string): number {
+/** Typing mistakes between two strings: a missing, extra or wrong letter, or two neighbouring letters swapped, each
+    count as one. Returns 9 when the lengths differ by more than could be forgiven. */
+function typos(a: string, b: string): number {
   const m = a.length;
   const n = b.length;
-  if (Math.abs(m - n) > 2) return 9;
+  if (Math.abs(m - n) > 3) return 9;
+  let before: number[] = [];
   let prev = Array.from({ length: n + 1 }, (_, i) => i);
   for (let i = 1; i <= m; i++) {
     const cur = [i];
     for (let j = 1; j <= n; j++) {
       cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) cur[j] = Math.min(cur[j], before[j - 2] + 1);
     }
+    before = prev;
     prev = cur;
   }
   return prev[n];
 }
+/** How many typing mistakes are forgiven in an answer of this many letters. Short answers get none, because one
+    changed letter in a short word is usually a different word. */
+export function typosAllowed(length: number): number {
+  return length >= 13 ? 3 : length >= 8 ? 2 : length >= 5 ? 1 : 0;
+}
 
-/** Returns the matching answer row or null. Exact and plural-insensitive matches win; otherwise one typo is
-    forgiven in answers of 5+ letters and two in answers of 8+. */
+/** Returns the matching answer row or null. An exact match wins, then a match that ignores word order, plurals and
+    joining words. Otherwise typing mistakes are forgiven: one in answers of 5+ letters, two in 8+, three in 13+.
+    Two neighbouring letters swapped count as one mistake. If a mistyped answer is equally close to two rows, the
+    closest wins and a tie goes to the row listed first. */
 export function match(question: Question, input: string): AnswerRow | null {
   const x = norm(input);
   if (!x) return null;
   const xs = x.replace(/s$/, "");
+  const xl = looseKey(input);
+  const aliases: { row: AnswerRow; y: string; yl: string }[] = [];
+  for (const row of question.a) {
+    for (const alias of [row[0], ...row.slice(2)] as string[]) aliases.push({ row, y: norm(alias), yl: looseKey(alias) });
+  }
+  for (const { row, y } of aliases) if (x === y || xs === y.replace(/s$/, "")) return row;
+  if (xl) for (const { row, yl } of aliases) if (xl === yl) return row;
   let best: AnswerRow | null = null;
   let bestDistance = 9;
-  for (const row of question.a) {
-    for (const alias of [row[0], ...row.slice(2)] as string[]) {
-      const y = norm(alias);
-      const ys = y.replace(/s$/, "");
-      if (x === y || xs === ys) return row;
-      const tolerance = y.length >= 8 ? 2 : y.length >= 5 ? 1 : 0;
-      const d = lev(x, y);
-      if (d <= tolerance && d < bestDistance) {
-        bestDistance = d;
-        best = row;
-      }
+  for (const { row, y, yl } of aliases) {
+    const d = Math.min(typos(x, y), xl && yl ? typos(xl, yl) : 9);
+    if (d <= typosAllowed(y.length) && d < bestDistance) {
+      bestDistance = d;
+      best = row;
     }
   }
   return best;
@@ -256,11 +286,14 @@ export function validate(questions: Question[]): string[] {
       if (!LEVELS[row[1]]) out.push(`${q.id}: bad level on ${row[0]}`);
       levels.add(row[1]);
       for (const alias of [row[0], ...row.slice(2)] as string[]) {
-        const key = norm(alias).replace(/s$/, "");
-        if (!key) out.push(`${q.id}: empty answer or alias on ${row[0]}`);
-        const owner = seen.get(key);
-        if (owner && owner !== row[0]) out.push(`${q.id}: "${alias}" matches both ${owner} and ${row[0]}`);
-        seen.set(key, row[0]);
+        const exact = norm(alias).replace(/s$/, "");
+        if (!exact) out.push(`${q.id}: empty answer or alias on ${row[0]}`);
+        // two rows may not accept the same typed text, whether matched exactly or with word order and plurals ignored
+        for (const key of new Set([exact, "~" + looseKey(alias)])) {
+          const owner = seen.get(key);
+          if (owner && owner !== row[0]) out.push(`${q.id}: "${alias}" matches both ${owner} and ${row[0]}`);
+          seen.set(key, row[0]);
+        }
       }
     }
     if (!levels.has(6)) out.push(`${q.id}: no DECA Glass answer`);

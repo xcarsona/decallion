@@ -37,7 +37,8 @@ You pick a career cluster, then a mode.
 
 - **Clusters:** Business Management + Administration, Entrepreneurship, Finance, Hospitality + Tourism, Marketing,
   or All clusters (a mix of the five).
-- **Daily climb:** seven prompts, one typed answer each, 25 seconds per prompt. Each cluster has its own daily round.
+- **Daily climb:** seven prompts, 25 seconds each. An answer that is not on the board can be tried again until the
+  clock runs out; the first answer that is on the board is final. Each cluster has its own daily round.
 - **Practice:** seven prompts. You choose the difficulty and whether the timer runs.
 - **Unlimited:** keeps going until three misses.
 - **Levels:** Roll Call 10, Club Meeting 25, Districts 45, State 65, ICDC 80, DECA Glass 100. One point is 10 ft.
