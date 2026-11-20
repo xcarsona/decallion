@@ -217,235 +217,296 @@ These are judgment calls the fact-checker or play-tester left in place and noted
 
 | Id | Topic | Difficulty | Answers | Prompt |
 |---|---|---|---|---|
-| HRM-01 | Human Resources | Easy | 16 | Name an employee benefit a company might offer on top of wages or salary. |
-| HRM-02 | Human Resources | Medium | 15 | Name a method of training employees. |
+| HRM-01 | Human Resources | Easy | 31 | Name an employee benefit a company might offer on top of wages or salary. |
+| HRM-02 | Human Resources | Medium | 24 | Name a method of training employees. |
 | HRM-03 | Human Resources | Medium | 13 | Name a characteristic that U.S. federal law protects from employment discrimination. |
-| HRM-04 | Human Resources | Hard | 15 | Name a method of evaluating employee performance. |
-| OPM-01 | Operations | Easy | 16 | Name a measure a store can use to prevent theft. |
-| OPM-02 | Operations | Medium | 13 | Name a production method or approach a manufacturer can use. |
-| OPM-03 | Operations | Hard | 16 | Name a method or tool companies use to manage or improve quality. |
-| OPM-04 | Operations | Hard | 15 | Name a method or tool for managing inventory. |
-| BCM-01 | Business Communication | Easy | 15 | Name a form of written business communication. |
-| BCM-02 | Business Communication | Medium | 16 | Name a barrier to effective communication. |
-| BCM-03 | Business Communication | Easy | 11 | Name a type of nonverbal communication. |
-| BCM-04 | Business Communication | Medium | 13 | Name a part of a formal business letter. |
-| BMA-04 | Business Management | Hard | 16 | Name a theory of management or employee motivation. |
-| BMA-05 | Business Management | Hard | 16 | Name a tool or document used to plan and manage a project. |
-| ECO-04 | Economics | Easy | 16 | Name a public service or program that governments commonly pay for with tax money. |
-| ECO-05 | Economics | Medium | 12 | Name a trade barrier a government can use to limit imports or trade with another country. |
-| ECO-06 | Economics | Hard | 15 | Name a factor that can shift the demand curve or the supply curve for a product. |
-| BA-04 | Business Administration | Easy | 16 | Name a type of software or information system a business uses to run its operations. |
-| POB-05 | Principles of Business | Medium | 16 | Name an unethical or illegal business practice. |
-| LAW-04 | Business Law | Hard | 15 | Name a U.S. federal law that protects workers. |
-| LAW-05 | Business Law | Hard | 16 | Name a tort, a civil wrong that one party can sue another for. |
-| BA-05 | Business Administration | Easy | 14 | Name a title held by a top executive or officer of a corporation. |
-| BA-06 | Business Administration | Medium | 16 | Name a measure a business uses to protect its data and computer systems. |
-| POB-06 | Principles of Business | Hard | 12 | Name a force in the external environment that a business cannot control but must watch. |
-| POB-07 | Principles of Business | Easy | 16 | Name a way a business can show social responsibility. |
-| HRM-05 | Human Resources | Medium | 15 | Name a form of direct pay an employee can earn for doing a job. |
-| HRM-06 | Human Resources | Hard | 14 | Name a tactic or process used in labor relations between unions and management. |
-| OPM-05 | Operations | Medium | 14 | Name a factor a business weighs when choosing a supplier. |
-| OPM-06 | Operations | Easy | 16 | Name a workplace safety hazard. |
-| BCM-05 | Business Communication | Easy | 16 | Name a visual aid a speaker can use in a presentation. |
-| BCM-06 | Business Communication | Hard | 9 | Name an element of the communication process. |
-| BMA-06 | Business Management | Medium | 15 | Name a tool or framework used in strategic planning. |
+| HRM-04 | Human Resources | Hard | 23 | Name a method of evaluating employee performance. |
+| OPM-01 | Operations | Easy | 26 | Name a measure a store can use to prevent theft. |
+| OPM-02 | Operations | Medium | 23 | Name a production method or approach a manufacturer can use. |
+| OPM-03 | Operations | Hard | 28 | Name a method or tool companies use to manage or improve quality. |
+| OPM-04 | Operations | Hard | 27 | Name a method or tool for managing inventory. |
+| BCM-01 | Business Communication | Easy | 29 | Name a form of written business communication. |
+| BCM-02 | Business Communication | Medium | 28 | Name a barrier to effective communication. |
+| BCM-03 | Business Communication | Easy | 16 | Name a type of nonverbal communication. |
+| BCM-04 | Business Communication | Medium | 14 | Name a part of a formal business letter. |
+| BMA-04 | Business Management | Hard | 22 | Name a theory of management or employee motivation. |
+| BMA-05 | Business Management | Hard | 30 | Name a tool or document used to plan and manage a project. |
+| ECO-04 | Economics | Easy | 28 | Name a public service or program that governments commonly pay for with tax money. |
+| ECO-05 | Economics | Medium | 18 | Name a trade barrier a government can use to limit imports or trade with another country. |
+| ECO-06 | Economics | Hard | 18 | Name a factor that can shift the demand curve or the supply curve for a product. |
+| BA-04 | Business Administration | Easy | 34 | Name a type of software or information system a business uses to run its operations. |
+| POB-05 | Principles of Business | Medium | 31 | Name an unethical or illegal business practice. |
+| LAW-04 | Business Law | Hard | 31 | Name a U.S. federal law that protects workers. |
+| LAW-05 | Business Law | Hard | 29 | Name a tort, a civil wrong that one party can sue another for. |
+| BA-05 | Business Administration | Easy | 28 | Name a title held by a top executive or officer of a corporation. |
+| BA-06 | Business Administration | Medium | 30 | Name a measure a business uses to protect its data and computer systems. |
+| POB-06 | Principles of Business | Hard | 18 | Name a force in the external environment that a business cannot control but must watch. |
+| POB-07 | Principles of Business | Easy | 29 | Name a way a business can show social responsibility. |
+| HRM-05 | Human Resources | Medium | 21 | Name a form of direct pay an employee can earn for doing a job. |
+| HRM-06 | Human Resources | Hard | 29 | Name a tactic or process used in labor relations between unions and management. |
+| OPM-05 | Operations | Medium | 26 | Name a factor a business weighs when choosing a supplier. |
+| OPM-06 | Operations | Easy | 27 | Name a workplace safety hazard. |
+| BCM-05 | Business Communication | Easy | 21 | Name a visual aid a speaker can use in a presentation. |
+| BCM-06 | Business Communication | Hard | 10 | Name an element of the communication process. |
+| BMA-06 | Business Management | Medium | 37 | Name a tool or framework used in strategic planning. |
 | BMA-07 | Business Management | Hard | 10 | Name one of the ten managerial roles described by Henry Mintzberg. |
-| LAW-06 | Business Law | Medium | 15 | Name a type of contract or legal agreement a business commonly signs. |
-| ECO-07 | Economics | Hard | 16 | Name an international trade agreement, trade bloc or economic organization. |
+| LAW-06 | Business Law | Medium | 31 | Name a type of contract or legal agreement a business commonly signs. |
+| ECO-07 | Economics | Hard | 34 | Name an international trade agreement, trade bloc or economic organization. |
 
 ### Entrepreneurship
 
 | Id | Topic | Difficulty | Answers | Prompt |
 |---|---|---|---|---|
-| ENT-04 | Entrepreneurship | Easy | 16 | Name a trait of successful entrepreneurs. |
-| ENT-05 | Entrepreneurship | Medium | 12 | Name a type of entrepreneurship or entrepreneur. |
-| ENT-06 | Entrepreneurship | Medium | 14 | Name a source of ideas for a new business. |
-| ENT-07 | Entrepreneurship | Easy | 12 | Name a reward or advantage of being an entrepreneur. |
+| ENT-04 | Entrepreneurship | Easy | 29 | Name a trait of successful entrepreneurs. |
+| ENT-05 | Entrepreneurship | Medium | 24 | Name a type of entrepreneurship or entrepreneur. |
+| ENT-06 | Entrepreneurship | Medium | 25 | Name a source of ideas for a new business. |
+| ENT-07 | Entrepreneurship | Easy | 16 | Name a reward or advantage of being an entrepreneur. |
 | SUP-01 | Startup Planning | Medium | 9 | Name a building block of the Business Model Canvas. |
-| SUP-02 | Startup Planning | Easy | 16 | Name a startup cost for a new business. |
-| SUP-03 | Startup Planning | Medium | 13 | Name a legal or registration step in starting a new business. |
-| SUP-04 | Startup Planning | Hard | 9 | Name an area examined in a feasibility study. |
-| SUP-05 | Startup Planning | Easy | 16 | Name a factor to consider when choosing a location for a new business. |
-| SUP-06 | Startup Planning | Medium | 12 | Name a professional or adviser a new business owner should consult. |
-| SUP-07 | Startup Planning | Hard | 15 | Name a matter that a written partnership agreement should settle. |
-| SUP-08 | Startup Planning | Medium | 16 | Name a revenue model, a way a business charges customers to make money. |
-| FND-01 | Funding | Medium | 14 | Name an element of an investor pitch. |
-| FND-02 | Funding | Hard | 15 | Name something a lender reviews before approving a small business loan. |
-| FND-03 | Funding | Medium | 16 | Name a way a startup can reduce the cash it needs to launch. |
-| FND-04 | Funding | Hard | 15 | Name a type of loan or debt financing a small business can use. |
-| FND-05 | Funding | Hard | 16 | Name a term used in startup equity investing, such as a type of investor, a funding stage, a document or a deal term. |
-| FND-06 | Funding | Hard | 16 | Name a metric used to track the growth or financial health of a startup. |
-| FND-07 | Funding | Medium | 13 | Name a financial statement or projection that belongs in the financial section of a business plan. |
-| SBM-01 | Small Business Management | Easy | 16 | Name a reason small businesses fail. |
-| SBM-02 | Small Business Management | Medium | 14 | Name an organization or program that helps people start or run a small business in the United States. |
-| SBM-03 | Small Business Management | Medium | 16 | Name a way a small business can improve its cash flow. |
-| SBM-07 | Small Business Management | Medium | 16 | Name a risk that could cause a loss for a small business. |
-| SBM-05 | Small Business Management | Easy | 16 | Name an ongoing operating expense of a small business. |
-| SBM-06 | Small Business Management | Easy | 16 | Name a task a small business commonly outsources. |
-| SBM-08 | Small Business Management | Hard | 16 | Name a step a small business takes when it hires its first employee. |
-| INO-01 | Innovation | Medium | 16 | Name a technique for generating new business or product ideas. |
-| INO-02 | Innovation | Hard | 16 | Name a concept from the lean startup method. |
-| INO-03 | Innovation | Medium | 15 | Name a type of innovation. |
-| INO-04 | Innovation | Easy | 16 | Name a way to test a business idea with customers before a full launch. |
-| INO-05 | Innovation | Easy | 16 | Name a competitive advantage a new business can build. |
-| INO-06 | Innovation | Easy | 16 | Name an emerging technology that is creating new business opportunities. |
-| INO-07 | Innovation | Easy | 15 | Name a quality that makes a business idea a real opportunity. |
-| FRN-01 | Franchising and Ownership | Medium | 15 | Name a fee or cost a franchisee pays. |
-| FRN-02 | Franchising and Ownership | Easy | 15 | Name an advantage of buying a franchise. |
-| FRN-03 | Franchising and Ownership | Easy | 13 | Name a disadvantage of buying a franchise. |
-| FRN-04 | Franchising and Ownership | Hard | 16 | Name an item disclosed in a Franchise Disclosure Document. |
-| FRN-05 | Franchising and Ownership | Hard | 12 | Name a factor to weigh when choosing a form of business ownership. |
-| FRN-06 | Franchising and Ownership | Medium | 16 | Name something a buyer should examine before buying an existing business. |
-| FRN-07 | Franchising and Ownership | Hard | 11 | Name a type of franchise or franchising arrangement. |
-| FRN-08 | Franchising and Ownership | Easy | 12 | Name an advantage of a sole proprietorship. |
-| GRO-01 | Growth and Exit | Medium | 14 | Name a strategy a business can use to grow. |
-| GRO-02 | Growth and Exit | Medium | 11 | Name an exit strategy for a business owner. |
-| GRO-03 | Growth and Exit | Hard | 13 | Name a way a business can enter a foreign market. |
-| GRO-04 | Growth and Exit | Hard | 11 | Name a method or measure used to value a business that is for sale. |
-| GRO-05 | Growth and Exit | Medium | 15 | Name a problem a business can face when it grows quickly. |
-| GRO-06 | Growth and Exit | Medium | 16 | Name a challenge a business faces when it expands into another country. |
+| SUP-02 | Startup Planning | Easy | 24 | Name a startup cost for a new business. |
+| SUP-03 | Startup Planning | Medium | 18 | Name a legal or registration step in starting a new business. |
+| SUP-04 | Startup Planning | Hard | 14 | Name an area examined in a feasibility study. |
+| SUP-05 | Startup Planning | Easy | 22 | Name a factor to consider when choosing a location for a new business. |
+| SUP-06 | Startup Planning | Medium | 16 | Name a professional or adviser a new business owner should consult. |
+| SUP-07 | Startup Planning | Hard | 19 | Name a matter that a written partnership agreement should settle. |
+| SUP-08 | Startup Planning | Medium | 22 | Name a revenue model, a way a business charges customers to make money. |
+| FND-01 | Funding | Medium | 23 | Name an element of an investor pitch. |
+| FND-02 | Funding | Hard | 22 | Name something a lender reviews before approving a small business loan. |
+| FND-03 | Funding | Medium | 25 | Name a way a startup can reduce the cash it needs to launch. |
+| FND-04 | Funding | Hard | 26 | Name a type of loan or debt financing a small business can use. |
+| FND-05 | Funding | Hard | 38 | Name a term used in startup equity investing, such as a type of investor, a funding stage, a document or a deal term. |
+| FND-06 | Funding | Hard | 28 | Name a metric used to track the growth or financial health of a startup. |
+| FND-07 | Funding | Medium | 19 | Name a financial statement or projection that belongs in the financial section of a business plan. |
+| SBM-01 | Small Business Management | Easy | 29 | Name a reason small businesses fail. |
+| SBM-02 | Small Business Management | Medium | 28 | Name an organization or program that helps people start or run a small business in the United States. |
+| SBM-03 | Small Business Management | Medium | 22 | Name a way a small business can improve its cash flow. |
+| SBM-07 | Small Business Management | Medium | 27 | Name a risk that could cause a loss for a small business. |
+| SBM-05 | Small Business Management | Easy | 28 | Name an ongoing operating expense of a small business. |
+| SBM-06 | Small Business Management | Easy | 25 | Name a task a small business commonly outsources. |
+| SBM-08 | Small Business Management | Hard | 23 | Name a step a small business takes when it hires its first employee. |
+| INO-01 | Innovation | Medium | 36 | Name a technique for generating new business or product ideas. |
+| INO-02 | Innovation | Hard | 27 | Name a concept from the lean startup method. |
+| INO-03 | Innovation | Medium | 25 | Name a type of innovation. |
+| INO-04 | Innovation | Easy | 25 | Name a way to test a business idea with customers before a full launch. |
+| INO-05 | Innovation | Easy | 28 | Name a competitive advantage a new business can build. |
+| INO-06 | Innovation | Easy | 33 | Name an emerging technology that is creating new business opportunities. |
+| INO-07 | Innovation | Easy | 19 | Name a quality that makes a business idea a real opportunity. |
+| FRN-01 | Franchising and Ownership | Medium | 25 | Name a fee or cost a franchisee pays. |
+| FRN-02 | Franchising and Ownership | Easy | 22 | Name an advantage of buying a franchise. |
+| FRN-03 | Franchising and Ownership | Easy | 20 | Name a disadvantage of buying a franchise. |
+| FRN-04 | Franchising and Ownership | Hard | 25 | Name an item disclosed in a Franchise Disclosure Document. |
+| FRN-05 | Franchising and Ownership | Hard | 18 | Name a factor to weigh when choosing a form of business ownership. |
+| FRN-06 | Franchising and Ownership | Medium | 23 | Name something a buyer should examine before buying an existing business. |
+| FRN-07 | Franchising and Ownership | Hard | 22 | Name a type of franchise or franchising arrangement. |
+| FRN-08 | Franchising and Ownership | Easy | 14 | Name an advantage of a sole proprietorship. |
+| GRO-01 | Growth and Exit | Medium | 20 | Name a strategy a business can use to grow. |
+| GRO-02 | Growth and Exit | Medium | 14 | Name an exit strategy for a business owner. |
+| GRO-03 | Growth and Exit | Hard | 16 | Name a way a business can enter a foreign market. |
+| GRO-04 | Growth and Exit | Hard | 19 | Name a method or measure used to value a business that is for sale. |
+| GRO-05 | Growth and Exit | Medium | 23 | Name a problem a business can face when it grows quickly. |
+| GRO-06 | Growth and Exit | Medium | 28 | Name a challenge a business faces when it expands into another country. |
 
 ### Finance
 
 | Id | Topic | Difficulty | Answers | Prompt |
 |---|---|---|---|---|
-| FIN-04 | Finance | Hard | 11 | Name a method used to evaluate a capital investment project. |
-| FIN-05 | Finance | Easy | 16 | Name a career in the finance industry. |
-| FIN-06 | Finance | Hard | 16 | Name a term or concept used in time value of money calculations. |
-| ACC-04 | Accounting | Medium | 11 | Name an accounting method for valuing inventory or depreciating an asset. |
-| ACC-05 | Accounting | Hard | 13 | Name a generally accepted accounting principle or assumption. |
-| ACC-06 | Accounting | Medium | 15 | Name a source document used to record a business transaction. |
-| ACC-07 | Accounting | Hard | 16 | Name a line or section on a statement of cash flows. |
-| PFL-04 | Personal Financial Literacy | Easy | 13 | Name a tax that an individual or household may have to pay. |
-| PFL-05 | Personal Financial Literacy | Easy | 16 | Name a spending or saving category in a personal or household budget. |
-| PFL-06 | Personal Financial Literacy | Medium | 16 | Name a type of financial fraud or scam aimed at consumers. |
-| PFL-07 | Personal Financial Literacy | Hard | 16 | Name a U.S. federal law that protects consumers or investors in financial matters. |
-| BNK-01 | Banking | Easy | 16 | Name a product or service a retail bank offers its customers. |
-| BNK-02 | Banking | Hard | 11 | Name a tool or action the Federal Reserve uses to carry out monetary policy. |
-| BNK-03 | Banking | Easy | 14 | Name a way to make a payment without using cash. |
-| BNK-04 | Banking | Medium | 13 | Name a fee a bank may charge on a checking or savings account. |
-| INV-01 | Investing | Hard | 11 | Name a type of stock order that sets how or when a trade is carried out. |
-| INV-02 | Investing | Medium | 12 | Name a type of risk an investor faces. |
-| INV-03 | Investing | Easy | 14 | Name a stock market index. |
-| INV-04 | Investing | Medium | 14 | Name a stock exchange. |
-| INV-05 | Investing | Medium | 16 | Name a type of bond. |
-| INS-01 | Insurance | Medium | 16 | Name a key term used in an insurance policy. |
-| INS-02 | Insurance | Medium | 11 | Name a type of coverage that can be part of an auto insurance policy. |
-| INS-03 | Insurance | Hard | 16 | Name a type of insurance that a business buys to protect itself. |
-| INS-04 | Insurance | Easy | 16 | Name a factor an insurer may use to set the price of an auto insurance policy. |
-| CRD-01 | Credit | Easy | 16 | Name a type of loan or consumer credit. |
-| CRD-03 | Credit | Medium | 15 | Name an item of information found on a credit report. |
-| CRD-04 | Credit | Hard | 16 | Name a term or condition spelled out in a loan or credit card agreement. |
-| CRD-05 | Credit | Hard | 15 | Name a debt-relief option or arrangement open to a borrower who is struggling to repay. |
+| FIN-04 | Finance | Hard | 17 | Name a method used to evaluate a capital investment project. |
+| FIN-05 | Finance | Easy | 31 | Name a career in the finance industry. |
+| FIN-06 | Finance | Hard | 23 | Name a term or concept used in time value of money calculations. |
+| ACC-04 | Accounting | Medium | 14 | Name an accounting method for valuing inventory or depreciating an asset. |
+| ACC-05 | Accounting | Hard | 24 | Name a generally accepted accounting principle or assumption. |
+| ACC-06 | Accounting | Medium | 21 | Name a source document used to record a business transaction. |
+| ACC-07 | Accounting | Hard | 24 | Name a line or section on a statement of cash flows. |
+| PFL-04 | Personal Financial Literacy | Easy | 19 | Name a tax that an individual or household may have to pay. |
+| PFL-05 | Personal Financial Literacy | Easy | 22 | Name a spending or saving category in a personal or household budget. |
+| PFL-06 | Personal Financial Literacy | Medium | 28 | Name a type of financial fraud or scam aimed at consumers. |
+| PFL-07 | Personal Financial Literacy | Hard | 23 | Name a U.S. federal law that protects consumers or investors in financial matters. |
+| BNK-01 | Banking | Easy | 24 | Name a product or service a retail bank offers its customers. |
+| BNK-02 | Banking | Hard | 15 | Name a tool or action the Federal Reserve uses to carry out monetary policy. |
+| BNK-03 | Banking | Easy | 18 | Name a way to make a payment without using cash. |
+| BNK-04 | Banking | Medium | 17 | Name a fee a bank may charge on a checking or savings account. |
+| INV-01 | Investing | Hard | 16 | Name a type of stock order that sets how or when a trade is carried out. |
+| INV-02 | Investing | Medium | 22 | Name a type of risk an investor faces. |
+| INV-03 | Investing | Easy | 26 | Name a stock market index. |
+| INV-04 | Investing | Medium | 28 | Name a stock exchange. |
+| INV-05 | Investing | Medium | 25 | Name a type of bond. |
+| INS-01 | Insurance | Medium | 38 | Name a key term used in an insurance policy. |
+| INS-02 | Insurance | Medium | 14 | Name a type of coverage that can be part of an auto insurance policy. |
+| INS-03 | Insurance | Hard | 26 | Name a type of insurance that a business buys to protect itself. |
+| INS-04 | Insurance | Easy | 23 | Name a factor an insurer may use to set the price of an auto insurance policy. |
+| CRD-01 | Credit | Easy | 27 | Name a type of loan or consumer credit. |
+| CRD-03 | Credit | Medium | 22 | Name an item of information found on a credit report. |
+| CRD-04 | Credit | Hard | 29 | Name a term or condition spelled out in a loan or credit card agreement. |
+| CRD-05 | Credit | Hard | 19 | Name a debt-relief option or arrangement open to a borrower who is struggling to repay. |
 | BNK-05 | Banking | Easy | 13 | Name a piece of information printed or written on a personal check. |
-| BNK-06 | Banking | Medium | 12 | Name a function of money or a characteristic that makes something work well as money. |
-| BNK-07 | Banking | Hard | 13 | Name a function or goal of the Federal Reserve System. |
-| INS-05 | Insurance | Easy | 16 | Name a cause of loss that a standard homeowners insurance policy typically covers. |
-| INS-06 | Insurance | Hard | 14 | Name a type of life insurance policy. |
-| CRD-06 | Credit | Medium | 16 | Name a cost a home buyer pays at or before closing when buying with a mortgage. |
-| CRD-07 | Credit | Hard | 13 | Name a type of mortgage. |
-| INV-06 | Investing | Medium | 16 | Name a type of retirement or tax-advantaged savings account or plan. |
+| BNK-06 | Banking | Medium | 13 | Name a function of money or a characteristic that makes something work well as money. |
+| BNK-07 | Banking | Hard | 16 | Name a function or goal of the Federal Reserve System. |
+| INS-05 | Insurance | Easy | 18 | Name a cause of loss that a standard homeowners insurance policy typically covers. |
+| INS-06 | Insurance | Hard | 21 | Name a type of life insurance policy. |
+| CRD-06 | Credit | Medium | 25 | Name a cost a home buyer pays at or before closing when buying with a mortgage. |
+| CRD-07 | Credit | Hard | 22 | Name a type of mortgage. |
+| INV-06 | Investing | Medium | 26 | Name a type of retirement or tax-advantaged savings account or plan. |
 | INV-07 | Investing | Medium | 11 | Name a sector of the stock market. |
-| FIN-07 | Finance | Hard | 12 | Name a type of financial market. |
-| FIN-08 | Finance | Hard | 16 | Name a type of budget a business prepares. |
-| PFL-08 | Personal Financial Literacy | Easy | 16 | Name a source of income for an individual or household. |
-| ACC-08 | Accounting | Medium | 14 | Name a branch or specialized field of accounting. |
+| FIN-07 | Finance | Hard | 17 | Name a type of financial market. |
+| FIN-08 | Finance | Hard | 25 | Name a type of budget a business prepares. |
+| PFL-08 | Personal Financial Literacy | Easy | 20 | Name a source of income for an individual or household. |
+| ACC-08 | Accounting | Medium | 19 | Name a branch or specialized field of accounting. |
 
 ### Hospitality + Tourism
 
 | Id | Topic | Difficulty | Answers | Prompt |
 |---|---|---|---|---|
-| HT-04 | Hospitality and Tourism | Easy | 16 | Name an amenity a hotel may offer its guests. |
-| HT-05 | Hospitality and Tourism | Easy | 14 | Name a step an employee should take when handling a guest complaint. |
-| HT-06 | Hospitality and Tourism | Medium | 16 | Name a factor outside a business that can raise or lower demand for travel. |
-| HT-07 | Hospitality and Tourism | Medium | 12 | Name a way a hotel or restaurant gathers feedback from its guests. |
-| LDG-01 | Lodging | Easy | 16 | Name a type of hotel guest room. |
-| LDG-02 | Lodging | Easy | 16 | Name a job position in a hotel. |
-| LDG-03 | Lodging | Hard | 12 | Name a metric a hotel uses to measure its performance. |
-| LDG-04 | Lodging | Medium | 14 | Name a task carried out at a hotel front desk. |
-| LDG-05 | Lodging | Hard | 16 | Name a type of room rate a hotel may offer. |
-| LDG-06 | Lodging | Medium | 14 | Name a benefit a hotel loyalty program gives its members. |
-| LDG-07 | Lodging | Hard | 16 | Name a room status term used by hotel housekeeping and the front desk. |
-| LDG-08 | Lodging | Easy | 16 | Name a task the housekeeping department carries out in a hotel. |
-| LDG-09 | Lodging | Hard | 16 | Name a market segment of guests that a hotel targets. |
-| RFS-01 | Restaurants and Food Service | Easy | 16 | Name a type of restaurant, classified by its service style or format rather than its cuisine. |
-| RFS-02 | Restaurants and Food Service | Medium | 16 | Name a kitchen (back-of-house) position in a restaurant. |
-| RFS-03 | Restaurants and Food Service | Easy | 15 | Name a front-of-house position in a restaurant. |
-| RFS-04 | Restaurants and Food Service | Medium | 16 | Name a type of menu. |
-| RFS-05 | Restaurants and Food Service | Hard | 16 | Name a style of food service a restaurant or caterer can use. |
-| RFS-06 | Restaurants and Food Service | Easy | 16 | Name a practice that keeps food safe in a commercial kitchen. |
-| RFS-07 | Restaurants and Food Service | Hard | 16 | Name a cost or metric a restaurant manager tracks. |
+| HT-04 | Hospitality and Tourism | Easy | 36 | Name an amenity a hotel may offer its guests. |
+| HT-05 | Hospitality and Tourism | Easy | 20 | Name a step an employee should take when handling a guest complaint. |
+| HT-06 | Hospitality and Tourism | Medium | 25 | Name a factor outside a business that can raise or lower demand for travel. |
+| HT-07 | Hospitality and Tourism | Medium | 18 | Name a way a hotel or restaurant gathers feedback from its guests. |
+| LDG-01 | Lodging | Easy | 29 | Name a type of hotel guest room. |
+| LDG-02 | Lodging | Easy | 33 | Name a job position in a hotel. |
+| LDG-03 | Lodging | Hard | 24 | Name a metric a hotel uses to measure its performance. |
+| LDG-04 | Lodging | Medium | 25 | Name a task carried out at a hotel front desk. |
+| LDG-05 | Lodging | Hard | 28 | Name a type of room rate a hotel may offer. |
+| LDG-06 | Lodging | Medium | 23 | Name a benefit a hotel loyalty program gives its members. |
+| LDG-07 | Lodging | Hard | 25 | Name a room status term used by hotel housekeeping and the front desk. |
+| LDG-08 | Lodging | Easy | 23 | Name a task the housekeeping department carries out in a hotel. |
+| LDG-09 | Lodging | Hard | 28 | Name a market segment of guests that a hotel targets. |
+| RFS-01 | Restaurants and Food Service | Easy | 28 | Name a type of restaurant, classified by its service style or format rather than its cuisine. |
+| RFS-02 | Restaurants and Food Service | Medium | 24 | Name a kitchen (back-of-house) position in a restaurant. |
+| RFS-03 | Restaurants and Food Service | Easy | 25 | Name a front-of-house position in a restaurant. |
+| RFS-04 | Restaurants and Food Service | Medium | 30 | Name a type of menu. |
+| RFS-05 | Restaurants and Food Service | Hard | 22 | Name a style of food service a restaurant or caterer can use. |
+| RFS-06 | Restaurants and Food Service | Easy | 28 | Name a practice that keeps food safe in a commercial kitchen. |
+| RFS-07 | Restaurants and Food Service | Hard | 32 | Name a cost or metric a restaurant manager tracks. |
 | RFS-08 | Restaurants and Food Service | Medium | 9 | Name one of the nine major food allergens that U.S. food businesses must watch for. |
-| RFS-09 | Restaurants and Food Service | Hard | 16 | Name a way a restaurant keeps its food cost percentage under control. |
-| TRV-01 | Travel and Tourism | Easy | 16 | Name a type of tourism, classified by the purpose of the trip. |
-| TRV-02 | Travel and Tourism | Hard | 11 | Name a travel intermediary that sells, packages or distributes travel. |
-| TRV-03 | Travel and Tourism | Easy | 16 | Name a mode of transportation travelers use. |
-| TRV-04 | Travel and Tourism | Medium | 16 | Name a tool or tactic a destination uses to market itself to visitors. |
-| TRV-05 | Travel and Tourism | Medium | 16 | Name a practice a hotel or destination can adopt to make tourism more sustainable. |
-| TRV-06 | Travel and Tourism | Hard | 15 | Name a source of ancillary revenue for an airline beyond the base ticket price. |
-| TRV-07 | Travel and Tourism | Easy | 16 | Name a type of visitor attraction. |
-| TRV-08 | Travel and Tourism | Easy | 15 | Name a document a traveler may need for an international trip. |
-| EVT-01 | Events | Easy | 16 | Name a type of event a planner might organize. |
-| EVT-02 | Events | Medium | 16 | Name something an event planner must arrange when planning an event. |
-| EVT-03 | Events | Easy | 16 | Name a type of event venue. |
-| EVT-04 | Events | Hard | 11 | Name a room seating layout used for a meeting or event. |
-| EVT-05 | Events | Medium | 16 | Name a vendor or professional an event planner hires for an event. |
-| EVT-06 | Events | Easy | 16 | Name a risk an event planner should prepare for. |
-| EVT-07 | Events | Medium | 16 | Name a measure used to judge whether an event was a success. |
-| EVT-08 | Events | Hard | 16 | Name a clause or term commonly found in a contract between an event planner and a venue. |
-| SPE-01 | Sports and Entertainment | Easy | 15 | Name a revenue stream for a professional sports team. |
-| SPE-02 | Sports and Entertainment | Hard | 16 | Name a right or asset a team or event can include in a sponsorship package for a company. |
-| SPE-03 | Sports and Entertainment | Medium | 14 | Name a type of ticket or ticket package a team or venue sells. |
-| SPE-04 | Sports and Entertainment | Easy | 16 | Name a category of licensed merchandise a team or entertainment brand sells. |
-| SPE-05 | Sports and Entertainment | Medium | 16 | Name a promotion a team uses to boost attendance at games. |
-| SPE-06 | Sports and Entertainment | Hard | 15 | Name a type of property whose name or image is licensed for use on merchandise. |
-| SPE-07 | Sports and Entertainment | Easy | 16 | Name a career in the sports industry other than professional athlete. |
-| SPE-08 | Sports and Entertainment | Medium | 16 | Name a way a professional athlete or entertainer earns income. |
-| SPE-09 | Sports and Entertainment | Hard | 13 | Name a source of revenue for a movie studio from a film it releases. |
+| RFS-09 | Restaurants and Food Service | Hard | 26 | Name a way a restaurant keeps its food cost percentage under control. |
+| TRV-01 | Travel and Tourism | Easy | 27 | Name a type of tourism, classified by the purpose of the trip. |
+| TRV-02 | Travel and Tourism | Hard | 15 | Name a travel intermediary that sells, packages or distributes travel. |
+| TRV-03 | Travel and Tourism | Easy | 22 | Name a mode of transportation travelers use. |
+| TRV-04 | Travel and Tourism | Medium | 26 | Name a tool or tactic a destination uses to market itself to visitors. |
+| TRV-05 | Travel and Tourism | Medium | 25 | Name a practice a hotel or destination can adopt to make tourism more sustainable. |
+| TRV-06 | Travel and Tourism | Hard | 22 | Name a source of ancillary revenue for an airline beyond the base ticket price. |
+| TRV-07 | Travel and Tourism | Easy | 27 | Name a type of visitor attraction. |
+| TRV-08 | Travel and Tourism | Easy | 21 | Name a document a traveler may need for an international trip. |
+| EVT-01 | Events | Easy | 32 | Name a type of event a planner might organize. |
+| EVT-02 | Events | Medium | 31 | Name something an event planner must arrange when planning an event. |
+| EVT-03 | Events | Easy | 29 | Name a type of event venue. |
+| EVT-04 | Events | Hard | 18 | Name a room seating layout used for a meeting or event. |
+| EVT-05 | Events | Medium | 29 | Name a vendor or professional an event planner hires for an event. |
+| EVT-06 | Events | Easy | 25 | Name a risk an event planner should prepare for. |
+| EVT-07 | Events | Medium | 24 | Name a measure used to judge whether an event was a success. |
+| EVT-08 | Events | Hard | 26 | Name a clause or term commonly found in a contract between an event planner and a venue. |
+| SPE-01 | Sports and Entertainment | Easy | 20 | Name a revenue stream for a professional sports team. |
+| SPE-02 | Sports and Entertainment | Hard | 26 | Name a right or asset a team or event can include in a sponsorship package for a company. |
+| SPE-03 | Sports and Entertainment | Medium | 26 | Name a type of ticket or ticket package a team or venue sells. |
+| SPE-04 | Sports and Entertainment | Easy | 28 | Name a category of licensed merchandise a team or entertainment brand sells. |
+| SPE-05 | Sports and Entertainment | Medium | 26 | Name a promotion a team uses to boost attendance at games. |
+| SPE-06 | Sports and Entertainment | Hard | 20 | Name a type of property whose name or image is licensed for use on merchandise. |
+| SPE-07 | Sports and Entertainment | Easy | 32 | Name a career in the sports industry other than professional athlete. |
+| SPE-08 | Sports and Entertainment | Medium | 19 | Name a way a professional athlete or entertainer earns income. |
+| SPE-09 | Sports and Entertainment | Hard | 17 | Name a source of revenue for a movie studio from a film it releases. |
 
 ### Marketing
 
 | Id | Topic | Difficulty | Answers | Prompt |
 |---|---|---|---|---|
-| MKT-07 | Marketing | Easy | 16 | Name a cultural, social, personal or psychological factor that influences consumer buying behavior. |
-| MKT-08 | Marketing | Medium | 15 | Name a section of a marketing plan. |
-| MKT-09 | Marketing | Hard | 14 | Name a category used to classify consumer or business products. |
-| MKT-11 | Marketing | Medium | 13 | Name a demographic variable used to segment a consumer market. |
-| SEL-04 | Professional Selling | Hard | 9 | Name a specialized method a salesperson can use to answer a customer objection. |
-| SEL-05 | Professional Selling | Medium | 12 | Name a way a salesperson can find new prospects. |
-| SEL-06 | Professional Selling | Easy | 14 | Name a way a business keeps customers coming back after the sale. |
-| SEL-07 | Professional Selling | Medium | 14 | Name a type of sales job or salesperson. |
-| SEL-08 | Professional Selling | Easy | 14 | Name a source a salesperson can use to build product knowledge. |
-| PROM-01 | Promotion | Easy | 16 | Name an advertising medium. |
-| PROM-02 | Promotion | Medium | 16 | Name a sales promotion tool. |
-| PROM-03 | Promotion | Medium | 14 | Name a public relations tool. |
-| PROM-04 | Promotion | Hard | 16 | Name a metric used to measure digital marketing results. |
-| PROM-05 | Promotion | Medium | 14 | Name an element of visual merchandising. |
-| PROM-06 | Promotion | Hard | 13 | Name a type of advertising, classified by its purpose or sponsor. |
-| PROM-07 | Promotion | Medium | 13 | Name a part of a print advertisement. |
-| PRC-01 | Pricing | Easy | 15 | Name a factor that affects the price a business sets. |
-| PRC-02 | Pricing | Medium | 11 | Name a goal a business may be trying to reach through its pricing. |
-| PRC-03 | Pricing | Medium | 15 | Name a type of discount or allowance a seller offers to buyers. |
-| PRC-04 | Pricing | Hard | 10 | Name a pricing practice that laws restrict or prohibit. |
-| PRC-05 | Pricing | Medium | 14 | Name a term used in retail pricing math, the calculations a store uses to set and change its selling prices. |
-| PRC-06 | Pricing | Easy | 13 | Name a reason a retailer would mark down the price of an item. |
-| CHN-01 | Channels | Easy | 16 | Name a type of retailer. |
-| CHN-02 | Channels | Medium | 10 | Name an activity that is part of physical distribution. |
-| CHN-03 | Channels | Hard | 13 | Name a type of wholesaler or agent intermediary. |
-| CHN-04 | Channels | Hard | 13 | Name a job that intermediaries perform for producers in a distribution channel. |
-| CHN-05 | Channels | Hard | 12 | Name a distribution strategy or type of channel arrangement a producer can use. |
-| CHN-06 | Channels | Medium | 12 | Name a type of shopping center or retail store location. |
-| MKR-01 | Market Research | Easy | 11 | Name a method of collecting primary market research data. |
-| MKR-02 | Market Research | Medium | 14 | Name a source of secondary market research data. |
-| MKR-03 | Market Research | Medium | 12 | Name a step in the marketing research process. |
-| MKR-04 | Market Research | Hard | 12 | Name a sampling method used in research. |
-| MKR-05 | Market Research | Medium | 11 | Name a type of question used on a market research survey. |
-| MKR-06 | Market Research | Hard | 14 | Name a source of error or bias that can make survey results unreliable. |
-| MKR-07 | Market Research | Easy | 16 | Name a kind of information a business keeps about a customer in a customer relationship management (CRM) database. |
-| BRD-01 | Branding | Easy | 13 | Name an element of a brand. |
-| BRD-02 | Branding | Hard | 13 | Name a branding strategy or type of brand. |
-| BRD-03 | Branding | Easy | 11 | Name a job that packaging does for a product. |
-| BRD-04 | Branding | Medium | 11 | Name a basis a company can use to position a product in the minds of customers. |
-| BRD-05 | Branding | Easy | 16 | Name a piece of information found on a product label. |
-| BRD-06 | Branding | Hard | 11 | Name a level of brand familiarity or a component of brand equity. |
+| MKT-07 | Marketing | Easy | 22 | Name a cultural, social, personal or psychological factor that influences consumer buying behavior. |
+| MKT-08 | Marketing | Medium | 20 | Name a section of a marketing plan. |
+| MKT-09 | Marketing | Hard | 18 | Name a category used to classify consumer or business products. |
+| MKT-11 | Marketing | Medium | 14 | Name a demographic variable used to segment a consumer market. |
+| SEL-04 | Professional Selling | Hard | 11 | Name a specialized method a salesperson can use to answer a customer objection. |
+| SEL-05 | Professional Selling | Medium | 20 | Name a way a salesperson can find new prospects. |
+| SEL-06 | Professional Selling | Easy | 22 | Name a way a business keeps customers coming back after the sale. |
+| SEL-07 | Professional Selling | Medium | 22 | Name a type of sales job or salesperson. |
+| SEL-08 | Professional Selling | Easy | 19 | Name a source a salesperson can use to build product knowledge. |
+| PROM-01 | Promotion | Easy | 21 | Name an advertising medium. |
+| PROM-02 | Promotion | Medium | 23 | Name a sales promotion tool. |
+| PROM-03 | Promotion | Medium | 21 | Name a public relations tool. |
+| PROM-04 | Promotion | Hard | 24 | Name a metric used to measure digital marketing results. |
+| PROM-05 | Promotion | Medium | 19 | Name an element of visual merchandising. |
+| PROM-06 | Promotion | Hard | 20 | Name a type of advertising, classified by its purpose or sponsor. |
+| PROM-07 | Promotion | Medium | 15 | Name a part of a print advertisement. |
+| PRC-01 | Pricing | Easy | 20 | Name a factor that affects the price a business sets. |
+| PRC-02 | Pricing | Medium | 16 | Name a goal a business may be trying to reach through its pricing. |
+| PRC-03 | Pricing | Medium | 24 | Name a type of discount or allowance a seller offers to buyers. |
+| PRC-04 | Pricing | Hard | 11 | Name a pricing practice that laws restrict or prohibit. |
+| PRC-05 | Pricing | Medium | 20 | Name a term used in retail pricing math, the calculations a store uses to set and change its selling prices. |
+| PRC-06 | Pricing | Easy | 17 | Name a reason a retailer would mark down the price of an item. |
+| CHN-01 | Channels | Easy | 25 | Name a type of retailer. |
+| CHN-02 | Channels | Medium | 13 | Name an activity that is part of physical distribution. |
+| CHN-03 | Channels | Hard | 21 | Name a type of wholesaler or agent intermediary. |
+| CHN-04 | Channels | Hard | 18 | Name a job that intermediaries perform for producers in a distribution channel. |
+| CHN-05 | Channels | Hard | 17 | Name a distribution strategy or type of channel arrangement a producer can use. |
+| CHN-06 | Channels | Medium | 18 | Name a type of shopping center or retail store location. |
+| MKR-01 | Market Research | Easy | 13 | Name a method of collecting primary market research data. |
+| MKR-02 | Market Research | Medium | 17 | Name a source of secondary market research data. |
+| MKR-03 | Market Research | Medium | 15 | Name a step in the marketing research process. |
+| MKR-04 | Market Research | Hard | 13 | Name a sampling method used in research. |
+| MKR-05 | Market Research | Medium | 15 | Name a type of question used on a market research survey. |
+| MKR-06 | Market Research | Hard | 19 | Name a source of error or bias that can make survey results unreliable. |
+| MKR-07 | Market Research | Easy | 21 | Name a kind of information a business keeps about a customer in a customer relationship management (CRM) database. |
+| BRD-01 | Branding | Easy | 18 | Name an element of a brand. |
+| BRD-02 | Branding | Hard | 19 | Name a branding strategy or type of brand. |
+| BRD-03 | Branding | Easy | 13 | Name a job that packaging does for a product. |
+| BRD-04 | Branding | Medium | 17 | Name a basis a company can use to position a product in the minds of customers. |
+| BRD-05 | Branding | Easy | 23 | Name a piece of information found on a product label. |
+| BRD-06 | Branding | Hard | 12 | Name a level of brand familiarity or a component of brand equity. |
 
+## Wider answer boards (second pass)
+
+After players reported that plausible answers were not accepted, every board was widened: more correct answers at each
+level and more accepted wordings for each answer. The bank went from 3,447 answers and about 8,400 accepted wordings to
+5,422 answers and about 33,400. This pass was done by one AI agent per cluster with a self-review; it was not
+fact-checked by a second agent or by a person. All earlier wordings still score at the same level, apart from three
+rows that were split on purpose (Server / Bartender, Baker / Pastry chef, Wine list / Drink menu).
+
+Points the agents flagged as the least certain additions:
+
+### Business Management + Administration
+
+- POB-02: Buying, Risk taking and Standardizing and grading added at level 6, from the classic eight-function list rather than the seven usually taught.
+- ECO-01: Human capital is its own level 5 row; some texts fold it into labor or capital.
+- LAW-02: Non-disclosure agreement at level 5 is a contract protection, not an intellectual property right.
+- LAW-05: Strict liability split from Product liability; Wrongful termination and Infringement accepted as business torts.
+- POB-05: "monopoly" accepted under Monopolizing; bare "dumping" means illegal waste dumping, the trade sense needs "product dumping".
+- HRM-06: Layoff or plant closing threats, Lobbying, and Yellow-dog contract / blacklisting (historical, now illegal) accepted as tactics.
+- ECO-07, BA-05, LAW-04: level 6 is large (12 to 19 answers); some could be moved to level 5.
+
+### Entrepreneurship
+
+- SBM-05: Inventory purchases (with "cost of goods sold") and Loan payments (with "interest") accepted as operating expenses; strict accounting excludes both.
+- INO-06: Social media and e-commerce accepted as emerging technology.
+- GRO-01: Government contracting, and Increasing capacity with the alias "hiring", are the weakest growth strategies kept.
+- GRO-02: Bankruptcy accepted as a last-resort exit.
+- ENT-05: Fabian, Drone, Hustler, Researcher, Necessity and Opportunity entrepreneur come from classifications not every curriculum uses.
+- SBM-02, INO-01, FRN-07, INO-06: level 6 is crowded (10 to 13 answers).
+
+### Finance
+
+- ACC-05: Comparability, Relevance, Reliability, Timeliness and Understandability are qualitative characteristics, not principles in the strict sense; Regularity, Sincerity, Non-compensation and Utmost good faith come from a popular "10 principles" list, not from FASB.
+- FIN-01: Savings account and Retirement account accepted as investments.
+- INS-05: Injury to a guest accepted as a covered cause of loss.
+- BNK-03: Barter and Store credit or rewards points at level 6; Buy now pay later at level 5.
+- CRD-07: Refinance loan and Seller financing accepted as mortgage types.
+- INV-04: Cboe accepted as a stock exchange.
+- PFL-04: Tariff or customs duty accepted as a tax an individual may pay.
+- ACC-08: Budgeting and Consulting accepted as fields of accounting.
+- PFL-01: Medicare and Medicaid accepted as Health insurance.
+
+### Hospitality + Tourism
+
+- TRV-02: Central reservation system and Meeting planner accepted as travel intermediaries.
+- TRV-06: cargo and freight are deliberately not accepted as airline ancillary revenue.
+- RFS-08: "gluten" is not accepted for Wheat, nor "lactose" for Milk.
+- RFS-04: "fixed menu" now means Static menu; "fixed price menu" still means Prix fixe.
+- LDG-02: some aliases are neighbouring jobs rather than exact synonyms (night manager under Night auditor, barista under Bartender).
+- HT-03: Adventure, Cultural and Medical tourism added as industry segments.
+- LDG-01: Hollywood twin, Lanai, Cabana and Efficiency added at level 6.
+- EVT-05: Venue accepted as a vendor.
+
+### Marketing
+
+- PRC-04: Hidden fees (drip pricing, junk fees) accepted as a restricted practice; it rests on recent rules, not older textbooks.
+- MKR-01: Website analytics accepted as primary data.
+- BRD-01: Brand story, Brand values and Spokesperson accepted as brand elements.
+- MKT-02: Usage rate, Benefits sought, Brand loyalty and Occasion are separate rows although they are kinds of behavioral segmentation.
+- SEL-02: Service close, Minor points close and Testimonial close come from specific textbooks.
+- CHN-06: Flea market and Festival marketplace are loose fits for a type of shopping center.
+- MKR-06: "response bias" accepted under Dishonest answers and "margin of error" under Sampling error.

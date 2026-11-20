@@ -67,6 +67,9 @@ describe("answer matching", () => {
     expect(got("band")).toBeNull(); // short answers must be spelled right: one letter off is another word
     expect(got("bonds")).toBe("Bond");
     expect(got("pricing")).toBeNull(); // part of an answer is not the answer
+    const plurals: Question = { ...fakeBank(1)[0], a: [["Libraries", 1], ["Bonus", 2], ["Tax", 3], ["Case study", 4], ["Business", 5], ["Class", 6]] };
+    const hitOn = (text: string) => match(plurals, text)?.[0] ?? null;
+    expect([hitOn("library"), hitOn("bonuses"), hitOn("taxes"), hitOn("case studies"), hitOn("businesses"), hitOn("classes")]).toEqual(["Libraries", "Bonus", "Tax", "Case study", "Business", "Class"]);
   });
   it("prefers an exact answer on a later row to a near miss on an earlier one", () => {
     const board: Question = { ...fakeBank(1)[0], a: [["Co-branding", 1], ["Rebranding", 2], ["Rack jobber", 3], ["Truck jobber", 4], ["Five", 5], ["Six", 6]] };

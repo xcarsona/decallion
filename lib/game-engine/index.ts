@@ -25,17 +25,29 @@ function words(s: string): string[] {
 export function norm(s: string): string {
   return words(s).join("");
 }
-/** A looser form of an answer, for comparing: joining words are dropped, each word loses its plural "s", and the
+/** A looser form of an answer, for comparing: joining words are dropped, each word loses its plural ending, and the
     words are put in alphabetical order. So word order, plurals and "and"/"of" do not matter:
     "pricing, penetration" and "penetration pricing" give the same key. */
 export function looseKey(s: string): string {
   return words(s)
     .filter((w) => !LINK_WORDS.has(w))
-    .map((w) => (w.length > 3 ? w.replace(/s$/, "") : w))
+    .map(singular)
     .sort()
     .join("");
 }
 const LINK_WORDS = new Set(["and", "of", "for", "to", "in", "on", "or"]);
+/** A word without its plural ending, for comparing only: "libraries" and "library" both give "library", "bonuses"
+    and "bonus" both give "bonu". The result need not be a real word, only the same for singular and plural. */
+function singular(word: string): string {
+  let w = word;
+  for (let i = 0; i < 2 && w.length > 3; i++) {
+    if (/ies$/.test(w)) w = w.slice(0, -3) + "y";
+    else if (/(s|x|z|ch|sh)es$/.test(w)) w = w.slice(0, -2);
+    else if (/s$/.test(w) && !/ss$/.test(w)) w = w.slice(0, -1);
+    else break;
+  }
+  return w;
+}
 
 /** Typing mistakes between two strings: a missing, extra or wrong letter, or two neighbouring letters swapped, each
     count as one. Returns 9 when the lengths differ by more than could be forgiven. */
