@@ -12,10 +12,14 @@ const listeners = new Set<() => void>();
 function request(cluster: ClusterId) {
   if (asked.has(cluster)) return;
   asked.add(cluster);
-  void loadDefinitions(cluster).then((defs) => {
-    loaded = { ...loaded, [cluster]: defs };
-    listeners.forEach((fn) => fn());
-  });
+  loadDefinitions(cluster).then(
+    (defs) => {
+      loaded = { ...loaded, [cluster]: defs };
+      listeners.forEach((fn) => fn());
+    },
+    // could not load (offline, say): forget the attempt, so the next card or page that needs it tries again
+    () => asked.delete(cluster),
+  );
 }
 function subscribe(fn: () => void) {
   listeners.add(fn);

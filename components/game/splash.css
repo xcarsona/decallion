@@ -18,7 +18,11 @@
 .splashbar i.on{background:var(--gold)}
 .splashstate{margin:0;font-size:18px;letter-spacing:.4em;text-transform:uppercase;color:var(--glass);padding-left:.4em;animation:splashblink 1s steps(2) infinite}
 .splashfine{position:absolute;z-index:1;left:16px;right:16px;bottom:max(12px,env(safe-area-inset-bottom));margin:0 auto;max-width:none;text-align:center;font-size:15px;color:var(--mute)}
-.splash.out{animation:splashout .32s steps(5) forwards;pointer-events:none}
+/* While it is up, everything behind it is taken out of reach of the keyboard and screen readers. This is CSS, not
+   script, so it also holds in the moment before the page's code has loaded. The game shows again as it fades. */
+.app:has(> .splash:not(.out)) > :not(.splash){visibility:hidden}
+/* it keeps catching clicks while it fades, so a double click does not land on the game underneath */
+.splash.out{animation:splashout .32s steps(5) forwards}
 @keyframes splashblink{50%{opacity:.45}}
 @keyframes splashout{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.splashstate,.splash.out{animation:none}}

@@ -14,6 +14,9 @@ const CUT_MS = 650;
 const OUT_MS = 320;
 
 type Phase = "loading" | "leaving" | "gone";
+/** Set once the screen has left. The page is kept in memory when the player visits another page, and its effects run
+    again when they come back: without this the screen would flash up again on every return. */
+let finished = false;
 
 export function Splash() {
   const [scene, setScene] = useState(0);
@@ -23,6 +26,7 @@ export function Splash() {
   const skip = useRef<() => void>(() => {});
 
   useEffect(() => {
+    if (finished) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const min = reduced ? MIN_MS_REDUCED : MIN_MS;
     const started = performance.now();
@@ -31,16 +35,16 @@ export function Splash() {
     const order = [0, ...rest];
     let cut = 0;
     let done = false;
-    let out = 0;
     const gameLoaded = () => document.getElementById("screen") !== null;
 
     function leave() {
       if (done) return;
       done = true;
+      finished = true;
       window.clearInterval(timer);
       setFilled(BLOCKS);
       setPhase("leaving");
-      out = window.setTimeout(() => setPhase("gone"), reduced ? 0 : OUT_MS);
+      window.setTimeout(() => setPhase("gone"), reduced ? 0 : OUT_MS);
     }
     const timer = window.setInterval(() => {
       const t = performance.now() - started;
@@ -60,12 +64,17 @@ export function Splash() {
     skip.current = () => {
       if (gameLoaded()) leave();
     };
-    const onKey = () => skip.current();
+    const onKey = (e: KeyboardEvent) => {
+      // the page behind the screen cannot be seen, so Tab must not walk focus into it
+      if (e.key === "Tab" && !done) e.preventDefault();
+      skip.current();
+    };
     window.addEventListener("keydown", onKey);
     return () => {
       window.clearInterval(timer);
-      window.clearTimeout(out);
       window.removeEventListener("keydown", onKey);
+      // the fade-out timer is left to finish: if the player leaves the page during the fade, the screen must still
+      // be removed, or it would sit there unseen and swallow clicks when they come back
     };
   }, []);
 

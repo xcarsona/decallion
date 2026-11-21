@@ -60,8 +60,8 @@ describe("answer matching", () => {
     expect(got("goods sold cost")).toBe("Cost of goods sold");
     expect(got("accoutns receivable")).toBe("Accounts receivable"); // two letters swapped is one mistake
     expect(got("acounts recievables")).toBe("Accounts receivable"); // plural plus two mistakes
-    expect(got("psycologcal pricng")).toBe("Psychological pricing"); // three mistakes in a long answer
-    expect(got("psycolgcal prcng")).toBeNull(); // five is too many
+    expect(got("psycological pricng")).toBe("Psychological pricing"); // two mistakes in a long answer
+    expect(got("psycologcal pricng")).toBeNull(); // three is too many, however long the answer
     expect(got("R & D")).toBe("Research and development");
     expect(got("theory z")).toBe("Theory Z");
     expect(got("band")).toBeNull(); // short answers must be spelled right: one letter off is another word
@@ -70,6 +70,37 @@ describe("answer matching", () => {
     const plurals: Question = { ...fakeBank(1)[0], a: [["Libraries", 1], ["Bonus", 2], ["Tax", 3], ["Case study", 4], ["Business", 5], ["Class", 6]] };
     const hitOn = (text: string) => match(plurals, text)?.[0] ?? null;
     expect([hitOn("library"), hitOn("bonuses"), hitOn("taxes"), hitOn("case studies"), hitOn("businesses"), hitOn("classes")]).toEqual(["Libraries", "Bonus", "Tax", "Case study", "Business", "Class"]);
+  });
+  it("does not give credit for a different word that happens to be a few letters away", () => {
+    // each of these typed answers once scored as the answer beside it
+    const cases: [string, string][] = [
+      ["fax", "Taxes"], ["safe", "Sales"], ["patent", "parents"], ["stack", "Stock"], ["lease", "Leash"], ["room", "roofs"], ["pull", "polls"], ["salad", "salaries"],
+      ["business", "business taxes"], ["government", "government taxes"], ["import", "taxes on imports"],
+      ["service", "vice pres"], ["wholesale", "home sales"], ["leadership", "bad leadership"],
+      ["honest advertising", "dishonest advertising"], ["dissatisfaction", "job satisfaction"], ["decertification", "diversification"],
+    ];
+    for (const [typed, answer] of cases) {
+      const board: Question = { ...fakeBank(1)[0], a: [[answer, 1], ["Two", 2], ["Three", 3], ["Four", 4], ["Five", 5], ["Six", 6]] };
+      expect(match(board, typed)?.[0] ?? null, typed + " is not " + answer).toBeNull();
+      expect(match(board, answer)?.[0]).toBe(answer);
+    }
+  });
+  it("still forgives real slips, and ignores accents", () => {
+    const board: Question = { ...fakeBank(1)[0], a: [["Taxes", 1], ["Cafe", 2], ["Resume", 3], ["Dishonest advertising", 4], ["Diversification", 5], ["Franchise", 6]] };
+    const got = (text: string) => match(board, text)?.[0] ?? null;
+    expect(got("taxs")).toBe("Taxes"); // plural slip, no typo needed
+    expect(got("café")).toBe("Cafe");
+    expect(got("Résumé")).toBe("Resume");
+    expect(got("dishonest advertizing")).toBe("Dishonest advertising");
+    expect(got("diversifcation")).toBe("Diversification");
+    expect(got("franchize")).toBe("Franchise");
+    expect(got("diversifcaton")).toBe("Diversification"); // two slips when both sides have nine or more letters
+    expect(got("franchse")).toBe("Franchise");
+    const short: Question = { ...fakeBank(1)[0], a: [["Stock", 1], ["Parent", 2], ["Three", 3], ["Four", 4], ["Five", 5], ["Six", 6]] };
+    // in a short word a missing, extra or swapped letter is still a slip
+    expect([match(short, "stcok")?.[0], match(short, "stockk")?.[0], match(short, "paernt")?.[0]]).toEqual(["Stock", "Stock", "Parent"]);
+    // but four typed letters are never stretched to a five-letter answer: "plan" must not score as "Plant"
+    expect(match(short, "stok")).toBeNull();
   });
   it("prefers an exact answer on a later row to a near miss on an earlier one", () => {
     const board: Question = { ...fakeBank(1)[0], a: [["Co-branding", 1], ["Rebranding", 2], ["Rack jobber", 3], ["Truck jobber", 4], ["Five", 5], ["Six", 6]] };

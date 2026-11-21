@@ -39,7 +39,8 @@ export async function GET(request: Request) {
   // "Today" is the viewer's own date, because that is the round they are playing. It can be a day either side of UTC.
   const asked = params.get("day");
   const today = asked === null ? utcDayKey() : Number(asked);
-  if (!isPlayableDay(today)) return fail(400, "Unknown day.");
+  // the all-time board does not use the day, so a device with a wrong clock can still read it
+  if (scope !== "all" && !isPlayableDay(today)) return fail(400, "Unknown day.");
   let query = db.from("daily_scores").select("name, score, levels, day, cluster").eq("cluster", cluster.cluster);
   if (scope === "today") query = query.eq("day", dayIso(today));
   else if (scope === "yesterday") query = query.eq("day", dayIso(prevDayKey(today)));

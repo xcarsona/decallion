@@ -20,12 +20,14 @@ const loaders: Record<ClusterId, () => Promise<{ default: unknown }>> = {
 };
 const cache = new Map<ClusterId, Promise<Definitions>>();
 
-/** The definitions for one cluster. Resolves to an empty set if they cannot be loaded, so the game still works. */
+/** The definitions for one cluster. Rejects if they cannot be loaded (for example offline); a failure is not
+    remembered, so the next call tries again. */
 export function loadDefinitions(cluster: ClusterId): Promise<Definitions> {
   let pending = cache.get(cluster);
   if (!pending) {
-    pending = loaders[cluster]().then((m) => m.default as Definitions, () => ({}));
+    pending = loaders[cluster]().then((m) => m.default as Definitions);
     cache.set(cluster, pending);
+    pending.catch(() => cache.delete(cluster));
   }
   return pending;
 }

@@ -39,6 +39,14 @@ export default function StudyPage() {
     removeTerm(ref);
     to?.focus();
   };
+  /* With "Hide learned" on, marking a term learned takes its row away too, so focus moves to a neighbouring row. */
+  const learnRow = (button: HTMLButtonElement, ref: { promptId: string; answer: string }, wasLearned: boolean) => {
+    const all = Array.from(document.querySelectorAll<HTMLButtonElement>("#studyPage .studyLearned"));
+    const at = all.indexOf(button);
+    const to = filter.hideLearned && !wasLearned ? (all[at + 1] ?? all[at - 1]) : null;
+    toggleTermLearned(ref);
+    to?.focus();
+  };
   const clear = () => {
     if (!armed) {
       setArmed(true);
@@ -123,7 +131,7 @@ export default function StudyPage() {
                           : p.question && <p className="stdef mute">This answer is no longer on the board.</p>}
                       </div>
                       <div className="stbtns">
-                        <button type="button" className="ghost mini studyLearned" aria-pressed={item.learned} aria-label={`Learned: ${item.answer}`} onClick={() => toggleTermLearned(ref)}>Learned</button>
+                        <button type="button" className="ghost mini studyLearned" aria-pressed={item.learned} aria-label={`Learned: ${item.answer}`} onClick={(e) => learnRow(e.currentTarget, ref, item.learned)}>Learned</button>
                         <button type="button" className="ghost mini studyRemove" aria-label={`Remove ${item.answer}`} onClick={(e) => removeRow(e.currentTarget, ref)}>Remove</button>
                       </div>
                     </li>

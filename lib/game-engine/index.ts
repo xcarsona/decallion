@@ -15,6 +15,9 @@ export const DIFFS: Record<number, string> = { 1: "Easy", 2: "Medium", 3: "Hard"
 function words(s: string): string[] {
   return String(s)
     .toLowerCase()
+    // accents are dropped, so "café" and "résumé" (which a phone keyboard may type) match "cafe" and "resume"
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9 ]/g, " ")
     .replace(/\b(the|a|an)\b/g, " ")
@@ -68,16 +71,37 @@ function typos(a: string, b: string): number {
   }
   return prev[n];
 }
-/** How many typing mistakes are forgiven in an answer of this many letters. Short answers get none, because one
-    changed letter in a short word is usually a different word. */
-export function typosAllowed(length: number): number {
-  return length >= 13 ? 3 : length >= 8 ? 2 : length >= 5 ? 1 : 0;
+/** How many typing mistakes are forgiven between two strings, judged by the SHORTER one: one mistake from 5 letters,
+    two from 9. Short strings get none, because one changed letter in a short word is usually a different word
+    ("fax" is not "tax"). Three or more are never forgiven, however long the answer: that many changes can add or drop
+    a whole short word or prefix and reverse the meaning ("honest advertising" is not "dishonest advertising"). */
+export function typosAllowed(a: number, b: number = a): number {
+  const length = Math.min(a, b);
+  return length >= 9 ? 2 : length >= 5 ? 1 : 0;
+}
+
+/** True when two strings of the same length differ in exactly one letter. */
+function oneLetterChanged(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let changed = 0;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) changed++;
+  return changed === 1;
+}
+/** How far apart two strings are for matching, or 9 if they are too far to forgive. In strings under seven letters
+    one wrong letter is not forgiven, because it usually makes another real word ("patent" is not "parent", "stack"
+    is not "stock"); a missing, extra or swapped letter still is. */
+function slip(a: string, b: string): number {
+  const d = typos(a, b);
+  if (d > typosAllowed(a.length, b.length)) return 9;
+  if (d === 1 && Math.min(a.length, b.length) < 7 && oneLetterChanged(a, b)) return 9;
+  return d;
 }
 
 /** Returns the matching answer row or null. An exact match wins, then a match that ignores word order, plurals and
-    joining words. Otherwise typing mistakes are forgiven: one in answers of 5+ letters, two in 8+, three in 13+.
-    Two neighbouring letters swapped count as one mistake. If a mistyped answer is equally close to two rows, the
-    closest wins and a tie goes to the row listed first. */
+    joining words. Otherwise typing mistakes are forgiven: one when both the typed text and the answer have 5+ letters,
+    two when both have 9+. Two neighbouring letters swapped count as one mistake, and in words under seven letters a
+    single wrong letter is not forgiven. If a mistyped answer is equally
+    close to two rows, the closest wins and a tie goes to the row listed first. */
 export function match(question: Question, input: string): AnswerRow | null {
   const x = norm(input);
   if (!x) return null;
@@ -92,8 +116,9 @@ export function match(question: Question, input: string): AnswerRow | null {
   let best: AnswerRow | null = null;
   let bestDistance = 9;
   for (const { row, y, yl } of aliases) {
-    const d = Math.min(typos(x, y), xl && yl ? typos(xl, yl) : 9);
-    if (d <= typosAllowed(y.length) && d < bestDistance) {
+    // each comparison is judged against its own two strings: the looser form can be much shorter than the answer
+    const d = Math.min(slip(x, y), xl && yl ? slip(xl, yl) : 9);
+    if (d < bestDistance) {
       bestDistance = d;
       best = row;
     }
