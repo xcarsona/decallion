@@ -1,12 +1,12 @@
 /* Daily leaderboard API, one board per cluster.
-   GET  /api/scores?scope=today|yesterday|all&cluster=all|bma|ent|fin|ht|mkt&day=20261117   top 50 scores
-        day is the viewer's own calendar date (today for them). Without it the UTC date is used.
+   GET  /api/scores?scope=today|yesterday|all&cluster=all|bma|ent|fin|ht|mkt   top 50 scores
+        today and yesterday are dates in Eastern Time, the clock the daily rounds run on
    POST /api/scores  { name, day, cluster, answers }                           submit a daily round
 
    The browser sends the answers it typed, never a score. The server rebuilds that cluster's round for that day from
    the shared seed and scores it with the same engine the game uses, so a posted score cannot be invented. */
 import { NextResponse } from "next/server";
-import { dayIso, isPlayableDay, prevDayKey, utcDayKey } from "@/lib/game-engine";
+import { dayIso, dayKey, prevDayKey } from "@/lib/game-engine";
 import { createLimiter } from "@/lib/leaderboard/ratelimit";
 import { parseCluster, parseSubmission, scoreSubmission } from "@/lib/leaderboard/submission";
 import { getServerClient } from "@/lib/supabase/server";
@@ -36,11 +36,8 @@ export async function GET(request: Request) {
   const db = getServerClient();
   if (!db) return NextResponse.json(NOT_CONFIGURED, { status: 503 });
 
-  // "Today" is the viewer's own date, because that is the round they are playing. It can be a day either side of UTC.
-  const asked = params.get("day");
-  const today = asked === null ? utcDayKey() : Number(asked);
-  // the all-time board does not use the day, so a device with a wrong clock can still read it
-  if (scope !== "all" && !isPlayableDay(today)) return fail(400, "Unknown day.");
+  // the server's own clock decides which day is today, so a device with a wrong clock still sees the right board
+  const today = dayKey();
   let query = db.from("daily_scores").select("name, score, levels, day, cluster").eq("cluster", cluster.cluster);
   if (scope === "today") query = query.eq("day", dayIso(today));
   else if (scope === "yesterday") query = query.eq("day", dayIso(prevDayKey(today)));

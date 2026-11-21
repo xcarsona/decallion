@@ -20,7 +20,7 @@ export interface LoggedRound {
   id: string;
   /** When the round finished, ISO date-time (UTC). */
   at: string;
-  /** The player's calendar date when the round started, as a day key such as 20261117. */
+  /** The date (Eastern Time) when the round started, as a day key such as 20261117. */
   day: number;
   /** The cluster the player chose, which may be "all". */
   cluster: ClusterChoice;

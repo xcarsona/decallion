@@ -6,13 +6,15 @@ import { CLUSTER_CHOICES, QUESTIONS } from "@/lib/questions";
 import type { ClusterChoice } from "@/types";
 
 const TODAY = 20261117;
+/** Midday Eastern on that day. */
+const NOW = new Date("2026-11-17T17:00:00Z");
 const round = (cluster: ClusterChoice, day = TODAY) => buildRound(QUESTIONS, { mode: "daily", cluster, seed: day });
 /** The rarest answer on each prompt of a cluster's round: a perfect set of typed answers for that round. */
 const best = (cluster: ClusterChoice, day = TODAY) => round(cluster, day).map((q) => q.a.find((row) => row[1] === 6)![0]);
 const body = (over: Record<string, unknown> = {}) => ({ name: "Test Player", day: TODAY, cluster: "fin", answers: best("fin"), ...over });
 
-function submit(input: unknown, today = TODAY) {
-  const parsed = parseSubmission(input, today);
+function submit(input: unknown, now = NOW) {
+  const parsed = parseSubmission(input, now);
   if (!parsed.ok) throw new Error(parsed.error);
   const scored = scoreSubmission(parsed.submission);
   if (!scored.ok) throw new Error(scored.error);
@@ -33,7 +35,7 @@ describe("leaderboard submission", () => {
 
   it("ignores a score, levels or points sent by the browser", () => {
     const answers = Array.from({ length: ROUND_SIZE }, () => "not an answer");
-    const parsed = parseSubmission(body({ answers, score: 700, levels: [6, 6, 6, 6, 6, 6, 6], points: 700, pts: 700 }), TODAY);
+    const parsed = parseSubmission(body({ answers, score: 700, levels: [6, 6, 6, 6, 6, 6, 6], points: 700, pts: 700 }), NOW);
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(Object.keys(parsed.submission).sort()).toEqual(["answers", "cluster", "day", "name"]);
@@ -42,7 +44,7 @@ describe("leaderboard submission", () => {
 
   it("rejects an unknown cluster and treats a missing one as the mixed round", () => {
     for (const cluster of ["xyz", "", "ALL", 3, ["fin"]]) {
-      expect(parseSubmission(body({ cluster }), TODAY)).toEqual({ ok: false, error: "Unknown cluster." });
+      expect(parseSubmission(body({ cluster }), NOW)).toEqual({ ok: false, error: "Unknown cluster." });
     }
     const { cluster: _dropped, ...old } = body({ answers: best("all") });
     void _dropped;
@@ -57,7 +59,7 @@ describe("leaderboard submission", () => {
   it("rejects the wrong number of answers and answers that are not text", () => {
     const seven = best("fin");
     for (const answers of [seven.slice(0, 6), [...seven, "extra"], [], "seven", undefined, [...seven.slice(0, 6), 7], [...seven.slice(0, 6), null]]) {
-      expect(parseSubmission(body({ answers }), TODAY)).toEqual({ ok: false, error: "A daily round has seven answers." });
+      expect(parseSubmission(body({ answers }), NOW)).toEqual({ ok: false, error: "A daily round has seven answers." });
     }
   });
 
@@ -85,27 +87,31 @@ describe("leaderboard submission", () => {
     expect(all.score).toBeLessThan(fin.score);
   });
 
-  it("accepts the player's date within a day of the UTC date, and rejects older or later days", () => {
-    // TODAY is the server's UTC date. A player west of UTC can still be on yesterday, one east of it on tomorrow.
+  it("accepts only today's round (Eastern Time), with an hour's grace for yesterday's after midnight", () => {
     const yesterday = prevDayKey(TODAY);
     const tomorrow = nextDayKey(TODAY);
-    expect(submit(body({ day: yesterday, answers: best("fin", yesterday) })).score).toBe(700);
-    expect(submit(body({ day: tomorrow, answers: best("fin", tomorrow) })).score).toBe(700);
     expect(submit(body()).day).toBe(TODAY);
-    for (const day of [prevDayKey(yesterday), nextDayKey(tomorrow), 20251117, String(TODAY), undefined, null]) {
-      const parsed = parseSubmission(body({ day }), TODAY);
+    for (const day of [yesterday, tomorrow, prevDayKey(yesterday), nextDayKey(tomorrow), 20251117, String(TODAY), undefined, null]) {
+      const parsed = parseSubmission(body({ day }), NOW);
       expect(parsed.ok).toBe(false);
       if (!parsed.ok) expect(parsed.error).toContain("closed");
     }
+    // tomorrow's round cannot be posted early, even late in the evening when the UTC date has already moved on
+    expect(parseSubmission(body({ day: tomorrow }), new Date("2026-11-18T03:00:00Z")).ok).toBe(false);
+    // half an hour after midnight Eastern, a round started the evening before still posts, under its own day
+    const justAfter = new Date("2026-11-18T05:30:00Z");
+    expect(submit(body({ day: TODAY }), justAfter).score).toBe(700);
+    expect(submit(body({ day: tomorrow, answers: best("fin", tomorrow) }), justAfter).day).toBe(tomorrow);
+    expect(parseSubmission(body({ day: TODAY }), new Date("2026-11-18T06:30:00Z")).ok).toBe(false);
     // the first day of a month still has a yesterday
-    expect(parseSubmission(body({ day: 20261130 }), 20261201).ok).toBe(true);
+    expect(parseSubmission(body({ day: 20261130 }), new Date("2026-12-01T05:20:00Z")).ok).toBe(true);
   });
 
   it("keeps the name rules", () => {
-    expect(parseSubmission(body({ name: "ab" }), TODAY).ok).toBe(false);
-    expect(parseSubmission(body({ name: undefined }), TODAY).ok).toBe(false);
+    expect(parseSubmission(body({ name: "ab" }), NOW).ok).toBe(false);
+    expect(parseSubmission(body({ name: undefined }), NOW).ok).toBe(false);
     expect(submit(body({ name: "  Test   Player " })).name).toBe("Test Player");
-    for (const bad of [null, [], "text", 7]) expect(parseSubmission(bad, TODAY).ok).toBe(false);
+    for (const bad of [null, [], "text", 7]) expect(parseSubmission(bad, NOW).ok).toBe(false);
   });
 
   it("limits posts per address without counting the refused ones", () => {

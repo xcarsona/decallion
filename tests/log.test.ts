@@ -107,7 +107,7 @@ describe("round log", () => {
   });
 
   it("repairs a damaged day key from the round's own time, so the export cannot fail", () => {
-    const ok = round("ok", "fin", "daily", [entry(fin[0], fin[0].a[0][0])], true, new Date(2026, 2, 1, 12, 0).toISOString()); // midday on 1 March, on the local clock
+    const ok = round("ok", "fin", "daily", [entry(fin[0], fin[0].a[0][0])], true, "2026-03-01T17:00:00.000Z"); // midday Eastern on 1 March
     for (const day of [1e20, 0, -5, 20261340, 20260230, 2026.5, "20261117", null, undefined]) {
       const [r] = sanitize([{ ...ok, day }]);
       expect(r.day).toBe(20260301);

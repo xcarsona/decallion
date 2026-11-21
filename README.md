@@ -53,9 +53,10 @@ bottom. A round opens with a short intro card (click, Enter or Space skips it) a
 prompt appears. How to play, the answer levels and a short stats summary are in the How to play panel. Opening it
 does not pause the clock.
 
-The daily round is seeded from the calendar date and the cluster. Each player gets the round for the date on their
-own clock, so it changes at their midnight, and everyone playing a cluster on the same date gets the same seven
-prompts. A prompt is not repeated within three days. For that reason a cluster needs
+The daily round is seeded from the date and the cluster. The date is always the date in US Eastern Time, wherever
+the player is, so the round changes for everyone at midnight Eastern and everyone playing a cluster gets the same
+seven prompts. The server uses the same clock, so it accepts only today's round (and yesterday's for an hour after
+midnight): tomorrow's round cannot be posted early. A prompt is not repeated within three days. For that reason a cluster needs
 at least 21 prompts before its daily round opens.
 
 ## Training log

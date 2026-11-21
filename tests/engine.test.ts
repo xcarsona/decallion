@@ -151,14 +151,27 @@ describe("daily rounds", () => {
   it("mixes clusters in the All clusters round", () => {
     expect(new Set(dailyRound(bank, "all", 20261117).map((x) => x.cluster)).size).toBe(CLUSTER_IDS.length);
   });
-  it("keys the day to the player's own calendar date, changing at their midnight", () => {
-    // new Date(year, month, day, hour, minute) is a time on the local clock, whatever zone the tests run in
-    expect(dayKey(new Date(2026, 10, 17, 23, 59, 59))).toBe(20261117);
-    expect(dayKey(new Date(2026, 10, 18, 0, 0, 0))).toBe(20261118);
-    expect(dayKey(new Date(2026, 10, 18, 18, 30))).toBe(20261118); // evening is still the same day
-    expect(dayKey(new Date(2026, 10, 19, 9, 0))).toBe(20261119); // and the next morning is a new one
-    expect(msUntilNextDay(new Date(2026, 10, 17, 23, 0, 0))).toBe(3600000);
-    expect(ids(dailyRound(bank, "fin", dayKey(new Date(2026, 10, 18, 19, 0))))).not.toEqual(ids(dailyRound(bank, "fin", dayKey(new Date(2026, 10, 19, 9, 0)))));
+  it("keys the day to the date in Eastern Time, for everyone, changing at midnight Eastern", () => {
+    // winter: Eastern is five hours behind UTC, so midnight Eastern is 05:00 UTC
+    expect(dayKey(new Date("2026-11-18T04:59:59Z"))).toBe(20261117);
+    expect(dayKey(new Date("2026-11-18T05:00:00Z"))).toBe(20261118);
+    expect(dayKey(new Date("2026-11-18T23:30:00Z"))).toBe(20261118); // 6:30 pm Eastern is still the same day
+    expect(dayKey(new Date("2026-11-19T14:00:00Z"))).toBe(20261119); // and the next morning is a new one
+    // summer: four hours behind
+    expect(dayKey(new Date("2026-07-01T03:59:59Z"))).toBe(20260630);
+    expect(dayKey(new Date("2026-07-01T04:00:00Z"))).toBe(20260701);
+    expect(ids(dailyRound(bank, "fin", dayKey(new Date("2026-11-19T00:00:00Z"))))).not.toEqual(ids(dailyRound(bank, "fin", dayKey(new Date("2026-11-19T14:00:00Z")))));
+  });
+  it("counts down to midnight Eastern, including the two days the clocks change", () => {
+    expect(msUntilNextDay(new Date("2026-11-18T04:00:00Z"))).toBe(3600000); // 11 pm Eastern
+    expect(msUntilNextDay(new Date("2026-11-18T05:00:00Z"))).toBe(24 * 3600000);
+    expect(msUntilNextDay(new Date("2026-11-18T17:30:15.250Z"))).toBe(11 * 3600000 + 29 * 60000 + 44750);
+    expect(msUntilNextDay(new Date("2026-03-08T05:00:00Z"))).toBe(23 * 3600000); // clocks go forward: a 23-hour day
+    expect(msUntilNextDay(new Date("2026-11-01T04:00:00Z"))).toBe(25 * 3600000); // clocks go back: a 25-hour day
+    expect(msUntilNextDay(new Date("2026-11-01T06:30:00Z"))).toBe(22 * 3600000 + 30 * 60000); // 1:30 am, the second time round
+    const at = new Date("2026-03-08T12:00:00Z");
+    expect(dayKey(new Date(at.getTime() + msUntilNextDay(at)))).toBe(20260309);
+    expect(dayKey(new Date(at.getTime() + msUntilNextDay(at) - 1))).toBe(20260308);
   });
   it("does day arithmetic on the calendar, and keeps a UTC date for the server", () => {
     expect(utcDayKey(new Date("2026-11-17T23:59:59Z"))).toBe(20261117);
@@ -168,10 +181,17 @@ describe("daily rounds", () => {
     expect(nextDayKey(20260228)).toBe(20260301);
     expect(dayIso(20261107)).toBe("2026-11-07");
   });
-  it("accepts a player's date one day either side of the UTC date, and nothing further", () => {
-    expect([20261116, 20261117, 20261118].map((d) => isPlayableDay(d, 20261117))).toEqual([true, true, true]);
-    expect([20261115, 20261119, 20251117, "20261117", null, undefined, NaN].map((d) => isPlayableDay(d, 20261117))).toEqual([false, false, false, false, false, false, false]);
-    expect(isPlayableDay(20270101, 20261231)).toBe(true);
+  it("lets only today's round be posted, with an hour's grace for yesterday's after midnight", () => {
+    const noon = new Date("2026-11-17T17:00:00Z"); // midday Eastern on 17 November
+    expect([20261116, 20261117, 20261118].map((d) => isPlayableDay(d, noon))).toEqual([false, true, false]);
+    expect([20261115, 20261119, 20251117, "20261117", null, undefined, NaN].map((d) => isPlayableDay(d, noon))).toEqual([false, false, false, false, false, false, false]);
+    // just after midnight Eastern: yesterday's round, started before midnight, can still be posted
+    expect([20261116, 20261117, 20261118].map((d) => isPlayableDay(d, new Date("2026-11-17T05:30:00Z")))).toEqual([true, true, false]);
+    expect(isPlayableDay(20261116, new Date("2026-11-17T06:00:01Z"))).toBe(false); // the hour is up
+    expect(isPlayableDay(20261231, new Date("2027-01-01T05:10:00Z"))).toBe(true); // across the year end
+    // late evening in UTC is still the same Eastern day: tomorrow's UTC date is not accepted
+    expect(isPlayableDay(20261118, new Date("2026-11-18T03:00:00Z"))).toBe(false);
+    expect(isPlayableDay(20261117, new Date("2026-11-18T03:00:00Z"))).toBe(true);
   });
 });
 

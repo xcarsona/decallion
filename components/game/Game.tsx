@@ -53,7 +53,7 @@ export default function Game() {
   const [idx, setIdx] = useState(0);
   const [log, setLog] = useState<LogEntry[]>([]);
   const [counts, setCounts] = useState(true);
-  const [roundDay, setRoundDay] = useState(today); // the day, on the player's clock, the current round was started on
+  const [roundDay, setRoundDay] = useState(today); // the day (Eastern Time) the current round was started on
   const [outcome, setOutcome] = useState<RecordOutcome | null>(null);
   const [panel, setPanel] = useState<Panel>(null);
   const [shown, setShown] = useState(0);
@@ -250,7 +250,7 @@ export default function Game() {
               <p>Every prompt has many correct answers. Type one. You have 25 seconds.</p>
               <p>If your answer is not on the board, try another until the clock runs out. The first answer that is on the board is final, so you cannot swap it for a rarer one.</p>
               <p>The fewer competitors likely to give your answer, the higher its level. Answer boards stay sealed until the round ends.</p>
-              <p>Pick a career cluster, or All clusters for a mix. Each has its own daily round, the same for everyone on the same date. It changes at midnight, your time.</p>
+              <p>Pick a career cluster, or All clusters for a mix. Each has its own daily round, the same for everyone. It changes at midnight Eastern Time.</p>
               <p className="mute">{QUESTIONS.length} prompts across {CLUSTER_IDS.length} career clusters.</p>
             </section>
             <section>

@@ -146,13 +146,23 @@ export function shuffle<T>(list: T[], rand: () => number): T[] {
   return a;
 }
 
-/* The daily round is keyed to a calendar date, written as a number such as 20261117. Each player gets the round for
-   their own date, so it changes at their midnight, and everyone gets the same seven prompts for the same date. */
-/** Today for the player: the calendar date on their own clock. */
-export function dayKey(d: Date = new Date()): number {
-  return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+/* The daily round is keyed to a calendar date, written as a number such as 20261117. The date is always the date in
+   US Eastern Time, wherever the player is, so the round changes for everyone at the same moment: midnight Eastern.
+   Because the browser and the server use the same clock, the server knows exactly which round is today's. */
+export const GAME_ZONE = "America/New_York";
+const zoneClock = new Intl.DateTimeFormat("en-US", { timeZone: GAME_ZONE, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hourCycle: "h23" });
+/** The date and time in the game's zone at a moment. */
+function zoned(d: Date): { year: number; month: number; day: number; hour: number; minute: number; second: number } {
+  const out: Record<string, number> = {};
+  for (const part of zoneClock.formatToParts(d)) if (part.type !== "literal") out[part.type] = Number(part.value);
+  return out as ReturnType<typeof zoned>;
 }
-/** The calendar date in UTC. The server uses this, because it does not know the player's time zone. */
+/** Today's day key: the calendar date in Eastern Time. */
+export function dayKey(d: Date = new Date()): number {
+  const z = zoned(d);
+  return z.year * 10000 + z.month * 100 + z.day;
+}
+/** The calendar date in UTC. Used only for arithmetic on day keys, which are plain calendar dates. */
 export function utcDayKey(d: Date = new Date()): number {
   return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
 }
@@ -169,17 +179,28 @@ export function nextDayKey(key: number): number {
   d.setUTCDate(d.getUTCDate() + 1);
   return utcDayKey(d);
 }
-/** A player's date is never more than a day away from the UTC date, whatever their time zone. */
-export function isPlayableDay(day: unknown, utcToday: number = utcDayKey()): day is number {
-  return day === utcToday || day === prevDayKey(utcToday) || day === nextDayKey(utcToday);
+/** How long after midnight a round started the day before may still be posted. A round takes a few minutes. */
+export const LATE_POST_MS = 60 * 60 * 1000;
+/** Whether a daily round for this day may be posted now: today's, or yesterday's in the first hour after midnight
+    (a round started just before midnight and finished just after). Tomorrow's round can never be posted early. */
+export function isPlayableDay(day: unknown, now: Date = new Date()): day is number {
+  const today = dayKey(now);
+  if (day === today) return true;
+  return day === prevDayKey(today) && dayKey(new Date(now.getTime() - LATE_POST_MS)) === day;
 }
 /** 20261117 -> "2026-11-17" */
 export function dayIso(key: number): string {
   return keyToDate(key).toISOString().slice(0, 10);
 }
-/** Time left until the player's next midnight, when their daily rounds change. */
+/** Time left until the next midnight Eastern, when the daily rounds change. */
 export function msUntilNextDay(now: Date = new Date()): number {
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+  const z = zoned(now);
+  const today = dayKey(now);
+  // the time left on the clock, which is right except on the two days a year the clocks change
+  let ms = ((23 - z.hour) * 3600 + (59 - z.minute) * 60 + (60 - z.second)) * 1000 - now.getMilliseconds();
+  while (dayKey(new Date(now.getTime() + ms)) === today) ms += 3600000; // clocks went back: the day is an hour longer
+  while (ms > 3600000 && dayKey(new Date(now.getTime() + ms - 3600000)) !== today) ms -= 3600000; // clocks went forward
+  return ms;
 }
 
 /** Whole days since 1 January 2026 for a day key. */
@@ -208,7 +229,7 @@ export interface RoundOptions {
   /** Practice in All clusters only: the clusters the player ticked. */
   clusters?: ClusterId[];
   diff?: number;
-  /** Day key for the daily round. Defaults to the player's today. */
+  /** Day key for the daily round. Defaults to today (Eastern Time). */
   seed?: number;
   rand?: () => number;
 }

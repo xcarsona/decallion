@@ -38,7 +38,7 @@ export function Board() {
   const fromUrl = params.get("cluster");
   const cluster: ClusterChoice = isClusterChoice(fromUrl) ? fromUrl : isClusterChoice(stored) ? stored : "all";
 
-  // Today and Yesterday are the viewer's own dates, the same ones their daily rounds use.
+  // refetch when the day changes (midnight Eastern), so Today does not keep showing yesterday's scores
   const today = useToday();
   const want = `${scope}:${cluster}:${today}`;
   const [loaded, setLoaded] = useState<{ key: string; result: Result } | null>(null);
@@ -47,7 +47,7 @@ export function Board() {
   useEffect(() => {
     let live = true;
     const key = `${scope}:${cluster}:${today}`;
-    fetch(`/api/scores?scope=${scope}&cluster=${cluster}&day=${today}`)
+    fetch(`/api/scores?scope=${scope}&cluster=${cluster}`)
       .then(async (res) => {
         const data = await res.json();
         if (!live) return;
@@ -92,7 +92,7 @@ export function Board() {
           ))}
         </div>
       </div>
-      <p className="mute">One entry per name, per day, per cluster. Scores are worked out on the server from the answers you typed. Rounds change at midnight, your time.</p>
+      <p className="mute">One entry per name, per day, per cluster. Scores are worked out on the server from the answers you typed. Rounds change at midnight Eastern Time.</p>
       {state.status === "loading" && <p className="mute" aria-busy="true">Loading scores</p>}
       {state.status === "error" && <p id="lbPageError" style={{ color: "var(--miss)" }}>{state.message}</p>}
       {state.status === "ready" && state.rows.length === 0 && <p id="lbEmpty">No {info.short} scores here yet. <Link href="/">Play the daily climb</Link> and post the first one.</p>}

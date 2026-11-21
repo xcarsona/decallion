@@ -15,7 +15,7 @@ function subscribe(fn: () => void): () => void {
 }
 const now = () => dayKey();
 
-/** Today's day key on the player's own clock. It moves on at their midnight, and is checked again whenever a page
+/** Today's day key (the date in Eastern Time). It moves on at midnight Eastern, and is checked again whenever a page
     kept in memory is shown. */
 export function useToday(): number {
   return useSyncExternalStore(subscribe, now, now);

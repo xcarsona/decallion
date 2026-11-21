@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { MODE_NAME } from "./EndView";
 import { AddMissedBoards, AnswerBoard, AnswerBoards } from "@/components/study/AnswerBoard";
-import { DIFFS } from "@/lib/game-engine";
+import { DIFFS, GAME_ZONE } from "@/lib/game-engine";
 import { clusterInfo } from "@/lib/questions";
 import { LEVELS, MAX_PER_PROMPT, ft } from "@/lib/scoring";
 import type { ClusterChoice, LogEntry, Mode } from "@/types";
@@ -12,7 +12,7 @@ import type { ClusterChoice, LogEntry, Mode } from "@/types";
     card with its definition and can be put on the study list. */
 export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number }) {
   const [copied, setCopied] = useState("Copy result");
-  const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: GAME_ZONE });
   const share = `Decallion ${MODE_NAME[mode].toLowerCase()} · ${clusterInfo(cluster).short}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (
