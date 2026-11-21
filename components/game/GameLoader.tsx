@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import { Splash } from "./Splash";
 
 /* The game is canvas, sound and browser storage, so it renders in the browser only. */
 const Game = dynamic(() => import("./Game"), {
@@ -8,5 +9,10 @@ const Game = dynamic(() => import("./Game"), {
 });
 
 export default function GameLoader() {
-  return <Game />;
+  return (
+    <>
+      <Game />
+      <Splash />
+    </>
+  );
 }
