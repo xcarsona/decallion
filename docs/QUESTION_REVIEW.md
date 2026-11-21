@@ -510,3 +510,78 @@ Points the agents flagged as the least certain additions:
 - SEL-02: Service close, Minor points close and Testimonial close come from specific textbooks.
 - CHN-06: Flea market and Festival marketplace are loose fits for a type of shopping center.
 - MKR-06: "response bias" accepted under Dishonest answers and "margin of error" under Sampling error.
+
+## Definitions (third pass)
+
+Every answer now has a short definition in `lib/questions/defs/`, shown when a player opens an answer in the round
+review, the training log or the study list: 5,422 in all. Each cluster's definitions were written by one AI agent and
+then checked by a second, which changed 84 of them. Most changes were precision or wording; the real errors fixed
+included the explanation of home equity, a depreciation formula, and a handwashing time. No person has checked them.
+
+Writing a definition is a good test of whether an answer belongs on its board. The writers flagged the entries below as
+not really fitting their prompt, or as having accepted wordings that mean something different. The definitions were
+written to be accurate rather than to defend the entry, so some of them say the answer is a loose fit.
+
+### Business Management + Administration
+
+- LAW-02 Non-disclosure agreement: a contract, not a type of intellectual property protection.
+- LAW-04 Taft-Hartley Act mainly restricts unions; Whistleblower Protection Act covers federal employees only; Social Security Act and Consumer Credit Protection Act are only loosely worker-protection laws.
+- ECO-05 Boycott and Currency devaluation are not classic government trade barriers.
+- ECO-04 Postal service is funded mostly by postage, not taxes.
+- POB-05 Breach of contract, Planned obsolescence and Conflict of interest: a civil wrong, a usually legal practice, and a situation rather than a practice.
+- HRM-05 Raise is an increase in pay, not a form of pay; Stock options also sits on HRM-01 as a benefit.
+- POB-02 Buying, Risk taking, Standardizing and grading, Financing come from older lists of eight or nine functions, while the prompt's explanation says seven.
+- ECO-01 Human capital, Technology, Knowledge are not among the standard four factors.
+- BMA-03 Centralized / Decentralized describe where decisions are made, not structure types.
+- OPM-04 Last in first out and Weighted average cost are accounting valuation methods.
+- Accepted wordings that mean something else: "deficit" for National debt and "employment rate" for Unemployment rate (ECO-03); "collective mark" for Certification mark (LAW-02); "epa" for Equal Pay Act (LAW-04); "web browser" for Website (BA-04); "g8" for G7 (ECO-07); "jit" for Job instruction training (HRM-02); "benefit corporation" for B Corp certification (POB-07).
+
+### Entrepreneurship
+
+- SBM-05 Inventory purchases, Loan payments and the broad alias "taxes" on Property taxes are not operating expenses in the accounting sense.
+- INO-01 Five whys is a problem-diagnosis tool, not an idea-generation technique; Value analysis and Delphi method are listed as creativity techniques in only some textbooks.
+- INO-02 Business model canvas is not a lean startup concept as such.
+- FND-04 Convertible note, Bonds, Promissory note are loose as types of small business loan.
+- FND-05 Return on investment, Pitch deck, Accelerator are general terms, not deal terms.
+- GRO-04 Growth rate, Return on investment, Goodwill and intangibles are inputs to a valuation, not methods.
+- ENT-07 Job security is debatable as an advantage of entrepreneurship.
+- FRN-01 Rent, Payroll, Utilities, Taxes, Inventory are ordinary business costs, not franchise fees.
+- ENT-05 Hustler and Researcher entrepreneur come from web lists, not textbooks.
+- Accepted wordings that mean something else: "llp" for Limited partnership and "limited liability corporation" for LLC (ENT-01); "incubator" for Accelerator (ENT-02); "tag along" for Drag-along rights (FND-05); "customer satisfaction" for Net promoter score and "net income" for Profit margin (FND-06); "board of directors" for Advisory board (SUP-06).
+
+### Finance
+
+- ACC-05 Regularity, Sincerity, Non-compensation, Utmost good faith come from a popular web list, not the official accounting framework. They are the weakest entries in the cluster.
+- INS-05 Injury to a guest is liability coverage, not a cause of property loss.
+- BNK-03 Barter involves no payment; Store credit or rewards points is loose.
+- BNK-02 Margin requirements and Moral suasion are not normally counted as monetary policy tools.
+- PFL-04 Tariff is paid by importers and Value-added tax is not a United States tax.
+- ACC-08 Bookkeeping, Budgeting, Consulting are activities rather than branches of accounting.
+- FIN-04 Return on investment, Cost-benefit analysis, Feasibility study, Break-even analysis are general evaluation tools, not capital budgeting methods.
+- FIN-01 Savings account is a stretch as an investment; FIN-03 Pawnshop and Check-cashing service are loose as financial institutions.
+- INV-04 NYSE Chicago was renamed NYSE Texas in 2025 (from the checking agent's memory, not looked up). "nyse texas" is now accepted; the displayed name is unchanged.
+- PFL-03 Withholding allowances: the current federal form no longer uses allowances.
+- BNK-02 Reserve requirements: the definition and the prompt's explanation say the requirement is currently zero, which will need updating if that changes.
+
+### Hospitality + Tourism
+
+- LDG-07 No-show is a reservation status, not a room status.
+- TRV-02 Central reservation system is a hotel chain's own system, not an intermediary; Meeting planner is a buyer rather than a distributor.
+- HT-01 Valet is a job, not a department; Rooms division contains three other entries on the same board.
+- LDG-01 Smoking or non-smoking room is an attribute, not a room type.
+- RFS-03 Delivery driver, Valet, Bouncer are not classic front-of-house positions.
+- LDG-05 Special event rate is usually a premium, not a discount.
+- Accepted wordings that mean something else: "net income" and "ebitda" for Gross operating profit, "booking window" for Booking pace and "no-show rate" for Cancellation rate (LDG-03); "english service" for Family-style service and "silver service" for Russian service (RFS-05); "brewery" for Pub and "food court" for Food hall (RFS-01); "expansion fees" for Revenue sharing (SPE-01).
+
+### Marketing
+
+- MKT-01 Packaging and Positioning are not in the standard four or seven Ps.
+- MKT-03 Social media, Influencer marketing, Visual merchandising are channels or tactics, not promotional-mix elements.
+- SEL-01 Negotiation, Qualifying, Suggestion selling are not in the standard steps of a sale.
+- SEL-03 Competitor, Authority, Hidden objection sit outside the classic five objection types the prompt's explanation cites.
+- PROM-02 Product placement, Sponsorship, Trade shows are usually classed under other parts of the promotional mix.
+- PRC-05 Profit and Break-even point are not really retail pricing math terms.
+- MKR-05 Net promoter score is a metric, not a question type.
+- Several boards list a category alongside its own members: MKT-09, CHN-05, MKR-04, MKR-05, CHN-01.
+- Accepted wordings that conflict across boards: "price discrimination" is a strategy on MKT-04 and a restricted practice on PRC-04; "loss leader" is a strategy on MKT-04 and a restricted practice on PRC-04.
+- Accepted wordings that mean something else: "paying in cash" for Cash discount (PRC-03); "variety store" for Dollar store (CHN-01); "brand identity" for Brand associations (BRD-06).

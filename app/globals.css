@@ -76,8 +76,9 @@ canvas.clicon{display:block;flex:none;width:24px;height:24px;image-rendering:pix
 .rev .why{color:var(--ink);font-size:18px}
 .rev .tag{color:var(--mute);font-size:16px;letter-spacing:.08em}
 .bank{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
-.bank li{font-size:18px;padding:1px 8px;border:2px solid var(--c);color:var(--c)}
-.bank li.mine{background:var(--c);color:#06224a}
+/* each answer is a button that opens its answer card (see the answer cards section) */
+.bank .ans{font-size:18px;line-height:1.15;letter-spacing:.03em;text-transform:none;text-align:left;padding:1px 8px;border:2px solid var(--c);background:transparent;color:var(--c);box-shadow:none}
+.bank .ans.mine{background:var(--c);color:#06224a}
 
 /* ---- site chrome ---- */
 .sitehead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -267,6 +268,52 @@ button.logrow:active{transform:none}
 .board td.rank{color:var(--mute);width:3ch}
 .board tr.me td{color:var(--gold)}
 
+/* ---- answer cards and study controls: under an answer board in the round review and the training log ---- */
+.aboard{display:flex;flex-direction:column;gap:8px;min-width:0}
+.bank .ans:hover{filter:none;background:color-mix(in srgb,var(--c) 22%,transparent)}
+.bank .ans.mine:hover{background:var(--c);filter:brightness(1.12)}
+.bank .ans:active{transform:none}
+.bank .ans[aria-expanded="true"]{background:color-mix(in srgb,var(--c) 30%,transparent);box-shadow:0 0 0 2px #06122c,0 0 0 4px var(--c)}
+.bank .ans.mine[aria-expanded="true"]{background:var(--c)}
+/* a small square marks an answer that is on the study list */
+.bank .ans[data-saved]::after{content:"";display:inline-block;width:8px;height:8px;margin-left:8px;background:var(--gold);box-shadow:0 0 0 1px #06122c}
+.acard{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:2px solid var(--c);border-left-width:6px;background:#06122c;animation:fade .16s ease both}
+.acard:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.achead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.achead b{font-weight:400;font-size:24px;line-height:1.05;overflow-wrap:anywhere}
+.aclevel{color:var(--c);white-space:nowrap}
+.acmine{font-size:15px;letter-spacing:.14em;text-transform:uppercase;padding:0 6px;background:var(--c);color:#06224a}
+.acard p{max-width:70ch;overflow-wrap:anywhere}
+.acrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.aclisted{color:var(--gold)}
+.acrow #answerClose{margin-left:auto}
+.boardtools,.missedtools{display:flex;flex-wrap:wrap;gap:8px}
+.reviewtools{display:flex;flex-direction:column;gap:8px}
+button[aria-disabled="true"]{cursor:default;opacity:.55}
+button[aria-disabled="true"]:hover{filter:none}
+button[aria-disabled="true"]:active{transform:none}
+
+/* ---- study list (/study). --cc is the cluster colour of a group ---- */
+.studypage{display:flex;flex-direction:column;gap:16px;min-width:0}
+.studypage button:disabled{cursor:not-allowed;opacity:.55;filter:none}
+.studycluster{border-left:5px solid var(--cc,var(--line))}
+.studycluster h3.clname{display:flex;align-items:center;gap:10px}
+.studyprompt{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:2px dashed var(--line);min-width:0}
+.studyprompt h4{display:flex;align-items:flex-start;gap:8px;margin:0;font-size:22px;line-height:1.1;font-weight:400}
+.studyprompt h4 .clicon{margin-top:3px}
+.studyprompt h4 span{min-width:0;overflow-wrap:anywhere}
+.studyprompt .tag{color:var(--mute);font-size:16px;letter-spacing:.08em}
+.studyterms{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.studyTerm{display:flex;align-items:flex-start;justify-content:space-between;gap:8px 14px;padding:6px 10px;border-left:5px solid var(--c,var(--mute));background:rgba(255,255,255,.05);min-width:0}
+.stmain{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto}
+.sthead{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}
+.sthead b{font-weight:400;font-size:22px;line-height:1.1;overflow-wrap:anywhere}
+.stlevel{color:var(--c);white-space:nowrap}
+.stdef{font-size:18px;max-width:70ch;overflow-wrap:anywhere}
+.stbtns{display:flex;gap:6px;flex:none}
+.studyTerm.learned .stmain{opacity:.5}
+.studyLearned[aria-pressed="true"]{background:var(--glass);color:#052046}
+
 /* ---- motion ---- */
 @keyframes viewin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -332,6 +379,11 @@ button.logrow:active{transform:none}
   .sheethead button{padding:5px 10px}
   .sheetbody{padding:12px 12px 18px}
   .helpgrid{grid-template-columns:minmax(0,1fr)}
+
+  /* answer boards: taller answers for fingers; study rows put their buttons under the text */
+  .bank .ans{padding:4px 8px}
+  .acrow button,.boardtools button,.missedtools button,.stbtns button{padding:5px 10px}
+  .studyTerm{flex-direction:column}
 
   /* log round row: date and caret, cluster and mode, level squares, then points and altitude */
   button.logrow{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}

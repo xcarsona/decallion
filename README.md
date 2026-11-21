@@ -11,9 +11,12 @@ fewer competitors would give climbs higher. Unofficial: not affiliated with or e
 | `components/game/` | The game screens as React components, plus `scene.ts`, the canvas animation and sound |
 | `lib/questions/bank/` | The question bank, one file per career cluster. Data only |
 | `lib/questions/clusters.ts` | The five clusters: names, colours and icons |
+| `lib/questions/defs/` | A short definition for every answer, one JSON file per cluster, loaded only when first needed |
 | `lib/game-engine/` | Answer matching, round building, the daily seed, bank checks |
 | `lib/scoring/` | The six answer levels and their points |
-| `lib/stats/`, `lib/log/` | Personal stats and the training log, both saved in the browser |
+| `lib/stats/`, `lib/log/`, `lib/study/` | Personal stats, the training log and the study list, all saved in the browser |
+| `components/study/` | The answer boards with their definition cards, and the study list page (`/study`) |
+| `public/splash/` | The four tiles behind the loading screen (see Loading screen below) |
 | `lib/leaderboard/` | Name rules and the checks on a posted round |
 | `lib/supabase/`, `supabase/` | Leaderboard database client (server only), the table definition and its migrations |
 | `docs/QUESTION_REVIEW.md` | Notes from the review of the question bank |
@@ -59,6 +62,22 @@ at least 21 prompts before its daily round opens.
 
 Every finished round is saved in the browser and listed at `/log`. It keeps the latest 500 rounds and can be
 exported as a CSV file.
+
+## Definitions and the study list
+
+In the round review and in the training log, every answer on a board can be opened to read what it is. The
+definitions live in `lib/questions/defs/`, keyed by prompt id and by the answer as displayed. `npm test` fails if an
+answer has no definition or a definition is left over, so add one whenever you add an answer.
+
+From an answer's card a player can add it to their study list, add a whole board, or add every board they missed in
+that round. The list is at `/study`: terms grouped by cluster and prompt, with a learned toggle and filters. It is
+saved in the browser only, up to 2,000 terms, and clearing the log does not clear it.
+
+## Loading screen
+
+The game opens on a short loading screen that cuts between four tiles in `public/splash/`. Each tile is a photo
+shrunk to between 26 and 40 blocks across, so that no face, name badge or logo in it can be made out. Only those
+tiles are in the repository, not the photos. Replace a tile with any small PNG of the same name to change it.
 
 ## Leaderboard
 

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { ClusterIcon } from "@/components/game/ClusterIcon";
+import { AddMissedBoards, AnswerBoard, AnswerBoards } from "@/components/study/AnswerBoard";
 import { useToday } from "@/components/ui/useToday";
 import { DIFFS, prevDayKey } from "@/lib/game-engine";
 import {
@@ -9,7 +10,7 @@ import {
   questionIndex, roundsNotListed, subscribeLog, toCsv, topicBreakdown, type LogFilter, type LoggedRound,
 } from "@/lib/log";
 import { CLUSTER_CHOICES, CLUSTER_IDS, QUESTIONS, clusterInfo } from "@/lib/questions";
-import { LEVELS, ft } from "@/lib/scoring";
+import { ft } from "@/lib/scoring";
 import { isPersistent, reset as resetStats, snapshot as statsSnapshot, subscribe as subscribeStats } from "@/lib/stats";
 import type { ClusterChoice, Question } from "@/types";
 
@@ -32,10 +33,16 @@ function Chips<T extends string>({ id, label, options, value, onChange }: { id: 
   );
 }
 
-/* The answer boards for one logged round, in the same layout as the round review under the game. */
+/* The answer boards for one logged round, in the same layout as the round review under the game. The log's Clear
+   button erases the log and the stats only: the study list is separate. */
 function RoundBoards({ round, byId }: { round: LoggedRound; byId: Map<string, Question> }) {
+  const missed = round.entries.filter((e) => e.level === -1).map((e) => byId.get(e.id)).filter((q): q is Question => !!q);
   return (
     <div className="logboards" id={`boards-${round.id}`}>
+      <div className="reviewtools">
+        <p className="mute">Pick an answer to see what it means and add it to your study list.</p>
+        <AddMissedBoards className="addMissed" questions={missed} />
+      </div>
       {round.entries.map((e, i) => {
         const q = byId.get(e.id);
         const row = matchedRow(q, e);
@@ -46,11 +53,7 @@ function RoundBoards({ round, byId }: { round: LoggedRound; byId: Map<string, Qu
             <div className={`you ${e.level === -1 ? "cx" : `c${e.level}`}`}>{you}</div>
             {q ? (
               <>
-                <ul className="bank">
-                  {q.a.slice().sort((a, b) => b[1] - a[1]).map((r) => (
-                    <li key={r[0]} className={`c${r[1]}${r === row ? " mine" : ""}`} title={LEVELS[r[1]].name}>{r[0]} · {LEVELS[r[1]].pts}</li>
-                  ))}
-                </ul>
+                <AnswerBoard question={q} mine={row} />
                 <div className="why">{q.why}</div>
                 <div className="tag">{q.topic} · {q.area} · {DIFFS[q.diff]} · {q.id}</div>
               </>
@@ -218,6 +221,7 @@ export default function LogPage() {
         <p className="mute" id="logCount" aria-live="polite">
           {rounds.length === 0 ? (log.length === 0 ? "No rounds in the log yet." : "No rounds match these filters.") : `Showing ${visible.length} of ${rounds.length} ${rounds.length === 1 ? "round" : "rounds"}, newest first.`}
         </p>
+        <AnswerBoards>
         <ul className="logrounds" id="logRounds">
           {visible.map((r) => {
             const info = clusterInfo(r.cluster);
@@ -238,6 +242,7 @@ export default function LogPage() {
             );
           })}
         </ul>
+        </AnswerBoards>
         {rounds.length > limit && (
           <div><button type="button" className="ghost mini" id="logMore" onClick={() => setLimit(limit + PAGE)}>Show more</button></div>
         )}

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [["/", "Play"], ["/log", "Log"], ["/leaderboard", "Leaderboard"]] as const;
+const LINKS = [["/", "Play"], ["/log", "Log"], ["/study", "Study"], ["/leaderboard", "Leaderboard"]] as const;
 
 export function SiteNav() {
   const path = usePathname();
