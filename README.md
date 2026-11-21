@@ -77,7 +77,8 @@ saved in the browser only, up to 2,000 terms, and clearing the log does not clea
 ## Loading screen
 
 The game opens on a short loading screen that cuts between four tiles in `public/splash/`. Each tile is a photo
-shrunk to between 26 and 40 blocks across, so that no face, name badge or logo in it can be made out. Only those
+shrunk to between 50 and 72 blocks across: enough to see that there are people and a place, too coarse to recognise
+a face or read a name badge. Areas holding a logo are drawn four times coarser. Only those
 tiles are in the repository, not the photos. Replace a tile with any small PNG of the same name to change it.
 
 ## Leaderboard
