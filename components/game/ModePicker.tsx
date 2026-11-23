@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ClusterIcon } from "./ClusterIcon";
 import { DAILY_MIN, ROUND_SIZE, STRIKES, dailyEnabled, inCluster, msUntilNextDay } from "@/lib/game-engine";
 import { QUESTIONS, clusterInfo } from "@/lib/questions";
@@ -19,6 +19,13 @@ function NextRound() {
 
 /** Step two: the three modes for the chosen cluster, with today's daily status and the player's best in each. */
 export function ModePicker({ cluster, stats, today, yesterday, onStart, onPractice, onBack }: { cluster: ClusterChoice; stats: Stats; today: number; yesterday: number; onStart: (mode: Mode) => void; onPractice: () => void; onBack: () => void }) {
+  /* The second click of a double click on a cluster lands here, on whichever mode button is now under the pointer.
+     Clicks are ignored for a moment after the menu appears. */
+  const shownAt = useRef(0);
+  useEffect(() => {
+    shownAt.current = performance.now();
+  }, []);
+  const armed = () => performance.now() - shownAt.current > 350;
   const info = clusterInfo(cluster);
   const count = inCluster(QUESTIONS, cluster).length;
   const open = dailyEnabled(QUESTIONS, cluster);
@@ -31,6 +38,7 @@ export function ModePicker({ cluster, stats, today, yesterday, onStart, onPracti
   let status = `${ROUND_SIZE} prompts, the same for everyone today.`;
   if (!open) status = `Opens when this cluster has ${DAILY_MIN} prompts (${count} so far).`;
   else if (daily.last === today) status = `Logged today: ${ft(daily.score)} ft. Replays do not count.`;
+  else if (daily.started === today) status = "Started earlier today, so a new run will not count.";
   return (
     <div className="view modes">
       <div className="vbody">
@@ -43,7 +51,7 @@ export function ModePicker({ cluster, stats, today, yesterday, onStart, onPracti
             </div>
           </div>
           <div className="menu">
-            <button type="button" id="mDaily" disabled={!open} autoFocus={open} onClick={() => onStart("daily")}>
+            <button type="button" id="mDaily" disabled={!open} autoFocus={open} onClick={() => armed() && onStart("daily")}>
               <b>Daily climb</b>
               <span>
                 <span id="dailyStatus">{status}</span> <NextRound />
@@ -51,14 +59,14 @@ export function ModePicker({ cluster, stats, today, yesterday, onStart, onPracti
                 {best("daily")}
               </span>
             </button>
-            <button type="button" id="mPractice" disabled={!count} autoFocus={!open} onClick={onPractice}>
+            <button type="button" id="mPractice" disabled={!count} autoFocus={!open} onClick={() => armed() && onPractice()}>
               <b>Practice</b>
               <span>
                 {cluster === "all" ? "Pick clusters, difficulty and timer." : "Pick difficulty and timer."}
                 {best("practice")}
               </span>
             </button>
-            <button type="button" id="mUnlimited" disabled={!count} onClick={() => onStart("unlimited")}>
+            <button type="button" id="mUnlimited" disabled={!count} onClick={() => armed() && onStart("unlimited")}>
               <b>Unlimited</b>
               <span>
                 Keep climbing until {STRIKES} misses.

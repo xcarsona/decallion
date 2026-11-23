@@ -1,6 +1,7 @@
 /* Player statistics, kept in this browser's storage. Falls back to memory for the session if storage is blocked.
    Totals, bests and daily streaks are tracked per cluster choice ("all" is the mixed round). These totals are the
    source of truth for the training log page: they include rounds older than the ones lib/log keeps. */
+import { dayKey } from "@/lib/game-engine";
 import { LEGACY_CATEGORY_CLUSTER } from "@/lib/questions/clusters";
 import type { ClusterChoice, ClusterId, Mode } from "@/types";
 
@@ -11,6 +12,9 @@ export interface DailyState {
   bestStreak: number;
   /** Score of the last counted daily round. */
   score: number;
+  /** Day key of the last daily round in which an answer was given, finished or not. A round that is started and
+      abandoned (Home, reload) still uses up the day's counted run. */
+  started?: number;
 }
 export interface ClusterTotals {
   games: number;
@@ -107,10 +111,21 @@ export function normalize(raw: unknown): Stats {
   s.games = count(raw.games);
   s.prompts = count(raw.prompts);
   s.pts = count(raw.pts);
-  if (isObject(raw.levels)) s.levels = { ...s.levels, ...(raw.levels as Record<string, number>) };
-  if (isObject(raw.topics)) s.topics = raw.topics as Stats["topics"];
-  if (isObject(raw.best)) s.best = raw.best as Stats["best"];
-  if (isObject(raw.daily)) s.daily = raw.daily as Stats["daily"];
+  // every field is rebuilt from numbers only: a value of the wrong type in storage must not reach the page, where
+  // it would throw while rendering or while the next round is added
+  if (isObject(raw.levels)) for (const [k, v] of Object.entries(raw.levels)) s.levels[k] = count(v);
+  if (isObject(raw.topics)) {
+    for (const [k, v] of Object.entries(raw.topics)) if (isObject(v)) s.topics[k] = { n: count(v.n), pts: count(v.pts), glass: count(v.glass) };
+  }
+  if (isObject(raw.best)) for (const [k, v] of Object.entries(raw.best)) s.best[k] = count(v);
+  if (isObject(raw.daily)) {
+    for (const [k, v] of Object.entries(raw.daily)) {
+      if (isObject(v)) {
+        s.daily[k] = { last: count(v.last), streak: count(v.streak), bestStreak: count(v.bestStreak), score: count(v.score) };
+        if (count(v.started)) s.daily[k].started = count(v.started);
+      }
+    }
+  }
   if (isObject(raw.clusters)) {
     for (const [k, v] of Object.entries(raw.clusters)) {
       if (isObject(v)) s.clusters[k] = { games: count(v.games), prompts: count(v.prompts), pts: count(v.pts) };
@@ -189,9 +204,26 @@ export function subscribe(fn: () => void): () => void {
   return () => void listeners.delete(fn);
 }
 
-/** Whether a round finishing now changes stats, bests and streaks. Only the first daily round of a day does. */
-export function countsNow(stats: Stats, mode: Mode, cluster: ClusterChoice, day: number): boolean {
-  return mode !== "daily" || dailyOf(stats, cluster).last !== day;
+/** Whether a round finishing now changes stats, bests and streaks. Only the first daily round of a day does, and
+    only if no later day's round has been counted since: a round left open in another tab and finished a day or two
+    late must not wind the streak back or let the later day's round count twice. A saved day that is in the future
+    (a device clock that was wrong) is ignored, so it cannot block the player. */
+export function countsNow(stats: Stats, mode: Mode, cluster: ClusterChoice, day: number, today: number = dayKey(), ownRound = false): boolean {
+  if (mode !== "daily") return true;
+  const { last, started } = dailyOf(stats, cluster);
+  if (last === day) return false;
+  // `ownRound` is true when the round asking is the one that marked the day as started
+  if (!ownRound && started === day) return false;
+  return !(last > day && last <= today);
+}
+
+/** Notes that the daily round for this day has had an answer given. From then on a fresh start that day does not
+    count: only the first run does, whether or not it is finished. */
+export function markDailyStarted(cluster: ClusterChoice, day: number): void {
+  const stats = load();
+  const daily = dailyOf(stats, cluster);
+  if (daily.started === day) return;
+  save({ ...stats, daily: { ...stats.daily, [cluster]: { ...daily, started: day } } });
 }
 
 /** Adds a finished round to the stats. Pure: returns the new stats and what changed. */
@@ -220,7 +252,9 @@ export function apply(prev: Stats, result: RoundResult): { stats: Stats; outcome
     outcome.newBest = true;
   }
   if (result.mode === "daily") {
-    daily.streak = daily.last === result.prevDayKey ? daily.streak + 1 : 1;
+    // A saved day later than this round can only come from a wrong clock or an older way of naming the day. The
+    // streak is kept then, not broken.
+    daily.streak = daily.last === result.prevDayKey ? daily.streak + 1 : daily.last > result.dayKey ? Math.max(1, daily.streak) : 1;
     daily.last = result.dayKey;
     daily.score = result.score;
     daily.bestStreak = Math.max(daily.bestStreak, daily.streak);

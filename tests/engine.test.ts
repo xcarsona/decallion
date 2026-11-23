@@ -293,7 +293,7 @@ describe("leaderboard names", () => {
     expect(cleanName("  Carson A ")).toEqual({ ok: true, name: "Carson A" });
     expect(cleanName("ab").ok).toBe(false);
     expect(cleanName("<script>").ok).toBe(false);
-    expect(cleanName("sh1t_head").ok).toBe(true);
+    expect(cleanName("sh1t_head").ok).toBe(false); // digits standing in for letters are read as the letters
     expect(cleanName("xShitx").ok).toBe(false);
     expect(cleanName(42).ok).toBe(false);
   });

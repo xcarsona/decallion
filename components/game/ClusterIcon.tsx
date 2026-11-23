@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { CLUSTERS, CLUSTER_IDS, clusterInfo } from "@/lib/questions";
-import type { ClusterInfo } from "@/lib/questions";
+// from the clusters file, not the "@/lib/questions" barrel: the barrel brings the whole question bank with it, and
+// this icon is also drawn on the leaderboard page, which has no use for the bank
+import { CLUSTERS, CLUSTER_IDS, clusterInfo } from "@/lib/questions/clusters";
+import type { ClusterInfo } from "@/lib/questions/clusters";
 import type { ClusterChoice } from "@/types";
 
 /* Original 12x12 pixel icons, one per career cluster plus the All clusters mix, in the style of LevelIcon.

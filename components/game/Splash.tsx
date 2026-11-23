@@ -10,6 +10,8 @@ const BLOCKS = 16;
 /** The shortest time the screen stays up, so it does not flash by on a fast connection. */
 const MIN_MS = 2600;
 const MIN_MS_REDUCED = 900;
+/** How long the game may take to load before the "Loading" line says what to try. */
+const SLOW_MS = 15000;
 const CUT_MS = 650;
 const OUT_MS = 320;
 
@@ -22,6 +24,8 @@ export function Splash() {
   const [scene, setScene] = useState(0);
   const [filled, setFilled] = useState(0);
   const [ready, setReady] = useState(false);
+  /** True once the game has taken so long to arrive that the player should be told what to try. */
+  const [slow, setSlow] = useState(false);
   const [phase, setPhase] = useState<Phase>("loading");
   const skip = useRef<() => void>(() => {});
 
@@ -50,6 +54,7 @@ export function Splash() {
       const t = performance.now() - started;
       const loaded = gameLoaded();
       setReady(loaded);
+      if (!loaded && t >= SLOW_MS) setSlow(true);
       // the bar never completes before the game is there
       setFilled(Math.floor(Math.min(1, t / min, loaded ? 1 : 0.9) * BLOCKS));
       const nextCut = Math.floor(t / CUT_MS);
@@ -91,7 +96,9 @@ export function Splash() {
         <div className="splashbar" aria-hidden="true">
           {Array.from({ length: BLOCKS }, (_, i) => <i key={i} className={i < filled ? "on" : undefined} />)}
         </div>
-        <p className="splashstate" id="splashState">{ready && filled >= BLOCKS ? "Ready" : "Loading"}</p>
+        {slow && !ready
+          ? <p className="splashstate slow" id="splashState">Still loading. Check your connection, or reload.</p>
+          : <p className="splashstate" id="splashState">{ready && filled >= BLOCKS ? "Ready" : "Loading"}</p>}
       </div>
       <p className="splashfine">Unofficial practice game. Not affiliated with or endorsed by DECA Inc.</p>
     </div>

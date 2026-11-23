@@ -18,6 +18,10 @@ export interface Question {
   q: string;
   why: string;
   a: AnswerRow[];
+  /** First day (a day key such as 20261124) the prompt may appear in a daily round. Set on prompts added after
+      launch, so that adding them does not change the daily rounds of earlier days, today's included. Practice and
+      Unlimited use a prompt as soon as it is in the bank. */
+  since?: number;
 }
 
 export type Mode = "daily" | "practice" | "unlimited";

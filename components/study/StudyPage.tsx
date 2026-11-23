@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { NO_DEFINITION } from "./AnswerCard";
-import { useDefinitions } from "./useDefinitions";
+import { useDefinitions, useDefinitionsFailed } from "./useDefinitions";
 import { ClusterIcon } from "@/components/game/ClusterIcon";
 import { CLUSTER_IDS, QUESTIONS, clusterInfo } from "@/lib/questions";
 import { definitionOf } from "@/lib/questions/defs";
@@ -27,6 +27,7 @@ export default function StudyPage() {
   const groups = useMemo(() => groupTerms(list, QUESTIONS, filter), [list, filter]);
   // only the clusters that have terms showing are loaded
   const defs = useDefinitions(groups.map((g) => g.cluster).filter(Boolean).join(","));
+  const failed = useDefinitionsFailed();
   const total = counts(list);
   const showing = groups.reduce((n, g) => n + g.terms, 0);
   const storageNote = isStudyPersistent() ? "Saved in this browser only." : "This browser is blocking storage, so the study list lasts only until you close the page.";
@@ -76,7 +77,7 @@ export default function StudyPage() {
           <h2>Study list</h2>
           <div className="row">
             <button type="button" className="ghost mini" id="studyRemoveLearned" onClick={() => removeLearnedTerms()} disabled={total.learned === 0}>Remove learned</button>
-            <button type="button" className="ghost mini" id="studyClear" onClick={clear}>{armed ? "Click again to erase" : "Clear study list"}</button>
+            <button type="button" className="ghost mini" id="studyClear" onClick={clear}>{armed ? "Tap again to erase" : "Clear study list"}</button>
           </div>
         </div>
         <div className="figs" id="studyCounts" aria-live="polite">
@@ -127,7 +128,7 @@ export default function StudyPage() {
                           {row && <span className="stlevel">{LEVELS[row[1]].name} · {LEVELS[row[1]].pts} pts</span>}
                         </div>
                         {row
-                          ? <p className={`stdef${text ? "" : " mute"}`}>{!loaded ? "Loading" : text ?? NO_DEFINITION}</p>
+                          ? <p className={`stdef${text ? "" : " mute"}`}>{!loaded ? ((p.question && failed.has(p.question.cluster)) ? "Could not load the definition. Check your connection." : "Loading") : text ?? NO_DEFINITION}</p>
                           : p.question && <p className="stdef mute">This answer is no longer on the board.</p>}
                       </div>
                       <div className="stbtns">

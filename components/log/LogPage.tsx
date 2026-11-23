@@ -137,7 +137,7 @@ export default function LogPage() {
           <h2>Training log</h2>
           <div className="row">
             <button type="button" className="ghost mini" id="logExport" onClick={exportCsv} disabled={log.length === 0}>Export CSV</button>
-            <button type="button" className="ghost mini" id="logClear" onClick={clear}>{armed ? "Click again to erase" : "Clear log and stats"}</button>
+            <button type="button" className="ghost mini" id="logClear" onClick={clear}>{armed ? "Tap again to erase" : "Clear log and stats"}</button>
           </div>
         </div>
         <div className="figs" id="logFigs">

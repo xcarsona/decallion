@@ -4,8 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { ClusterIcon } from "@/components/game/ClusterIcon";
 import { useToday } from "@/components/ui/useToday";
-import { CLUSTER_IDS, clusterInfo, isClusterChoice } from "@/lib/questions";
-import { ft } from "@/lib/scoring";
+// from the clusters file, not the "@/lib/questions" barrel, which would bring the whole question bank to this page
+import { CLUSTER_IDS, clusterInfo, isClusterChoice } from "@/lib/questions/clusters";
+import { LEVELS, ft } from "@/lib/scoring";
 import type { ClusterChoice, ScoreRow } from "@/types";
 
 type Scope = "today" | "yesterday" | "all";
@@ -25,6 +26,10 @@ const noSubscribe = () => () => {};
 const savedCluster = () => read(CLUSTER_KEY);
 const savedName = () => read("decallion-name").toLowerCase();
 const nothing = () => "";
+/** Where to report a name. Shown only when the site owner has set an address. */
+const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "").trim();
+/** The words for one coloured square: the level's name, or "No credit" for a miss (stored as 0). */
+const levelName = (level: number) => (level >= 1 && level <= 6 ? LEVELS[level as keyof typeof LEVELS].name : "No credit");
 
 export function Board() {
   const params = useSearchParams();
@@ -93,6 +98,7 @@ export function Board() {
         </div>
       </div>
       <p className="mute">One entry per name, per day, per cluster. Scores are worked out on the server from the answers you typed. Rounds change at midnight Eastern Time.</p>
+      {CONTACT_EMAIL && <p className="mute" id="lbReport">To report a name, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>}
       {state.status === "loading" && <p className="mute" aria-busy="true">Loading scores</p>}
       {state.status === "error" && <p id="lbPageError" style={{ color: "var(--miss)" }}>{state.message}</p>}
       {state.status === "ready" && state.rows.length === 0 && <p id="lbEmpty">No {info.short} scores here yet. <Link href="/">Play the daily climb</Link> and post the first one.</p>}
@@ -109,7 +115,7 @@ export function Board() {
                   <td>{r.name}</td>
                   <td className="num">{ft(r.score)} ft</td>
                   <td className="num">{r.score}</td>
-                  <td><span className="sq">{r.levels.map((l, j) => <i key={j} className={l ? `c${l}` : undefined} />)}</span></td>
+                  <td><span className="sq" role="img" aria-label={r.levels.map(levelName).join(", ")}>{r.levels.map((l, j) => <i key={j} className={l ? `c${l}` : undefined} />)}</span></td>
                   {scope === "all" && <td>{r.day}</td>}
                 </tr>
               ))}

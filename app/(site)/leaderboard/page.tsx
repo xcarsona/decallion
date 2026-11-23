@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Board } from "./Board";
+import { pageMetadata } from "@/app/site-info";
 
-export const metadata: Metadata = { title: "Leaderboard · Decallion" };
+export const metadata: Metadata = pageMetadata("Leaderboard", "/leaderboard");
 
 export default function LeaderboardPage() {
   // Board reads ?cluster= with useSearchParams, which needs a Suspense boundary on a prerendered page.

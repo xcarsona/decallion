@@ -52,9 +52,10 @@ export function ScoreSubmit({ day, cluster, answers }: { day: number; cluster: C
     <form className="lbform" onSubmit={submit}>
       <label htmlFor="lbName" className="mute" id="lbLabel">Post to {isToday ? "today" : "yesterday"}&apos;s {board} leaderboard</label>
       <div className="row" style={{ justifyContent: "flex-start" }}>
-        <input id="lbName" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name" maxLength={16} autoComplete="nickname" />
+        <input id="lbName" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name" maxLength={16} autoComplete="nickname" aria-describedby="lbNameHelp" />
         <button type="submit" className="mini" disabled={state.kind === "sending"}>{state.kind === "sending" ? "Posting" : "Post score"}</button>
       </div>
+      <p className="mute smallnote" id="lbNameHelp">Shown publicly. Use a nickname, not your full name. 3 to 16 characters.</p>
       {state.kind === "error" && <p className="cx" id="lbError" style={{ color: "var(--c)" }}>{state.message}</p>}
     </form>
   );

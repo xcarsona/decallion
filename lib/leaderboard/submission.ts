@@ -43,6 +43,8 @@ export function parseSubmission(body: unknown, now: Date = new Date()): Parsed<{
   }
   // No answer on any board is this long, so an over-long one is a miss. It is not a reason to refuse the other six.
   const kept = (answers as string[]).map((a) => (a.length <= MAX_ANSWER_LENGTH ? a : ""));
+  // Seven blanks is not a round anyone played. Refusing it stops a name being taken for the day with an empty post.
+  if (kept.every((a) => !a.trim())) return { ok: false, error: "Play the round before posting a score." };
   return { ok: true, submission: { name: name.name, day, cluster: cluster.cluster, answers: kept } };
 }
 

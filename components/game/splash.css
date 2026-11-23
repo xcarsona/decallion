@@ -26,3 +26,5 @@
 @keyframes splashblink{50%{opacity:.45}}
 @keyframes splashout{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.splashstate,.splash.out{animation:none}}
+/* the line shown when the game is slow to arrive: a sentence, so ordinary spacing, wrapped, and held still to be read */
+.splashstate.slow{max-width:26ch;font-size:20px;line-height:1.15;letter-spacing:.06em;text-transform:none;padding-left:0;color:var(--gold);animation:none;text-shadow:0 2px 8px rgba(0,0,0,.9)}

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { useDefinitions } from "./useDefinitions";
+import { retryDefinitions, useDefinitions, useDefinitionsFailed } from "./useDefinitions";
 import { definitionOf } from "@/lib/questions/defs";
 import { LEVELS } from "@/lib/scoring";
 import { addTerms, removeTerm } from "@/lib/study";
@@ -13,6 +13,7 @@ export const NO_DEFINITION = "No definition yet.";
 export function AnswerCard({ question, row, mine, onList, onClose }: { question: Question; row: AnswerRow; mine: boolean; onList: boolean; onClose: () => void }) {
   const box = useRef<HTMLDivElement>(null);
   const defs = useDefinitions(question.cluster)[question.cluster];
+  const failed = useDefinitionsFailed().has(question.cluster);
   const text = defs ? definitionOf(defs, question.id, row[0]) : null;
   const ref = { promptId: question.id, answer: row[0] };
   useEffect(() => {
@@ -26,7 +27,13 @@ export function AnswerCard({ question, row, mine, onList, onClose }: { question:
         <span className="aclevel">{LEVELS[row[1]].name} · {LEVELS[row[1]].pts} pts</span>
         {mine && <span className="acmine">Your answer</span>}
       </div>
-      <p id="answerDef" aria-live="polite" aria-busy={!defs} className={text ? undefined : "mute"}>{!defs ? "Loading" : text ?? NO_DEFINITION}</p>
+      {!defs && failed ? (
+        <p id="answerDef" aria-live="polite" className="mute">
+          Could not load the definition. Check your connection. <button type="button" className="ghost mini" onClick={retryDefinitions}>Try again</button>
+        </p>
+      ) : (
+        <p id="answerDef" aria-live="polite" aria-busy={!defs} className={text ? undefined : "mute"}>{!defs ? "Loading" : text ?? NO_DEFINITION}</p>
+      )}
       <div className="acrow">
         {onList && <span className="aclisted" key="on">On your study list</span>}
         <button type="button" className="ghost mini" id="studyToggle" key="toggle" onClick={() => (onList ? removeTerm(ref) : addTerms([ref]))}>{onList ? "Remove" : "Add to study list"}</button>

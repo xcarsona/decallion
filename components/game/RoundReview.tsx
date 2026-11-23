@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { MODE_NAME } from "./EndView";
 import { AddMissedBoards, AnswerBoard, AnswerBoards } from "@/components/study/AnswerBoard";
-import { DIFFS, GAME_ZONE } from "@/lib/game-engine";
+import { DIFFS, dayIso } from "@/lib/game-engine";
 import { clusterInfo } from "@/lib/questions";
 import { LEVELS, MAX_PER_PROMPT, ft } from "@/lib/scoring";
 import type { ClusterChoice, LogEntry, Mode } from "@/types";
@@ -10,9 +10,10 @@ import type { ClusterChoice, LogEntry, Mode } from "@/types";
 /** The share text and every prompt of a finished round with its full answer board. Shown in the Round review panel,
     which opens only from the results screen: boards stay hidden while a round is being played. Each answer opens a
     card with its definition and can be put on the study list. */
-export function RoundReview({ cluster, mode, log, score }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number }) {
+export function RoundReview({ cluster, mode, log, score, day }: { cluster: ClusterChoice; mode: Mode; log: LogEntry[]; score: number; day: number }) {
   const [copied, setCopied] = useState("Copy result");
-  const date = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: GAME_ZONE });
+  // the day the round belongs to, which is not always today: the review can be opened after midnight
+  const date = new Date(dayIso(day) + "T12:00:00Z").toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
   const share = `Decallion ${MODE_NAME[mode].toLowerCase()} · ${clusterInfo(cluster).short}${mode === "daily" ? ` ${date}` : ""}\n${log.map((l) => (l.level === -1 ? "⬛" : LEVELS[l.level].emoji)).join("")}\n${ft(score)} ft · ${score}${mode === "unlimited" ? " pts" : ` / ${log.length * MAX_PER_PROMPT}`}`;
   const copy = () => navigator.clipboard.writeText(share).then(() => setCopied("Copied"), () => setCopied("Select and copy the text above"));
   return (

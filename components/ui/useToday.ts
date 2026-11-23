@@ -11,7 +11,17 @@ function subscribe(fn: () => void): () => void {
     }, msUntilNextDay() + 250);
   };
   arm();
-  return () => clearTimeout(id);
+  // a timer does not always fire on time on a phone that was asleep, so look again whenever the page is shown
+  const look = () => {
+    if (document.visibilityState === "visible") fn();
+  };
+  document.addEventListener("visibilitychange", look);
+  window.addEventListener("focus", fn);
+  return () => {
+    clearTimeout(id);
+    document.removeEventListener("visibilitychange", look);
+    window.removeEventListener("focus", fn);
+  };
 }
 const now = () => dayKey();
 

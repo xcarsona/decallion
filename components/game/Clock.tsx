@@ -34,10 +34,12 @@ export function Clock({ seconds, timed, onExpire, onLastSeconds }: { seconds: nu
     return () => cancelAnimationFrame(id);
   }, [seconds, timed]);
 
-  if (!timed) return <div className="clock" aria-label="No time limit">∞</div>;
+  // role="timer" names what this is; a timer is not read out as it changes (its live setting is "off" by default),
+  // so a screen reader hears the time only when the player moves to it
+  if (!timed) return <div className="clock" role="timer" aria-label="No time limit">∞</div>;
   const style = { "--t": left / (seconds * 1000) } as React.CSSProperties;
   return (
-    <div className={left < 6000 ? "clock low" : "clock"} style={style} aria-label="Seconds left">
+    <div className={left < 6000 ? "clock low" : "clock"} style={style} role="timer" aria-live="off" aria-label="Seconds left">
       {Math.ceil(left / 1000)}
     </div>
   );

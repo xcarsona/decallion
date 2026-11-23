@@ -32,7 +32,7 @@ npm test           # unit tests, including checks on the question bank
 npm run build      # production build
 ```
 
-The game works with no setup. The leaderboard shows "not set up yet" until the environment variables below exist.
+The game works with no setup. The leaderboard says it is unavailable until the environment variables below exist.
 
 ## How the game works
 
@@ -41,7 +41,12 @@ You pick a career cluster, then a mode.
 - **Clusters:** Business Management + Administration, Entrepreneurship, Finance, Hospitality + Tourism, Marketing,
   or All clusters (a mix of the five).
 - **Daily climb:** seven prompts, 25 seconds each. An answer that is not on the board can be tried again until the
-  clock runs out; the first answer that is on the board is final. Each cluster has its own daily round.
+  clock runs out, or skipped; the first answer that is on the board is final. Each cluster has its own daily round.
+  Only the first run of the day counts, and it counts from its first answer: starting again after that, or
+  reloading mid-round, gives a run that is logged but not counted.
+- **Near misses:** a typing slip is not taken silently. The game asks "Did you mean ...?" above the answer box and
+  the player accepts it or types something else. A change that makes a different answer (a number, a one- or
+  two-letter word, a prefix such as un- or im-, max for min) is never treated as a slip.
 - **Practice:** seven prompts. You choose the difficulty and whether the timer runs.
 - **Unlimited:** keeps going until three misses.
 - **Levels:** Roll Call 10, Club Meeting 25, Districts 45, State 65, ICDC 80, DECA Glass 100. One point is 10 ft.
@@ -86,6 +91,18 @@ tiles are in the repository, not the photos. Replace a tile with any small PNG o
 There is one board per cluster, with tabs for today, yesterday and all-time best. One entry per name, per day, per
 cluster. `/leaderboard?cluster=fin` opens a cluster's tab directly.
 
+Names are public, so they are filtered (`lib/leaderboard/names.ts`): offensive words, including with digits in
+place of letters, phone numbers, web addresses and social handles are refused. No filter catches everything, so
+there are two more layers. The name box tells players the name is public and not to use their full name, and a row
+can be hidden without deleting it:
+
+- In the Supabase dashboard, open the `daily_scores` table and tick `hidden` on the row. It disappears from the
+  board at once. The name stays taken for that day, so it cannot simply be posted again.
+- Set `NEXT_PUBLIC_CONTACT_EMAIL` and the leaderboard and privacy pages show a "report a name" address.
+
+The board is an honour system. The server proves a score matches the answers that were typed. It cannot prove who
+typed them or what they had seen first, because the answer boards ship with the game.
+
 How scores stay honest: the browser posts the cluster and the seven answers it typed, not a score. The server
 rebuilds that cluster's round for that day from the same seed and scores the answers with the same engine. A score
 sent by the browser is ignored. The table allows public reads and no public writes.
@@ -94,7 +111,8 @@ sent by the browser is ignored. The table allows public reads and no public writ
 
 1. Create a Supabase project.
 2. Open the SQL editor and run `supabase/schema.sql`.
-3. Then run `supabase/migrations/20261117_add_cluster.sql`. It adds the cluster column.
+3. Then run the files in `supabase/migrations/` in date order: `20261117_add_cluster.sql` (one board per
+   cluster) and `20261123_moderation.sql` (the `hidden` flag).
 4. Copy the project URL and the **secret** key (`sb_secret_...`, or the legacy service role key) from the project's
    API settings.
 5. Put them in `.env.local` for local work (see `.env.example`), and in the host's environment variables for
@@ -105,8 +123,9 @@ sent by the browser is ignored. The table allows public reads and no public writ
    SUPABASE_SERVICE_ROLE_KEY=...
    ```
 
-**Already have the leaderboard running?** Run only step 3. It is safe to run more than once, and scores already
-saved are kept on the All clusters board. Until it is run, the leaderboard says it needs a database update.
+**Already have the leaderboard running?** Run only the migrations you have not run yet. Each is safe to run more
+than once. Until `20261123_moderation.sql` is run the board works as before but rows cannot be hidden. If the
+database is further behind than that, the leaderboard says it is unavailable and the reason is in the server log.
 
 If you ever run `schema.sql` again after the migration, run the migration again too. `schema.sql` puts back the old
 one-entry-per-name-per-day rule, and the migration removes it.
@@ -121,6 +140,13 @@ one-entry-per-name-per-day rule, and the migration removes it.
 The key must be the secret key (`sb_secret_...`) or the legacy service role key. The publishable key cannot save
 scores. The secret key is read only on the server: never prefix it with `NEXT_PUBLIC_` and never commit it.
 
+Two optional public values, safe to expose:
+
+| Name | What it does |
+|---|---|
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Shown as the address for reporting a leaderboard name, on the leaderboard and privacy pages. Without it there is no report link. |
+| `NEXT_PUBLIC_SITE_URL` | The site's own address, used in link previews and the sitemap. Defaults to the Vercel address; set it when you add a custom domain. |
+
 ## Deploy (Vercel) and custom domain
 
 1. Import this repository as a new Vercel project. The defaults for Next.js work.
@@ -130,8 +156,14 @@ scores. The secret key is read only on the server: never prefix it with `NEXT_PU
 ## Adding prompts
 
 Add an entry to the cluster's file in `lib/questions/bank/`, following the format described at the top of
-`lib/questions/index.ts`, then run `npm test`. The tests fail if an id is duplicated, an alias matches two answers,
-a board has too few answers, or a prompt has no ICDC or DECA Glass answer.
+`lib/questions/index.ts`, add a definition for each of its answers in `lib/questions/defs/`, then run `npm test`.
+The tests fail if an id is duplicated, an alias matches two answers, a board has too few answers, a prompt has no
+ICDC or DECA Glass answer, or an answer has no definition.
+
+Give a new prompt `since: 20261201` (the day after you will deploy it, as a number). Daily rounds are worked out
+forward from the first day, so a prompt with no `since` reshuffles every earlier day and changes today's round for
+people already playing it. With `since`, the prompt joins the daily rotation from that day and nothing before it
+moves. Practice and Unlimited use it straight away. Do not delete a prompt or change its id for the same reason.
 
 ## Known limits
 

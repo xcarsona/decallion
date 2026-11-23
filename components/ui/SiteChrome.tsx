@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { SiteNav } from "./SiteNav";
 
@@ -13,7 +14,12 @@ export function SiteHeader() {
   );
 }
 
-/** The disclaimer shown on every page. */
+/** The disclaimer shown on every page, and the link to the privacy page. */
 export function SiteFooter({ className }: { className: string }) {
-  return <footer className={className}>Unofficial practice game. Not affiliated with or endorsed by DECA Inc. Answer levels are editorial estimates, not live player data.</footer>;
+  return (
+    <footer className={className}>
+      Unofficial practice game. Not affiliated with or endorsed by DECA Inc. Answer levels are editorial estimates, not live player data.{" "}
+      <Link href="/privacy" id="privacyLink">Privacy</Link>
+    </footer>
+  );
 }

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ClusterIcon } from "./ClusterIcon";
 import { ScoreSubmit } from "./ScoreSubmit";
 import { reducedMotion } from "@/components/ui/motion";
-import { ROUND_SIZE } from "@/lib/game-engine";
+import { ROUND_SIZE, STRIKES } from "@/lib/game-engine";
 import { clusterInfo } from "@/lib/questions";
 import { LEVELS, LEVEL_KEYS, MAX_PER_PROMPT, ft } from "@/lib/scoring";
 import type { RecordOutcome } from "@/lib/stats";
@@ -52,9 +52,11 @@ export function EndView({ cluster, mode, log, score, outcome, day, onTick, onLan
   const glass = log.filter((l) => l.level === 6).length, miss = log.filter((l) => l.level === -1).length;
   const perfect = mode !== "unlimited" && prompts === ROUND_SIZE && score >= max;
   let note = "Answer boards are open: see Review answers.";
-  if (!outcome) note = "Today's daily was already logged, so this replay was not added to your stats.";
+  if (!outcome) note = "Today's daily was already started or logged, so this run was not added to your stats.";
   else if (mode === "daily") note = `Daily streak: ${outcome.streak} day${outcome.streak === 1 ? "" : "s"}. ${note}`;
   else if (outcome.previousBest && !outcome.newBest) note = `Your best in this mode is ${ft(outcome.previousBest)} ft. ${note}`;
+  // Unlimited normally ends on the third miss. If it ended with misses to spare, the cluster ran out of prompts.
+  if (mode === "unlimited" && miss < STRIKES) note = `You answered every prompt in this cluster. ${note}`;
   const alt = <span className="endft">{ft(n)} ft</span>;
   return (
     <div className="view end" data-done={done}>

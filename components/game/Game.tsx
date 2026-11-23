@@ -17,7 +17,7 @@ import { STRIKES, buildRound, dailyEnabled, dayKey, match, prevDayKey } from "@/
 import { ALL_CLUSTERS, CLUSTER_IDS, QUESTIONS, clusterInfo } from "@/lib/questions";
 import { appendRound, makeRound } from "@/lib/log";
 import { LEVELS, LEVEL_KEYS, pointsFor } from "@/lib/scoring";
-import { countsNow, load, record, snapshot, subscribe, type RecordOutcome } from "@/lib/stats";
+import { countsNow, load, markDailyStarted, record, snapshot, subscribe, type RecordOutcome } from "@/lib/stats";
 import type { ClusterChoice, LogEntry, Mode, PracticeSetup as Setup, Question } from "@/types";
 
 type View = "clusters" | "modes" | "setup" | "intro" | "play" | "climb" | "reveal" | "end";
@@ -44,6 +44,11 @@ export default function Game() {
   // Stats are read from storage, not kept here: another tab or the log page's Clear button can change them.
   const stats = useSyncExternalStore(subscribe, snapshot);
   const [sound, setSound] = useState(soundPref);
+  // the setting as shown on the button, for the scene, which is rebuilt each time this page is shown again
+  const soundNow = useRef(sound);
+  useEffect(() => {
+    soundNow.current = sound;
+  }, [sound]);
   const [view, setView] = useState<View>("clusters");
   const [mode, setMode] = useState<Mode>("daily");
   const [cluster, setCluster] = useState<ClusterChoice>("all");
@@ -68,12 +73,13 @@ export default function Game() {
   const leave = useRef(() => {});
   const resume = useRef(0);
   useEffect(() => {
-    resume.current = !round.length ? 0 : mode === "unlimited" && view === "end" ? Math.min(score, 650) : score;
+    resume.current = round.length ? score : 0;
     leave.current = () => {
       setPanel(null); // a panel left open would still be open, and holding focus, on the way back
       if (view === "play" && round[idx] && !answered.current) {
         answered.current = true;
-        setLog([...log, { question: round[idx], row: null, typed: "", pts: 0, level: -1, timedOut: true }]);
+        if (counts && mode === "daily") markDailyStarted(cluster, roundDay);
+        setLog([...log, { question: round[idx], row: null, typed: "", pts: 0, level: -1, timedOut: timed }]);
         setView("reveal");
       } else if (view === "climb") {
         setView("reveal"); // the climb animation stops with the scene, so go straight to the level
@@ -83,7 +89,7 @@ export default function Game() {
   useLayoutEffect(() => () => leave.current(), []);
 
   useEffect(() => {
-    const s = createScene(screenRef.current!, skyRef.current!, uiRef.current!, soundPref());
+    const s = createScene(screenRef.current!, skyRef.current!, uiRef.current!, soundNow.current);
     s.onTick(setShown);
     s.climbTo(resume.current); // a round kept while another page was open carries on from its altitude
     scene.current = s;
@@ -99,6 +105,12 @@ export default function Game() {
   useEffect(() => {
     scene.current?.setAccent(tint);
   }, [tint]);
+
+  /* Closing How to play in the middle of a prompt puts the cursor back in the answer box: the clock is running. */
+  function closeHelp() {
+    setPanel(null);
+    if (view === "play") window.setTimeout(() => document.getElementById("answer")?.focus(), 0);
+  }
 
   function goHome() {
     scene.current?.reset();
@@ -140,6 +152,9 @@ export default function Game() {
   function answer(text: string, timedOut: boolean) {
     if (answered.current) return;
     answered.current = true;
+    scene.current?.wake(); // the scene is new after a visit to another page, and silent until woken
+    // the day's counted run is used up by its first answer, so the round cannot be restarted until the score looks good
+    if (counts && mode === "daily") markDailyStarted(cluster, roundDay);
     const question = round[idx];
     const row = match(question, text);
     const entry: LogEntry = { question, row, typed: text.trim(), pts: pointsFor(row), level: row ? row[1] : -1, timedOut };
@@ -153,6 +168,7 @@ export default function Game() {
   }
 
   function next() {
+    scene.current?.wake();
     if (roundOver) return finish();
     answered.current = false;
     setIdx(idx + 1);
@@ -163,7 +179,7 @@ export default function Game() {
     let out: RecordOutcome | null = null;
     // Add to what is in storage now, and check again that the daily was not logged elsewhere while this round ran.
     const saved = load();
-    const counted = counts && countsNow(saved, mode, cluster, roundDay);
+    const counted = counts && countsNow(saved, mode, cluster, roundDay, undefined, true);
     if (counted) {
       out = record(saved, { mode, cluster, score, dayKey: roundDay, prevDayKey: prevDayKey(roundDay), log: log.map((l) => ({ cluster: l.question.cluster, topic: l.question.topic, level: l.level, pts: l.pts })) }).outcome;
     }
@@ -242,15 +258,20 @@ export default function Game() {
       </div>
 
       {open === "help" && (
-        <Sheet id="helpPanel" title="How to play" onClose={() => setPanel(null)}>
+        <Sheet id="helpPanel" title="How to play" onClose={closeHelp}>
           {view === "play" && timed && <p className="warn" id="helpClock">The clock keeps running while this is open.</p>}
           <div className="helpgrid">
             <section>
               <h3>How it works</h3>
               <p>Every prompt has many correct answers. Type one. You have 25 seconds.</p>
               <p>If your answer is not on the board, try another until the clock runs out. The first answer that is on the board is final, so you cannot swap it for a rarer one.</p>
+              <p>After a wrong try a Skip button appears. Skipping counts as a miss.</p>
               <p>The fewer competitors likely to give your answer, the higher its level. Answer boards stay sealed until the round ends.</p>
               <p>Pick a career cluster, or All clusters for a mix. Each has its own daily round, the same for everyone. It changes at midnight Eastern Time.</p>
+              <p><b>Daily:</b> seven prompts, the same for everyone. Your first run counts.</p>
+              <p><b>Unlimited:</b> keep going until three misses.</p>
+              <p><b>Practice:</b> choose the difficulty and turn the clock off if you like.</p>
+              <p>After a round, Review answers shows every board. Tap an answer to see it explained and save it to your study list.</p>
               <p className="mute">{QUESTIONS.length} prompts across {CLUSTER_IDS.length} career clusters.</p>
             </section>
             <section>
@@ -268,7 +289,7 @@ export default function Game() {
       )}
       {open === "review" && (
         <Sheet id="reviewPanel" title="Round review" onClose={() => setPanel(null)}>
-          <RoundReview cluster={cluster} mode={mode} log={log} score={score} />
+          <RoundReview cluster={cluster} mode={mode} log={log} score={score} day={roundDay} />
         </Sheet>
       )}
     </div>

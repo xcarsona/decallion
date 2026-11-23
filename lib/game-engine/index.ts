@@ -97,33 +97,82 @@ function slip(a: string, b: string): number {
   return d;
 }
 
-/** Returns the matching answer row or null. An exact match wins, then a match that ignores word order, plurals and
-    joining words. Otherwise typing mistakes are forgiven: one when both the typed text and the answer have 5+ letters,
-    two when both have 9+. Two neighbouring letters swapped count as one mistake, and in words under seven letters a
-    single wrong letter is not forgiven. If a mistyped answer is equally
-    close to two rows, the closest wins and a tie goes to the row listed first. */
-export function match(question: Question, input: string): AnswerRow | null {
+/* A typing slip must not turn one answer into a different or opposite one. These checks look at the words, not just
+   the letters, and rule a near miss out as a slip when: */
+/** prefixes that reverse or change a word's meaning: "imperfect" is not "perfect", "uncollectible" not "collectible" */
+const CHANGING_PREFIXES = ["un", "in", "im", "il", "ir", "non", "dis", "de", "mis", "anti", "counter", "re", "pre", "post", "sub", "super", "over", "under", "out", "co"];
+/** word parts that are opposites of each other: "maximize" is not "minimize", "microfinance" not "macrofinance" */
+const OPPOSITES: [string, string][] = [["max", "min"], ["micro", "macro"], ["over", "under"], ["import", "export"], ["pre", "post"], ["increas", "decreas"], ["inter", "intra"], ["hyper", "hypo"], ["up", "down"], ["high", "low"], ["buy", "sell"], ["debit", "credit"], ["asset", "liabilit"], ["long", "short"], ["fixed", "variable"], ["direct", "indirect"], ["formal", "informal"], ["internal", "external"], ["tangible", "intangible"], ["public", "private"]];
+const digitsOf = (s: string) => s.replace(/[^0-9]/g, "");
+
+/** True when the typed words and an answer's words differ in a way that is a different answer, not a slip. */
+function differentAnswer(typed: string[], answer: string[]): boolean {
+  const a = typed.join("");
+  const b = answer.join("");
+  if (digitsOf(a) !== digitsOf(b)) return true; // "403k" is not "401k", "s&p 400" is not "s&p 500"
+  for (const [p, q] of OPPOSITES) {
+    if ((a.includes(p) && !b.includes(p) && b.includes(q) && !a.includes(q)) || (a.includes(q) && !b.includes(q) && b.includes(p) && !a.includes(p))) return true;
+  }
+  // the words each side has that the other does not
+  const left = answer.slice();
+  const onlyTyped: string[] = [];
+  for (const w of typed) {
+    const at = left.indexOf(w);
+    if (at === -1) onlyTyped.push(w);
+    else left.splice(at, 1);
+  }
+  // a one- or two-letter word is a whole word, never a slip: "theory b" is not "theory x", "c corp" is not "b corp"
+  if ([...onlyTyped, ...left].some((w) => w.length <= 2)) return true;
+  if (onlyTyped.length === 1 && left.length === 1) {
+    const [s, t] = onlyTyped[0].length <= left[0].length ? [onlyTyped[0], left[0]] : [left[0], onlyTyped[0]];
+    if (CHANGING_PREFIXES.some((p) => t === p + s)) return true;
+  }
+  // the same check when the words run together ("imperfectcompetition")
+  const [s, t] = a.length <= b.length ? [a, b] : [b, a];
+  return CHANGING_PREFIXES.some((p) => t === p + s);
+}
+
+export interface MatchResult {
+  row: AnswerRow;
+  /** False when the typed text is only close to the answer (a typing slip). The game then asks "Did you mean ...?"
+      instead of taking it silently. */
+  exact: boolean;
+}
+
+/** Finds the answer row for typed text, and says whether it was typed correctly. An exact match wins, then a match
+    that ignores word order, plurals and joining words: both count as exact. Otherwise typing mistakes are forgiven:
+    one when both the typed text and the answer have 5+ letters, two when both have 9+. Two neighbouring letters
+    swapped count as one mistake; in words under seven letters a single wrong letter is not forgiven; and a change
+    that makes a different answer (a number, a short word, a prefix such as un- or im-, max for min) is never a
+    slip. If a mistyped answer is equally close to two rows, the closest wins and a tie goes to the row listed first. */
+export function matchDetail(question: Question, input: string): MatchResult | null {
   const x = norm(input);
   if (!x) return null;
   const xs = x.replace(/s$/, "");
   const xl = looseKey(input);
-  const aliases: { row: AnswerRow; y: string; yl: string }[] = [];
+  const xw = words(input);
+  const aliases: { row: AnswerRow; text: string; y: string; yl: string }[] = [];
   for (const row of question.a) {
-    for (const alias of [row[0], ...row.slice(2)] as string[]) aliases.push({ row, y: norm(alias), yl: looseKey(alias) });
+    for (const alias of [row[0], ...row.slice(2)] as string[]) aliases.push({ row, text: alias, y: norm(alias), yl: looseKey(alias) });
   }
-  for (const { row, y } of aliases) if (x === y || xs === y.replace(/s$/, "")) return row;
-  if (xl) for (const { row, yl } of aliases) if (xl === yl) return row;
+  for (const { row, y } of aliases) if (x === y || xs === y.replace(/s$/, "")) return { row, exact: true };
+  if (xl) for (const { row, yl } of aliases) if (xl === yl) return { row, exact: true };
   let best: AnswerRow | null = null;
   let bestDistance = 9;
-  for (const { row, y, yl } of aliases) {
+  for (const { row, text, y, yl } of aliases) {
     // each comparison is judged against its own two strings: the looser form can be much shorter than the answer
     const d = Math.min(slip(x, y), xl && yl ? slip(xl, yl) : 9);
-    if (d < bestDistance) {
+    if (d < bestDistance && !differentAnswer(xw, words(text))) {
       bestDistance = d;
       best = row;
     }
   }
-  return best;
+  return best ? { row: best, exact: false } : null;
+}
+
+/** Returns the matching answer row or null, typing slips included. The server scores with this. */
+export function match(question: Question, input: string): AnswerRow | null {
+  return matchDetail(question, input)?.row ?? null;
 }
 
 /** Small seeded generator (mulberry32) so a seed always gives the same round. */
@@ -240,8 +289,8 @@ export const DAILY_MIN = ROUND_SIZE * 3;
 export function inCluster(questions: Question[], cluster: ClusterChoice = "all"): Question[] {
   return cluster === "all" ? questions : questions.filter((q) => q.cluster === cluster);
 }
-export function dailyEnabled(questions: Question[], cluster: ClusterChoice): boolean {
-  return inCluster(questions, cluster).length >= DAILY_MIN;
+export function dailyEnabled(questions: Question[], cluster: ClusterChoice, day: number = dayKey()): boolean {
+  return inCluster(questions, cluster).filter((q) => (q.since ?? 0) <= day).length >= DAILY_MIN;
 }
 export function countByCluster(questions: Question[]): Record<ClusterId, number> {
   const out = { bma: 0, ent: 0, fin: 0, ht: 0, mkt: 0 };
@@ -281,9 +330,14 @@ const dailyCache = new Map<string, Question[]>();
     before, so three days in a row never repeat. That makes a day depend on the days before it, so the rounds are
     worked out forward from 1 January 2026. Returns [] while the cluster has fewer than DAILY_MIN prompts. */
 export function dailyRound(questions: Question[], cluster: ClusterChoice, day: number): Question[] {
-  const list = inCluster(questions, cluster).slice().sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  if (list.length < DAILY_MIN) return [];
-  const cacheKey = `${cluster}:${day}:${list.length}:${hash(list.map((q) => q.id).join())}`;
+  const all = inCluster(questions, cluster).slice().sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  /* Each day draws only from the prompts that existed by then (`since`). The rounds are worked out forward from the
+     first day, so without this, adding a prompt would reshuffle every earlier day and change today's round for
+     people already playing it. With it, new prompts simply join from their first day on. */
+  const dated = all.some((q) => q.since);
+  const poolFor = (key: number) => (dated ? all.filter((q) => (q.since ?? 0) <= key) : all);
+  if (poolFor(day).length < DAILY_MIN) return [];
+  const cacheKey = `${cluster}:${day}:${all.length}:${hash(all.map((q) => q.id + (q.since ?? "")).join())}`;
   const cached = dailyCache.get(cacheKey);
   if (cached) return cached;
   const end = dayIndex(day);
@@ -292,7 +346,7 @@ export function dailyRound(questions: Question[], cluster: ClusterChoice, day: n
   for (let i = Math.min(0, end); i <= end; i++) {
     const key = utcDayKey(new Date(EPOCH + i * 86400000));
     const used = new Set(recent.flat());
-    round = spread(shuffle(list, rng(dailySeed(key, cluster))).filter((q) => !used.has(q.id)), ROUND_SIZE, groupFor(cluster));
+    round = spread(shuffle(poolFor(key), rng(dailySeed(key, cluster))).filter((q) => !used.has(q.id)), ROUND_SIZE, groupFor(cluster));
     recent = [...recent.slice(-1), round.map((q) => q.id)];
   }
   if (dailyCache.size > 64) dailyCache.clear();
