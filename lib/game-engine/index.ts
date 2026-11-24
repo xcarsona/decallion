@@ -11,7 +11,7 @@ export const MAX_ANSWER_LENGTH = 80;
 export const STRIKES = 3;
 export const DIFFS: Record<number, string> = { 1: "Easy", 2: "Medium", 3: "Hard" };
 
-/** The words of an answer: lower case, punctuation removed, "the", "a" and "an" dropped. */
+/** The words of an answer: lower case, punctuation removed, "the", "a" and "an" dropped (a final "a" is kept). */
 function words(s: string): string[] {
   return String(s)
     .toLowerCase()
@@ -20,9 +20,10 @@ function words(s: string): string[] {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9 ]/g, " ")
-    .replace(/\b(the|a|an)\b/g, " ")
     .split(/\s+/)
-    .filter(Boolean);
+    .filter(Boolean)
+    // "the", "a" and "an" are dropped, except a final "a", which is part of the name: "Hepatitis A", "Vitamin A"
+    .filter((w, i, all) => !(w === "the" || w === "an" || (w === "a" && i < all.length - 1)));
 }
 /** An answer with case, punctuation, spaces and small words removed: "The Four P's" becomes "fourps". */
 export function norm(s: string): string {

@@ -585,3 +585,58 @@ written to be accurate rather than to defend the entry, so some of them say the 
 - Several boards list a category alongside its own members: MKT-09, CHN-05, MKR-04, MKR-05, CHN-01.
 - Accepted wordings that conflict across boards: "price discrimination" is a strategy on MKT-04 and a restricted practice on PRC-04; "loss leader" is a strategy on MKT-04 and a restricted practice on PRC-04.
 - Accepted wordings that mean something else: "paying in cash" for Cash discount (PRC-03); "variety store" for Dollar store (CHN-01); "brand identity" for Brand associations (BRD-06).
+
+## New prompts, batch 1 (125 prompts)
+
+The bank grew from 250 to 375 prompts, 75 in each cluster. Each cluster's 25 were written by one AI agent, with a wide
+answer board and a definition for every answer, then checked by a second agent that fixed what it found. No person has
+reviewed them. The new prompts carry `since: 20261125`, so they join the daily rounds from 25 November and do not
+change any earlier day's round.
+
+New ids:
+
+- Business Management + Administration: BA-07 to BA-09, BCM-07 to BCM-10, BMA-08 to BMA-10, ECO-08 to ECO-10, HRM-07 to HRM-09, LAW-07 to LAW-09, OPM-07 to OPM-09, POB-08 to POB-10.
+- Entrepreneurship: ENT-08 to ENT-11, FND-08 to FND-10, FRN-09 to FRN-11, GRO-07 to GRO-11, INO-08 to INO-11, SBM-09 to SBM-11, SUP-09 to SUP-11.
+- Finance: ACC-09 to ACC-11, BNK-08 to BNK-11, CRD-08 to CRD-11, FIN-09 to FIN-11, INS-07 to INS-10, INV-08 to INV-11, PFL-09 to PFL-11.
+- Hospitality + Tourism: EVT-09 to EVT-13, HT-08 to HT-12, LDG-10 to LDG-12, RFS-10 to RFS-13, SPE-10 to SPE-12, TRV-09 to TRV-13.
+- Marketing: BRD-07 to BRD-09, CHN-07 to CHN-10, MKR-08 to MKR-11, MKT-12 to MKT-14, PRC-07 to PRC-10, PROM-08 to PROM-11, SEL-09 to SEL-11.
+
+### Written by the checker and not read by anyone else
+
+Because the five clusters were written at the same time, several new prompts duplicated one in another cluster. The
+checkers replaced one side of each pair, and a few others, with a prompt of their own. These had no second reader:
+
+- POB-10 (what sets a corporation apart), ECO-09 (what helps an economy grow), LAW-09 (remedies a court can award).
+- FND-10 (drawbacks of equity investors), GRO-11 (steps in selling a business), and the definitions of GRO-08 (ways companies combine).
+- CRD-11 (warning signs of too much debt).
+- HT-09 (making up for a service failure), HT-11 (jobs that commonly receive tips).
+- MKT-13 (extending a mature product's life), PRC-10 (words that mean a price: fee, rent, fare).
+
+### Boards that still share many answers
+
+Three pairs share six or more answers. Each asks a different question, so both sides were kept:
+
+- SBM-10 (taxes a small business pays or collects) and PFL-04 (taxes a household pays).
+- RFS-03 (front-of-house positions) and HT-11 (jobs that receive tips).
+- SUP-10 (choosing a business name) and BRD-07 (qualities of a good brand name).
+
+### Points the checkers left for a person
+
+- LAW-09: Quantum meruit, Constructive trust, Replevin and Statutory damages sit at the top level. Check they are fair for high-school players.
+- OPM-09: "stockout rate" is accepted as Fill rate, which is its opposite; Takt time is a target pace more than a performance measure.
+- ENT-10: a bare "service" no longer scores; the prompt now asks for something more specific.
+- FND-08: the crowdfunding platform facts are from memory, and platforms change.
+- ACC-11: Leasehold is listed as an intangible asset, as older textbooks do; current rules treat leases differently.
+- BNK-11: HUD and the Department of Labor are accepted as financial regulators.
+- PRC-08: Gas stations is the weakest answer on a board about prices that move with demand.
+- PRC-10: Tax ("the price of public services") and Freight are the least conventional answers.
+- RFS-11: "frying" is accepted as Deep-frying. TRV-09: "transportation" is accepted as Airport transfers.
+- HT-11: Host, Sommelier and Barback are accepted because they share in tips.
+- Piggyback, fishyback and birdyback (CHN-07), and the two implied warranties (BRD-09), were merged into their parent row. They still score, at the parent's level.
+
+### The top level, DECA Glass
+
+A review found boards where the top level was not rare. On 13 older boards the more familiar top-level answers were
+moved down one level (ECO-07, LAW-04, BMA-06, BA-05, SBM-02, INO-01, FRN-07, INO-06, INV-04, INV-01, BNK-02, INV-03),
+and every new board has about a quarter or less at the top. Eighteen older boards still have more than a third of
+their answers at the top level, among them PFL-07, INV-06, ACC-05, INS-03, LAW-06 and HRM-06.
