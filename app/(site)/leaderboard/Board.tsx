@@ -27,7 +27,7 @@ const savedCluster = () => read(CLUSTER_KEY);
 const savedName = () => read("decallion-name").toLowerCase();
 const nothing = () => "";
 /** Where to report a name. Shown only when the site owner has set an address. */
-const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "").trim();
+const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "carson.alexander1@outlook.com").trim();
 /** The words for one coloured square: the level's name, or "No credit" for a miss (stored as 0). */
 const levelName = (level: number) => (level >= 1 && level <= 6 ? LEVELS[level as keyof typeof LEVELS].name : "No credit");
 

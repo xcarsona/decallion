@@ -590,7 +590,7 @@ written to be accurate rather than to defend the entry, so some of them say the 
 
 The bank grew from 250 to 375 prompts, 75 in each cluster. Each cluster's 25 were written by one AI agent, with a wide
 answer board and a definition for every answer, then checked by a second agent that fixed what it found. No person has
-reviewed them. The new prompts carry `since: 20261125`, so they join the daily rounds from 25 November and do not
+reviewed them. The new prompts carry `since: 20261127`, so they join the daily rounds from 27 November and do not
 change any earlier day's round.
 
 New ids:

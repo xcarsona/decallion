@@ -7,7 +7,7 @@ export const SITE_NAME = "Decallion";
 export const DESCRIPTION = "Unofficial rare-answer business trivia for DECA competitors. The answer nobody else gives climbs highest.";
 export const THEME_COLOR = "#07142e";
 /** Where to send a request to take a leaderboard name down. Empty when the site owner has not set one. */
-export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "").trim();
+export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "carson.alexander1@outlook.com").trim();
 
 /** The share image drawn by app/opengraph-image.tsx. */
 const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, type: "image/png", alt: "Decallion. The answer nobody else gives climbs highest." };

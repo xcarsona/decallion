@@ -98,7 +98,8 @@ can be hidden without deleting it:
 
 - In the Supabase dashboard, open the `daily_scores` table and tick `hidden` on the row. It disappears from the
   board at once. The name stays taken for that day, so it cannot simply be posted again.
-- Set `NEXT_PUBLIC_CONTACT_EMAIL` and the leaderboard and privacy pages show a "report a name" address.
+- The leaderboard and privacy pages show a "report a name" address. It is set in `app/site-info.ts`, and
+  `NEXT_PUBLIC_CONTACT_EMAIL` overrides it.
 
 The board is an honour system. The server proves a score matches the answers that were typed. It cannot prove who
 typed them or what they had seen first, because the answer boards ship with the game.
@@ -144,7 +145,7 @@ Two optional public values, safe to expose:
 
 | Name | What it does |
 |---|---|
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Shown as the address for reporting a leaderboard name, on the leaderboard and privacy pages. Without it there is no report link. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Shown as the address for reporting a leaderboard name, on the leaderboard and privacy pages. Overrides the default address set in `app/site-info.ts`. |
 | `NEXT_PUBLIC_SITE_URL` | The site's own address, used in link previews and the sitemap. Defaults to the Vercel address; set it when you add a custom domain. |
 
 ## Deploy (Vercel) and custom domain
